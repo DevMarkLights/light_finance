@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".Database">
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Holding"
+        android:textSize="24dp"
+        android:layout_marginTop="20dp"/>
+
+    <EditText
+        android:id="@+id/symbol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Symbol"
+        android:textSize="24dp"
+        android:layout_below="@+id/textTitle"
+        android:inputType="textCapCharacters"/>
+
+    <EditText
+        android:id="@+id/shares"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Number of Shares"
+        android:textSize="24dp"
+        android:layout_below="@+id/symbol"
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:id="@+id/costBasis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cost Per Share"
+        android:textSize="24dp"
+        android:layout_below="@+id/shares"
+        android:inputType="numberDecimal"/>
+
+    <!-- this needs to be an drop down selection box -->
+    <EditText
+        android:id="@+id/frequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="payment occurrence"
+        android:textSize="24dp"
+        android:layout_below="@+id/costBasis"
+        android:inputType="numberDecimal"/>
+
+    <Button
+        android:id="@+id/addStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Stock"
+        android:textSize="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/frequency"/>
+
+    <Button
+        android:id="@+id/deleteStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Stock"
+        android:textSize="24dp"
+        android:layout_below="@+id/updateStock"
+        />
+
+    <Button
+        android:id="@+id/updateStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Stock"
+        android:textSize="24dp"
+        android:layout_below="@+id/addStock"/>
+
+    <Button
+        android:id="@+id/viewStockList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Stocks"
+        android:textSize="24dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/deleteStock"/>
+
+
+</RelativeLayout>
