@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.Locale;
+
 
 public class DBHelper extends SQLiteOpenHelper {
     Database dbj = new Database();
@@ -17,8 +19,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase DB) {
-        DB.execSQL("Create Table Stocks(symbol Text primary key, shares Text, costBasis Text, " +
-                "dividend Text, annualDividend Text, frequency Text, dateOfDividend Text)");
+        DB.execSQL("Create Table Stocks(symbol Text primary key,price Text, shares Text, averageCost Text, " +
+                "Profit_or_Loss TEXT,dividend Text, Dividend_Yield Text,annualDividend Text, frequency Text, dateOfDividend Text, marketValue Text)");
     }
 
     @Override
@@ -27,34 +29,47 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // inserts a new holding into the database
-    public boolean addStock(String symbol, double shares, double costBasis, String frequency) {
+    public boolean addStock(String symbol,double shares, double average_cost, String frequency) {
         Double annualDividend = 0.0;
+        // calling the method from database class to bring the dividend value in
         dbj.get_Dividends(symbol);
-        SQLiteDatabase DB = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("symbol",symbol);
-        contentValues.put("shares",shares);
-        contentValues.put("costBasis",costBasis);
+        // getting the dividend amount
+        String div = dbj.amount_of_dividend;
+        double dividend = Double.parseDouble(div);
+        //Getting the price of the stock
+        String pric =  dbj.getPrice(symbol);
+        double price = Double.parseDouble(pric);
+        // getting the market value by multiplying the price by shares
+        double marketValue = price * shares;
 
-        //
-        double dividend = (double) amount_of_dividend;
-        if(frequency == "Monthly") {
+        frequency.toUpperCase(Locale.ROOT);
+        if(frequency.startsWith("M")) {
             annualDividend = dividend * 12;
         }
-        else if (frequency == "Quartely") {
+        else if (frequency.startsWith("Q")) {
             annualDividend = dividend * 4;
         }
-        else if (frequency == "Semi-annually") {
+        else if (frequency.startsWith("S")) {
             annualDividend = dividend * 2;
         }
         else {
             annualDividend = dividend;
         }
+        double Dividend_Yield = annualDividend / price;
 
-        String dateOfDividend = (String) date_of_dividend;
+        // put values in database
+        SQLiteDatabase DB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("symbol",symbol);
+        contentValues.put("Price", price);
+        contentValues.put("shares",shares);
+        contentValues.put("average cost",average_cost);
+
+        String dateOfDividend = dbj.date_of_dividend;
         contentValues.put("dividend", dividend);
         contentValues.put("annualDividend",annualDividend);
         contentValues.put("dateOfDividend", dateOfDividend);
+        contentValues.put("Dividend_Yield", Dividend_Yield);
         long results = DB.insert("Stocks",null,contentValues);
         // if the insert method did not work return false
         if (results == -1) {
@@ -107,7 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // displays the stock database
-    public Cursor deleteStock() {
+    public Cursor showStocks() {
         SQLiteDatabase DB = this.getWritableDatabase();
         Cursor cursor = DB.rawQuery("select * from Stocks ", null);
         return cursor;
