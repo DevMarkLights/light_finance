@@ -18,15 +18,20 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 public class Database extends AppCompatActivity {
     TextView price;
     Button button2;
     EditText symbol, shares, costBasis, frequency;
     Button addStock, deleteStock, updatestock, viewStocksList;
     DBHelper DB;
-    String date_of_dividend;
+    String date_of_dividend,test;
     String amount_of_dividend;
+    double annualDividend,Dividend_Yield;
     String price1;
+
+    MainActivity mn = new MainActivity();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,26 +48,53 @@ public class Database extends AppCompatActivity {
         viewStocksList = findViewById(R.id.viewStockList);
         price = findViewById(R.id.button2);
 
-        String date_of_dividend;
-        String amount_of_dividend;
         DB = new DBHelper(this);
-
 
         // need to create these methods use the link
         // https://www.youtube.com/watch?v=9t8VVWebRFM
         // timestamp -> 18:23
-
-
         String symbolTXT = symbol.getText().toString();
+        price.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mn.pr(symbolTXT);
+                TextView v3 = findViewById(R.id.textView3);
+                v3.setText(MainActivity.stock_price);
+            }
+        });
+
+
         addStock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               get_Dividends(symbolTXT);
-                String symbolTXT = symbol.getText().toString();
+                mn.get_dividends(symbolTXT);
+                mn.pr(symbolTXT);
+
+                double dividend = Double.parseDouble(mn.amount_of_dividend);
+                double price = Double.parseDouble(mn.stock_price);
+
                 String s = shares.getText().toString();
-                String fre = frequency.getText().toString();
-                // converting the given string representation to double value
                 double sharesTXT = Double.parseDouble(s);
+
+                String fre = frequency.getText().toString();
+                fre.toUpperCase(Locale.ROOT);
+                     if(fre.startsWith("M")) {
+                    annualDividend = dividend * 12;
+                    }
+                    else if (fre.startsWith("Q")) {
+                    annualDividend = dividend * 4;
+                     }
+                     else if (fre.startsWith("S")) {
+                    annualDividend = dividend * 2;
+                    }
+                     else {
+                    annualDividend = dividend;
+                    }
+
+                double Dividend_Yield = annualDividend / price;
+
+
+                // converting the given string representation to double value
                 String c = costBasis.getText().toString();
                 double costBasisTXT = Double.parseDouble(c);
 
@@ -147,11 +179,17 @@ public class Database extends AppCompatActivity {
                     .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                     .asString();
 
+
             String all = response.getBody();
+
             String allres = new JSONObject(all).getString("results");
-            String date_of_dividend = allres.substring(10, 20);
-            String am = allres.substring(31, 35);
-            double amount_of_dividend = Double.parseDouble(am);
+
+            date_of_dividend = all.substring(43, 53);
+            // this line is throwing the index out of bounds error
+            amount_of_dividend = all.substring(64, 69);
+            TextView v3 = findViewById(R.id.textView3);
+            v3.setText(all);
+
         } catch (UnirestException | JSONException e) {
             e.printStackTrace();
         }
@@ -168,10 +206,35 @@ public class Database extends AppCompatActivity {
             String all = response.getBody();
             String allres = new JSONObject(all).getString("price");
              price1 = allres;
+            TextView v3 = findViewById(R.id.textView3);
+            v3.setText(price1);
         } catch (UnirestException | JSONException e) {
             e.printStackTrace();
         }
 
         return price1 ;
+    }
+    public String testmethod(String v) {
+        try {
+            HttpResponse<String> response = Unirest.get("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol=" + v + "&OrderBy=Descending")
+                    .header("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
+                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                    .asString();
+
+
+            String all = response.getBody();
+
+           int allres = new JSONObject(all).length();
+           // String date_of_dividend = all.substring(10, 20);
+            //date_of_dividend = all.substring(43, 53);
+            //amount_of_dividend = all.substring(64, 69);
+
+
+           TextView v3 = findViewById(R.id.textView3);
+           v3.setText(allres);
+        } catch (UnirestException | JSONException e) {
+            e.printStackTrace();
+        }
+        return test;
     }
 }

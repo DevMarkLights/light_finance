@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".curious"
+            android:exported="true" />
+        <activity
             android:name=".Database"
             android:exported="true" />
         <activity
