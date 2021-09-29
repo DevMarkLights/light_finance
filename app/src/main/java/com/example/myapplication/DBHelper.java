@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
     Database dbj = new Database();
+    ApiCalls api = new ApiCalls();
 
     public DBHelper(Context context) {
         super(context, "Stocks.db", null, 1);
@@ -27,33 +28,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // inserts a new holding into the database
     public boolean addStock(String symbol,double shares, double average_cost, String frequency) {
-        Double annualDividend = 0.0;
-        // calling the method from database class to bring the dividend value in
-        dbj.get_Dividends(symbol);
-        // getting the dividend amount
-        String div= dbj.amount_of_dividend;
-        double dividend = Double.parseDouble(div);
 
+        // calling the method from database class to bring the dividend value in
+
+        Double annualDividend = dbj.annualDividend;
+        // getting the dividend amount
+        double dividend = api.amount_of_dividend;
+        String dateOfDividend = api.date_of_dividend;
         //Getting the price of the stock
-        String pric =  dbj.getPrice(symbol);
+        String pric = String.valueOf(api.stock_price);
         double price = Double.parseDouble(pric);
         // getting the market value by multiplying the price by shares
         double marketValue = price * shares;
-
-        /*frequency.toUpperCase(Locale.ROOT);
-        if(frequency.startsWith("M")) {
-            annualDividend = dividend * 12;
-        }
-        else if (frequency.startsWith("Q")) {
-            annualDividend = dividend * 4;
-        }
-        else if (frequency.startsWith("S")) {
-            annualDividend = dividend * 2;
-        }
-        else {
-            annualDividend = dividend;
-        }
-        double Dividend_Yield = annualDividend / price;*/
 
         // put values in database
         SQLiteDatabase DB = this.getWritableDatabase();
@@ -61,13 +47,15 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("symbol",symbol);
         contentValues.put("Price", price);
         contentValues.put("shares",shares);
-        contentValues.put("average cost",average_cost);
+        contentValues.put("averageCost",average_cost);
 
-        String dateOfDividend = dbj.date_of_dividend;
+
+       // String Dividend_Yield = String.valueOf(dbj.Dividend_Yield);
         contentValues.put("dividend", dividend);
         contentValues.put("annualDividend",annualDividend);
         contentValues.put("dateOfDividend", dateOfDividend);
-        contentValues.put("Dividend_Yield", dbj.Dividend_Yield);
+        contentValues.put("Dividend_Yield", dbj.Dividend_Yield); // this value is still 0.0
+        contentValues.put("marketValue", marketValue);
         long results = DB.insert("Stocks",null,contentValues);
         // if the insert method did not work return false
         if (results == -1) {

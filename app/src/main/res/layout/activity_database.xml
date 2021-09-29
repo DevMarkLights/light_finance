@@ -37,10 +37,10 @@
         android:id="@+id/costBasis"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Cost Per Share"
-        android:textSize="24dp"
         android:layout_below="@+id/shares"
-        android:inputType="numberDecimal"/>
+        android:hint="Cost Per Share"
+        android:inputType="numberDecimal"
+        android:textSize="24dp" />
 
     <!-- this needs to be an drop down selection box -->
     <EditText

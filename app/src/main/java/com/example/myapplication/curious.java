@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 /*
 Created this class to text to see if the database class just has a problem
 with calling methods and as I assumed that was the case
@@ -25,27 +26,42 @@ public class curious extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_curious);
         MainActivity mn = new MainActivity();
+        ApiCalls apiCalls = new ApiCalls();
 
         button3 = findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mn.get_dividends("USOI");
+                /*mn.get_dividends("USOI");
                TextView v1 = findViewById(R.id.textView4);
                v1.setText(MainActivity.date_of_dividend);
                TextView v2 = findViewById(R.id.textView5);
                v2.setText(MainActivity.amount_of_dividend);
-
+                */
+                apiCalls.Dividend("T");
+                String div = String.valueOf(apiCalls.amount_of_dividend);
+                TextView v = findViewById(R.id.textView4);
+                v.setText(div);
+                TextView vv = findViewById(R.id.textView5);
+                vv.setText(apiCalls.date_of_dividend);
             }
         });
         button5 = findViewById(R.id.button5);
         button5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 mn.pr("aapl");
                 TextView v2 = findViewById(R.id.textView5);
-                v2.setText(MainActivity.stock_price);
+                v2.setText(MainActivity.stock_price);*/
+
+               apiCalls.price("slvo");
+                TextView v1 = findViewById(R.id.textView4);
+               // v1.setText(apiCalls.stock_price);
+
             }
         });
     }
+
+
 }

@@ -5,33 +5,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Locale;
 
 public class Database extends AppCompatActivity {
-    TextView price;
+
     Button button2;
     EditText symbol, shares, costBasis, frequency;
     Button addStock, deleteStock, updatestock, viewStocksList;
     DBHelper DB;
-    String date_of_dividend,test;
-    String amount_of_dividend;
-    double annualDividend,Dividend_Yield;
-    String price1;
+    String date_of_dividend;
+    double annualDividend,Dividend_Yield, price,amount_of_dividend, average_cost;
 
-    MainActivity mn = new MainActivity();
+    ApiCalls api = new ApiCalls();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,38 +30,29 @@ public class Database extends AppCompatActivity {
         symbol = findViewById(R.id.symbol);
         shares = findViewById(R.id.shares);
         costBasis = findViewById(R.id.costBasis);
-        price = findViewById(R.id.textView3);
+        frequency = findViewById(R.id.frequency);
 
         addStock = findViewById(R.id.addStock);
         deleteStock = findViewById(R.id.deleteStock);
         updatestock = findViewById(R.id.updateStock);
         viewStocksList = findViewById(R.id.viewStockList);
-        price = findViewById(R.id.button2);
 
         DB = new DBHelper(this);
 
         // need to create these methods use the link
         // https://www.youtube.com/watch?v=9t8VVWebRFM
         // timestamp -> 18:23
-        String symbolTXT = symbol.getText().toString();
-        price.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mn.pr(symbolTXT);
-                TextView v3 = findViewById(R.id.textView3);
-                v3.setText(MainActivity.stock_price);
-            }
-        });
-
 
         addStock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mn.get_dividends(symbolTXT);
-                mn.pr(symbolTXT);
+            String symbolTXT = symbol.getText().toString();
+                api.Dividend(symbolTXT);
+                api.price(symbolTXT);
+                amount_of_dividend = ApiCalls.amount_of_dividend;
+                price = ApiCalls.stock_price;
 
-                double dividend = Double.parseDouble(mn.amount_of_dividend);
-                double price = Double.parseDouble(mn.stock_price);
+                date_of_dividend = ApiCalls.date_of_dividend;
 
                 String s = shares.getText().toString();
                 double sharesTXT = Double.parseDouble(s);
@@ -79,29 +60,26 @@ public class Database extends AppCompatActivity {
                 String fre = frequency.getText().toString();
                 fre.toUpperCase(Locale.ROOT);
                      if(fre.startsWith("M")) {
-                    annualDividend = dividend * 12;
+                    annualDividend = amount_of_dividend * 12;
                     }
                     else if (fre.startsWith("Q")) {
-                    annualDividend = dividend * 4;
+                    annualDividend = amount_of_dividend * 4;
                      }
                      else if (fre.startsWith("S")) {
-                    annualDividend = dividend * 2;
+                    annualDividend = amount_of_dividend * 2;
                     }
                      else {
-                    annualDividend = dividend;
+                    annualDividend = amount_of_dividend;
                     }
 
-                double Dividend_Yield = annualDividend / price;
-
-
+                double DY = annualDividend / price;
+                Dividend_Yield = DY * 100;
                 // converting the given string representation to double value
                 String c = costBasis.getText().toString();
                 double costBasisTXT = Double.parseDouble(c);
+                average_cost = costBasisTXT;
 
-                // api call for the price
-                getPrice(symbolTXT);
-
-                boolean checkaddstock = DB.addStock(symbolTXT, sharesTXT, costBasisTXT, fre);
+                boolean checkaddstock = DB.addStock(symbolTXT, sharesTXT, average_cost, fre);
                 if (checkaddstock == true) {
                     Toast.makeText(Database.this, "New stock added", Toast.LENGTH_SHORT).show();
                 } else {
@@ -119,9 +97,9 @@ public class Database extends AppCompatActivity {
                 String symbolTXT = symbol.getText().toString();
                 boolean deleteStock = DB.deleteStock(symbolTXT);
                 if (deleteStock == true) {
-                    Toast.makeText(Database.this, "New stock deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Database.this, "Stock deleted", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(Database.this, "New stock not deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Database.this, "Stock not deleted", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -156,10 +134,16 @@ public class Database extends AppCompatActivity {
                 }
                 StringBuffer buffer = new StringBuffer();
                 while (res.moveToNext()) {
-                    buffer.append("name : " + res.getString(0) + "\n");
-                    buffer.append("shares :" + res.getString(1) + "\n");
-                    buffer.append("shares :" + res.getString(2) + "\n\n");
-                    buffer.append("average cost :" + res.getString(3) + "\n\n\n");
+                    buffer.append("symbol: " + res.getString(0) + "\n");
+                    buffer.append("shares:" + res.getString(1) + "\n");
+                    buffer.append("shares:" + res.getString(2) + "\n");
+                    buffer.append("average cost:" + res.getString(3) + "\n");
+                    buffer.append("dividend: " + res.getString(4) + "\n");
+                    buffer.append("annual dividend: " + res.getString(5) + "\n");
+                    buffer.append("date of dividend: " + res.getString(6) + "\n");
+                    buffer.append("dividend yield: " + res.getString(7) + "\n\n");
+
+
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(Database.this);
                 builder.setCancelable(true);
@@ -170,71 +154,4 @@ public class Database extends AppCompatActivity {
         });
     }
 
-
-    public void get_Dividends(String view) {
-        // api call for the dividend
-        try {
-            HttpResponse<String> response = Unirest.get("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol=" + view + "&OrderBy=Descending")
-                    .header("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                    .asString();
-
-
-            String all = response.getBody();
-
-            String allres = new JSONObject(all).getString("results");
-
-            date_of_dividend = all.substring(43, 53);
-            // this line is throwing the index out of bounds error
-            amount_of_dividend = all.substring(64, 69);
-            TextView v3 = findViewById(R.id.textView3);
-            v3.setText(all);
-
-        } catch (UnirestException | JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public String getPrice(String v) {
-        try {
-            HttpResponse<String> response = Unirest.get("https://twelve-data1.p.rapidapi.com/price?symbol="+v+"&format=json&outputsize=30")
-                    .header("x-rapidapi-host", "twelve-data1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                    .asString();
-
-            String all = response.getBody();
-            String allres = new JSONObject(all).getString("price");
-             price1 = allres;
-            TextView v3 = findViewById(R.id.textView3);
-            v3.setText(price1);
-        } catch (UnirestException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return price1 ;
-    }
-    public String testmethod(String v) {
-        try {
-            HttpResponse<String> response = Unirest.get("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol=" + v + "&OrderBy=Descending")
-                    .header("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                    .asString();
-
-
-            String all = response.getBody();
-
-           int allres = new JSONObject(all).length();
-           // String date_of_dividend = all.substring(10, 20);
-            //date_of_dividend = all.substring(43, 53);
-            //amount_of_dividend = all.substring(64, 69);
-
-
-           TextView v3 = findViewById(R.id.textView3);
-           v3.setText(allres);
-        } catch (UnirestException | JSONException e) {
-            e.printStackTrace();
-        }
-        return test;
-    }
 }
