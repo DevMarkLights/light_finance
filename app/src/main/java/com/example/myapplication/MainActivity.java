@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        /*
         price.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        */
     }
 
 
