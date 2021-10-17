@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="LightFinance">My Application</string>
+    <string name="Light_Finance" />
+    <string name="app_name" />
+
+
 </resources>

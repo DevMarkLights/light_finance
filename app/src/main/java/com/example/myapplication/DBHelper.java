@@ -11,6 +11,7 @@ public class DBHelper extends SQLiteOpenHelper {
     Database dbj = new Database();
     ApiCalls api = new ApiCalls();
 
+
     public DBHelper(Context context) {
         super(context, "Stocks.db", null, 1);
     }
@@ -47,26 +48,25 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         // putting values
-        contentValues.put("symbol",symbol);
-        contentValues.put("Price", price);
-        contentValues.put("shares",shares);
-        contentValues.put("averageCost", average_cost);
-        contentValues.put("Profit_or_Loss",api.profit_loss+"("+ percentage+"%)");
-        contentValues.put("dividend", dividend);
-        contentValues.put("Dividend_Yield", dy);
-        contentValues.put("annualDividend",annualDividend);
-        contentValues.put("frequency", frequency);
-        contentValues.put("dateOfDividend", dateOfDividend);
-        contentValues.put("marketValue", marketValue);
+        contentValues.put("symbol", symbol); //0
+        contentValues.put("Price", price);   // 1
+        contentValues.put("shares", shares); // 2
+        contentValues.put("averageCost", average_cost); // 3
+        contentValues.put("Profit_or_Loss", api.profit_loss + "(" + percentage + "%)"); // 4
+        contentValues.put("dividend", dividend); // 5
+        contentValues.put("Dividend_Yield", dy); // 6
+        contentValues.put("annualDividend", annualDividend); // 7
+        contentValues.put("frequency", frequency);// 8
+        contentValues.put("dateOfDividend", dateOfDividend);// 9
+        contentValues.put("marketValue", marketValue); // 10
         //insert values into the database
-        long results = DB.insert("Stocks",null,contentValues);
+        long results = DB.insert("Stocks", null, contentValues);
         // if the insert method did not work return false
 
         if (results == -1) {
             DB.close();
             return false;
-        }
-        else{
+        } else {
             DB.close();
             return true;
 
@@ -78,22 +78,20 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean updateStock(String symbol, double shares, double costBasis) {
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("shares",shares);
-        contentValues.put("costBasis",costBasis);
-        Cursor cursor = DB.rawQuery("select * from Stocks where symbol=?", new String[] {symbol});
-        if (cursor.getCount()>0){
-            long results = DB.update("Stocks",contentValues, "symbol =?", new String[] {symbol});
+        contentValues.put("shares", shares);
+        contentValues.put("costBasis", costBasis);
+        Cursor cursor = DB.rawQuery("select * from Stocks where symbol=?", new String[]{symbol});
+        if (cursor.getCount() > 0) {
+            long results = DB.update("Stocks", contentValues, "symbol =?", new String[]{symbol});
             // if the update method did not work return false
             if (results == -1) {
 
                 return false;
-            }
-            else{
+            } else {
 
                 return true;
             }
-        }
-        else {
+        } else {
 
             return false;
         }
@@ -131,6 +129,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
+    Cursor readAllData() {
+        SQLiteDatabase DB = this.getReadableDatabase();
+        Cursor cursor = null;
+        if (DB != null) {
+            cursor = DB.rawQuery("Select * from Stocks", null);
+
+        }
+        return cursor;
+    }
 }
+
+
+
+
+
 
 

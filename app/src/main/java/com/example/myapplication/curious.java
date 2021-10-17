@@ -1,67 +1,101 @@
 package com.example.myapplication;
 
+import android.database.Cursor;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-/*
-Created this class to text to see if the database class just has a problem
-with calling methods and as I assumed that was the case
+import java.util.ArrayList;
 
-this class works with calling methods from another activity
-now what next is to make an api class where all the api calls are gonna be made
-in. Then Try to make the database class work or make a new database class
-only of activity calls to run the methods in another class. Also use
-multithreading so this application does not bog down the CPU and cause the application
-to freeze. If SQLlite database does not work then look into firebase
-*/
+
 public class curious extends AppCompatActivity {
- Button button3,button5;
- TextView textview4,textView5;
+
+    RecyclerView recyclerView;
+    ArrayList<String> tmv,Symbol,price,profit_loss,average_cost, Dividend_Yield,marketValue,frequency;
+    TextView total_market_value;
+    DBHelper DB;
+    RecViewAdapter recViewAdapter;
+
+    double totalMV;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_curious);
-        MainActivity mn = new MainActivity();
-        ApiCalls apiCalls = new ApiCalls();
+        DB = new DBHelper(this);
+        Symbol = new ArrayList<>();
+        price = new ArrayList<>();
+        profit_loss = new ArrayList<>();
+        average_cost = new ArrayList<>();
+        Dividend_Yield = new ArrayList<>();
+        marketValue = new ArrayList<>();
+        frequency = new ArrayList<>();
+        tmv = new ArrayList<>();
 
-        button3 = findViewById(R.id.button3);
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*mn.get_dividends("USOI");
-               TextView v1 = findViewById(R.id.textView4);
-               v1.setText(MainActivity.date_of_dividend);
-               TextView v2 = findViewById(R.id.textView5);
-               v2.setText(MainActivity.amount_of_dividend);
-                */
-                apiCalls.Dividend("T");
-                String div = String.valueOf(apiCalls.amount_of_dividend);
-                TextView v = findViewById(R.id.textView4);
-                v.setText(div);
-                TextView vv = findViewById(R.id.textView5);
-                vv.setText(apiCalls.date_of_dividend);
-            }
-        });
-        button5 = findViewById(R.id.button5);
-        button5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*
-                mn.pr("aapl");
-                TextView v2 = findViewById(R.id.textView5);
-                v2.setText(MainActivity.stock_price);*/
+        total_market_value = findViewById(R.id.total_market_value);
+        totalMarketValue();
+        recyclerView = findViewById(R.id.portfolio);
+        storeDataInArrays();
+        recViewAdapter = new RecViewAdapter(this,Symbol,price,profit_loss,average_cost,
+                                            Dividend_Yield,marketValue,frequency);
+        recyclerView.setAdapter(recViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-               apiCalls.price("slvo");
-                TextView v1 = findViewById(R.id.textView4);
-               // v1.setText(apiCalls.stock_price);
+        total_market_value.setText("$"+String.valueOf(totalMV));
 
-            }
-        });
     }
 
 
+
+
+
+
+    void storeDataInArrays() {
+        Cursor cursor = DB.readAllData();
+        if (cursor.getCount() == 0){
+            Toast.makeText(this,"No Stocks", Toast.LENGTH_SHORT).show();
+        } else {
+            while (cursor.moveToNext()) {
+                Symbol.add(cursor.getString(0));
+                price.add(cursor.getString(1));
+                profit_loss.add(cursor.getString(4));
+                average_cost.add(cursor.getString(3));
+                Dividend_Yield.add(cursor.getString(6));
+                marketValue.add(cursor.getString(10));
+                frequency.add(cursor.getString(8));
+            }
+        }
+    }
+
+    public void totalMarketValue (){
+        Cursor cursor = DB.readAllData();
+        if (cursor.getCount()==0) {
+            Toast.makeText(this,"No stocks", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            while (cursor.moveToNext()) {
+                tmv.add(cursor.getString(10));
+            }
+        }
+        double total=0.0;
+        for (int i = 0; i < tmv.size(); i++){
+            total = total + Double.parseDouble(tmv.get(i));
+            totalMV =  total;
+        }
+
+
+    }
+
+
+
+
+
 }
+
+
+
+
