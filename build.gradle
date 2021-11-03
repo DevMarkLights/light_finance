@@ -3,9 +3,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven{
-            url 'https://raw.github.com/zeeshanejaz/unirest-android/mvn-repo'
-        }
+        maven{ url 'https://raw.github.com/zeeshanejaz/unirest-android/mvn-repo'}
+        maven{ url "https://jitpack.io"}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
@@ -14,6 +13,8 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
+
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

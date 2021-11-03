@@ -1,15 +1,16 @@
 package com.example.myapplication;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class ApiCalls {
     static String date_of_dividend;
@@ -18,7 +19,27 @@ public class ApiCalls {
 
     // api call to get the dividend amount and dividend yield
     public void Dividend(String s) {
-                try {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol="+s+"&OrderBy=Descending")
+                .get()
+                .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String all = response.body().string();
+            String allres = new JSONObject(all).getString("results");
+            JSONArray t = new JSONArray(allres);
+            for(int i = 0; i < 1;i++){
+                JSONObject T = t.getJSONObject(i);
+                // org.json.JSONException: Value 0.52 at amount of type java.lang.Double cannot be converted to JSONObject
+                // String div = String.valueOf(T.getJSONObject("amount").toString());
+                amount_of_dividend = T.getDouble("amount");
+                date_of_dividend = T.getString("date");
+            }
+                /*try {
                     HttpResponse<String> response = Unirest.get("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol=" + s + "&OrderBy=Descending")
                             .header("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
                             .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
@@ -33,26 +54,30 @@ public class ApiCalls {
                        // String div = String.valueOf(T.getJSONObject("amount").toString());
                         amount_of_dividend = T.getDouble("amount");
                         date_of_dividend = T.getString("date");
-                    }
-                } catch (UnirestException | JSONException e) {
+                    }*/
+                } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
 
             }
 
+    // unirest throws an error. so now you need to use okHttp like you did in the dividend method
     // api call to get the stock price
     public void price(String s) {
-        try {
-            HttpResponse<String> response = Unirest.get("https://stock-market-data.p.rapidapi.com/stock/quote?ticker_symbol=" + s)
-                    .header("x-rapidapi-host", "stock-market-data.p.rapidapi.com")
-                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                    .asString();
+        OkHttpClient client = new OkHttpClient();
 
-            String all = response.getBody();
-            String allres = new JSONObject(all).getString("quote");
-            String ally = new JSONObject(allres).getString("Current Price");
+        Request request = new Request.Builder()
+                .url("https://twelve-data1.p.rapidapi.com/price?symbol="+s+"&format=json&outputsize=30").get()
+                .addHeader("x-rapidapi-host","twelve-data1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key","1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        try{
+            Response response = client.newCall(request).execute();
+            String allres = response.body().string();
+            String ally = new JSONObject(allres).getString("price");
             stock_price = Double.parseDouble(ally);
-        } catch (UnirestException | JSONException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -93,8 +118,9 @@ public class ApiCalls {
         BigDecimal d = c.setScale(3,RoundingMode.DOWN);
         percentage_profit_loss = Double.parseDouble(String.valueOf(d));
 
-
     }
+
+
 }
 
 

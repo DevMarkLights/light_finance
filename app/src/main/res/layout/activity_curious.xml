@@ -7,18 +7,35 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context="com.example.myapplication.curious">
+    tools:context="com.example.myapplication.Portfolio">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="721dp">
+
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/PieChart"
+            android:layout_width="408dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="88dp"
+            android:layout_marginBottom="105dp"
+            app:layout_constraintBottom_toTopOf="@+id/portfolio"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/total_market_value"
+            app:layout_constraintVertical_bias="0.555">
+
+        </com.github.mikephil.charting.charts.PieChart>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/portfolio"
-            android:layout_width="408dp"
-            android:layout_height="377dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="406dp"
+            android:layout_height="286dp"
+            android:layout_marginBottom="4dp"
+            android:fadeScrollbars="true"
             android:nestedScrollingEnabled="true"
+            android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.333"
@@ -28,16 +45,15 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Portfolio"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:text="Total Assets"
             android:textColor="@color/black"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/portfolio"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.003"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.053" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView6"
@@ -64,5 +80,50 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6"
             app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="265dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="36dp"
+            android:text="Total Profit Value"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/totalProfitLossView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/total_market_value"
+            app:layout_constraintVertical_bias="0.521" />
+
+        <TextView
+            android:id="@+id/totalProfitLossView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="303dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="5dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/PieChart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+        <Button
+            android:id="@+id/editPortfolio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="317dp"
+            android:layout_marginTop="31dp"
+            android:layout_marginBottom="26dp"
+            android:text="edit"
+            app:layout_constraintBottom_toTopOf="@+id/portfolio"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/PieChart" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

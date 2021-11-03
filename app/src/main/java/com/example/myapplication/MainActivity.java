@@ -16,23 +16,32 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity {
-    TextView textPrice;
+    TextView textPrice,textView,textView2;
     Button price;
-    static String date_of_dividend, amount_of_dividend;
+    static String date_of_dividend;
+    static double amount_of_dividend;
     static String stock_price;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("LightFinance");
         //Stops the app from crashing on button click and takes the application out of safe mode
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         //initializing views in the create method stops app from crashing also
         Button b1 = (Button) findViewById(R.id.button);
         Button price = (Button) findViewById(R.id.price);
-
+        TextView textview = findViewById(R.id.textView);
+        TextView textview2 = findViewById(R.id.textView2);
         Button mydbpage = (Button) findViewById(R.id.dbpage);
         mydbpage.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -48,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         curious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, curious.class);
+                Intent intent = new Intent(MainActivity.this, Portfolio.class);
                 startActivity(intent);
             }
         });
@@ -62,33 +71,58 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        */
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                get_dividends("SLVO");
+                test("SLVO");
 
             }
         });
-        */
+
     }
 
+    public void test (String v) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://twelve-data1.p.rapidapi.com/price?symbol="+v+"&format=json&outputsize=30").get()
+                .addHeader("x-rapidapi-host","twelve-data1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key","1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        try{
+            Response response = client.newCall(request).execute();
+            String allres = response.body().string();
+            String ally = new JSONObject(allres).getString("price");
+
+            /*
+            String am = String.valueOf(amount_of_dividend);
+            TextView textView = findViewById(R.id.textView);
+            textView.setText(am);
+            */
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void pr (String v) {
+        OkHttpClient client = new OkHttpClient();
 
-            try {
-                HttpResponse<String> response = Unirest.get("https://twelve-data1.p.rapidapi.com/price?symbol=slvo&format=json&outputsize=30")
-                        .header("x-rapidapi-host", "twelve-data1.p.rapidapi.com")
-                        .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                        .asString();
+        Request request = new Request.Builder()
+                .url("https://twelve-data1.p.rapidapi.com/price?symbol="+v+"&format=json&outputsize=30").get()
+                .addHeader("x-rapidapi-host","twelve-data1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key","1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
 
-                String all = response.getBody();
-                String allres = new JSONObject(all).getString("price");
-                stock_price = allres;
-                //TextView v1 = findViewById(R.id.textPrice);
-                //v1.setText(allres);
+        try{
+            Response response = client.newCall(request).execute();
+            String allres = response.body().string();
+            String ally = new JSONObject(allres).getString("Current Price");
+            String ax = new JSONObject(ally).getString("Price");
+            //stock_price = Double.parseDouble(ax);
 
-        } catch (UnirestException | JSONException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
 
@@ -104,13 +138,8 @@ public class MainActivity extends AppCompatActivity {
             String all = response.getBody();
             String allres = new JSONObject(all).getString("results");
             date_of_dividend = allres.substring(10,20);
-            amount_of_dividend = allres.substring(31,35);
-            // grab the textview to use it
-           // TextView v1 = findViewById(R.id.textView);
-            //TextView v2 = findViewById(R.id.textView2);
-            // change textview text with api data
-            //v1.setText(date_of_dividend);
-            //v2.setText(amount_of_dividend);
+           // amount_of_dividend = allres.substring(31,35);
+
 
         } catch (UnirestException | JSONException e) {
             e.printStackTrace();
