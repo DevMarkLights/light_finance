@@ -11,7 +11,7 @@ import java.math.RoundingMode;
 
 
 public class DBHelper extends SQLiteOpenHelper {
-
+    ApiCalls api = new ApiCalls();
 
     public DBHelper(Context context) {
         super(context, "Stocks.db", null, 1);
@@ -55,6 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // getting the frequency based off user input
 
         SQLiteDatabase DB = this.getWritableDatabase();
+
         ContentValues contentValues = new ContentValues();
         // putting values
         contentValues.put("symbol", symbol); //0
@@ -129,9 +130,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-
-
-
     Cursor readAllData() {
         SQLiteDatabase DB = this.getReadableDatabase();
         Cursor cursor = null;
@@ -149,6 +147,62 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery("Select symbol,marketValue from Stocks", null);
         }
         return cursor;
+    }
+
+    public boolean addStocksDialog(String symbol,double shares,double average_cost,String freqq){
+        api.Dividend(symbol);
+        api.price(symbol);
+        api.getAnnualDividend(freqq);
+        double annualDividend = ApiCalls.annualDividend;
+        double dividend = ApiCalls.amount_of_dividend;
+        String dateOfDividend = ApiCalls.date_of_dividend;
+        String pric = String.valueOf(ApiCalls.stock_price);
+        double price = Double.parseDouble(pric);
+        BigDecimal a = new BigDecimal(price);
+        BigDecimal b = a.setScale(2, RoundingMode.DOWN);
+        price = Double.parseDouble(String.valueOf(b));
+
+        double mValue = price * shares;
+        BigDecimal mva = new BigDecimal(mValue);
+        BigDecimal bva = mva.setScale(2,RoundingMode.DOWN);
+        double marketValue = Double.parseDouble(String.valueOf(bva));
+        api.getDividendYield();
+        api.profit_loss( shares, average_cost);
+        double dy = ApiCalls.Dividend_Yield;
+        double percentage = ApiCalls.percentage_profit_loss;
+        String frequency = null;
+        if (freqq.startsWith("M")) {
+            frequency = "Monthly";
+        } else if (freqq.startsWith("Q")) {
+            frequency = "Quarterly";
+        } else if (freqq.startsWith("S")) {
+            frequency = "Semi-annually";
+        } else {
+            frequency = "annually";
+        }
+
+
+        SQLiteDatabase DB = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        // putting values
+        contentValues.put("symbol", symbol); //0
+        contentValues.put("Price", price);   // 1
+        contentValues.put("shares", shares); // 2
+        contentValues.put("averageCost", average_cost); // 3
+        contentValues.put("Profit_or_Loss", ApiCalls.profit_loss + "(" + percentage + "%)"); // 4
+        contentValues.put("dividend", dividend); // 5
+        contentValues.put("Dividend_Yield", dy); // 6
+        contentValues.put("annualDividend", annualDividend); // 7
+        contentValues.put("frequency", frequency);// 8
+        contentValues.put("dateOfDividend", dateOfDividend);// 9
+        contentValues.put("marketValue", marketValue); // 10
+        //insert values into the database
+        long results = DB.insert("Stocks", null, contentValues);
+        // if the insert method did not work return false
+
+        DB.close();
+        return results != -1;
     }
 }
 

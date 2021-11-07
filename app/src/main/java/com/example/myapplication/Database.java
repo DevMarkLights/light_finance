@@ -45,46 +45,6 @@ public class Database extends AppCompatActivity {
 
         addStock.setOnClickListener(view -> {
             addStock();
-
-       /* String symbolTXT = symbol.getText().toString();
-            api.Dividend(symbolTXT);
-            api.price(symbolTXT);
-            amount_of_dividend = ApiCalls.amount_of_dividend;
-            price = ApiCalls.stock_price;
-            date_of_dividend = ApiCalls.date_of_dividend;
-            String s = shares.getText().toString();
-            double sharesTXT = Double.parseDouble(s);
-            String fre = frequency.getText().toString();
-            api.getAnnualDividend(fre);
-            api.getDividendYield();
-            // getting the frequency based off user input
-            if(fre.startsWith("M")) {
-                freq = "Monthly";
-            } else if (fre.startsWith("Q")) {
-                freq = "Quarterly";
-            }
-            else if (fre.startsWith("S")) {
-                freq = "Semi-annually";
-            }
-            else {
-                freq = "annually";
-            }
-
-            // converting the given string representation to double value
-            String c = costBasis.getText().toString();
-            double costBasisTXT = Double.parseDouble(c);
-            average_cost = costBasisTXT;
-            api.profit_loss(sharesTXT,costBasisTXT);
-            percentage = ApiCalls.percentage_profit_loss;
-
-            boolean checkaddstock = DB.addStock(symbolTXT, sharesTXT, average_cost);
-            if (checkaddstock) {
-                Toast.makeText(Database.this, "New stock added", Toast.LENGTH_SHORT).show();
-            }
-             else {
-                Toast.makeText(Database.this, "Stock already in portfolio", Toast.LENGTH_SHORT).show();
-            }*/
-
         });
 
         // to delete a stock out of the database

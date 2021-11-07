@@ -10,8 +10,13 @@
         <entry key="app/src/main/res/layout/activity_curious.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_database.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_portfolio.xml" value="0.33" />
         <entry key="app/src/main/res/layout/custom_design.xml" value="0.22" />
         <entry key="app/src/main/res/layout/menu_drop_down.xml" value="0.3648148148148148" />
+        <entry key="app/src/main/res/layout/popup_input_dialog.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/popup_input_dialog_addstock.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/popup_input_dialog_deletestock.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/popup_input_dialog_updatestock.xml" value="0.335" />
         <entry key="app/src/main/res/layout/portfolio_row.xml" value="0.5" />
         <entry key="app/src/main/res/layout/single_item.xml" value="0.2708333333333333" />
       </map>

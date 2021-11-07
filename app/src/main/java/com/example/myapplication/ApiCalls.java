@@ -39,30 +39,14 @@ public class ApiCalls {
                 amount_of_dividend = T.getDouble("amount");
                 date_of_dividend = T.getString("date");
             }
-                /*try {
-                    HttpResponse<String> response = Unirest.get("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol=" + s + "&OrderBy=Descending")
-                            .header("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
-                            .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                            .asString();
 
-                    String all = response.getBody();
-                    String allres = new JSONObject(all).getString("results");
-                    JSONArray t = new JSONArray(allres);
-                    for(int i = 0; i < 1;i++){
-                        JSONObject T = t.getJSONObject(i);
-                        // org.json.JSONException: Value 0.52 at amount of type java.lang.Double cannot be converted to JSONObject
-                       // String div = String.valueOf(T.getJSONObject("amount").toString());
-                        amount_of_dividend = T.getDouble("amount");
-                        date_of_dividend = T.getString("date");
-                    }*/
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
 
             }
 
-    // unirest throws an error. so now you need to use okHttp like you did in the dividend method
-    // api call to get the stock price
+
     public void price(String s) {
         OkHttpClient client = new OkHttpClient();
 
