@@ -50,7 +50,7 @@ public class TotalDividends extends AppCompatActivity {
         BarDataSet barDataSet = new BarDataSet(dividend, "Stocks");
         barDataSet.setColors(Color.rgb(0, 150, 255));
         barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(10f);
+        barDataSet.setValueTextSize(11f);
         //Description description = new Description();
         //description.setText("stocks");
         //chart.setDescription(description);
