@@ -9,10 +9,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +20,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     TextView textPrice,textView,textView2;
-    Button price;
+    Button price,upcdivv;
     static String date_of_dividend;
     static double amount_of_dividend;
     static String stock_price;
@@ -43,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textview = findViewById(R.id.textView);
         TextView textview2 = findViewById(R.id.textView2);
         Button mydbpage = (Button) findViewById(R.id.dbpage);
+        Button upcdivv = (Button) findViewById(R.id.UpcDiv);
         mydbpage.setOnClickListener(new View.OnClickListener() {
            @Override
             public void onClick(View v) {
@@ -58,6 +55,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, Portfolio.class);
+                startActivity(intent);
+            }
+        });
+
+        upcdivv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,TotalDividends.class);
                 startActivity(intent);
             }
         });
@@ -96,11 +101,7 @@ public class MainActivity extends AppCompatActivity {
             String allres = response.body().string();
             String ally = new JSONObject(allres).getString("price");
 
-            /*
-            String am = String.valueOf(amount_of_dividend);
-            TextView textView = findViewById(R.id.textView);
-            textView.setText(am);
-            */
+
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -128,37 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void get_dividends (String v) {
-        try {
-            HttpResponse<String> response = Unirest.get("https://yahoofinance-stocks1.p.rapidapi.com/dividends?Symbol="+v+"&OrderBy=Descending")
-                    .header("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                    .asString();
 
-            String all = response.getBody();
-            String allres = new JSONObject(all).getString("results");
-            date_of_dividend = allres.substring(10,20);
-           // amount_of_dividend = allres.substring(31,35);
-
-
-        } catch (UnirestException | JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            HttpResponse<String> response = Unirest.get("https://twelve-data1.p.rapidapi.com/price?symbol=+"+v+"&format=json&outputsize=30")
-                    .header("x-rapidapi-host", "twelve-data1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                    .asString();
-
-            String all = response.getBody();
-            String allres = new JSONObject(all).getString("price");
-            stock_price = allres;
-            TextView v1 = findViewById(R.id.textPrice);
-            v1.setText(allres);
-
-        } catch (UnirestException | JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
 }
