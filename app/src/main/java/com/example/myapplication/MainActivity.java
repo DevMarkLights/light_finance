@@ -20,10 +20,11 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     TextView textPrice,textView,textView2;
-    Button price,upcdivv;
+    Button price,upcdivv,LineChartbtn;
     static String date_of_dividend;
     static double amount_of_dividend;
     static String stock_price;
+    ApiCalls api = new ApiCalls();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,16 @@ public class MainActivity extends AppCompatActivity {
         TextView textview2 = findViewById(R.id.textView2);
         Button mydbpage = (Button) findViewById(R.id.dbpage);
         Button upcdivv = (Button) findViewById(R.id.UpcDiv);
+        Button LineChartbtn = (Button) findViewById(R.id.LineChartbtn);
+
+        LineChartbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,LineChartView.class);
+                startActivity(intent);
+            }
+        });
+
         mydbpage.setOnClickListener(new View.OnClickListener() {
            @Override
             public void onClick(View v) {
@@ -66,17 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        /*
-        price.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                    pr("SLVO");
-
-            }
-        });
-
-        */
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

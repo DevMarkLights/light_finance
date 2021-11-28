@@ -7,6 +7,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,6 +20,9 @@ public class ApiCalls {
     static String date_of_dividend;
     static double amount_of_dividend,stock_price, annualDividend, Dividend_Yield,profit_loss,
             percentage_profit_loss;
+    String todayy,today30,today90;
+    ArrayList<String> historicalPrice30 = new ArrayList<>();
+    ArrayList<String> historicalDates30 = new ArrayList<>();
 
     // api call to get the dividend amount and dividend yield
     public void Dividend(String s) {
@@ -34,8 +41,6 @@ public class ApiCalls {
             JSONArray t = new JSONArray(allres);
             for(int i = 0; i < 1;i++){
                 JSONObject T = t.getJSONObject(i);
-                // org.json.JSONException: Value 0.52 at amount of type java.lang.Double cannot be converted to JSONObject
-                // String div = String.valueOf(T.getJSONObject("amount").toString());
                 amount_of_dividend = T.getDouble("amount");
                 date_of_dividend = T.getString("date");
             }
@@ -104,6 +109,80 @@ public class ApiCalls {
 
     }
 
+    public void historicalPrices(String s, int days) throws IOException, JSONException {
+        getDates();
+        String date1 = "";
+        if(days == 30){
+            date1 = today30;
+        } else{
+            date1 = today90;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-prices?EndDateInclusive="+todayy+"&StartDateInclusive="+date1+"&Symbol="+s+"&OrderBy=Ascending")
+                .get()
+                .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String all = response.body().string();
+        String allres = new JSONObject(all).getString("results");
+        JSONArray t = new JSONArray(allres);
+        for(int i = 0; i < t.length();i++){
+            JSONObject T = t.getJSONObject(i);
+            String date = T.getString("date");
+            String adjClose = T.getString("adjClose");
+            historicalPrice30.add(adjClose);
+            historicalDates30.add(date);
+        }
+    }
+
+    public void getDates() {
+        Date today = new Date();
+        Calendar cal = new GregorianCalendar();
+
+        cal.setTime(today);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String mont = "";
+        if (month <10){
+            mont = "0"+month;
+            todayy = year+"-"+mont+"-"+day;
+        }else {
+            todayy = year + "-" + month + "-" + day;
+        }
+        // get the date for precious 30 days
+        cal.add(Calendar.DAY_OF_MONTH, -30);
+        int month30 = cal.get(Calendar.MONTH);
+        int year30 = cal.get(Calendar.YEAR);
+        int day30 = cal.get(Calendar.DAY_OF_MONTH);
+        String mont30 = "";
+
+        if (month30 <10){
+             mont30 = "0"+month30;
+             today30 = year30 + "-" + mont30 + "-" + day30;
+        }else {
+            today30 = year30 + "-" + month30 + "-" + day30;
+        }
+        // get the date for precious 90 days
+        cal.add(Calendar.DAY_OF_MONTH, -90);
+        int month90 = cal.get(Calendar.MONTH);
+        int year90 = cal.get(Calendar.YEAR);
+        int day90 = cal.get(Calendar.DAY_OF_MONTH);
+        String mont90 = "";
+
+        if (month90 <10){
+            mont90 = "0"+month90;
+            today90 = year90 + "-" + mont90 + "-" + day90;
+        }else {
+            today90 = year90 + "-" + month90 + "-" + day90;
+        }
+
+    }
 
 }
 
