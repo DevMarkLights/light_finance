@@ -102,6 +102,7 @@ public class TotalDividends extends AppCompatActivity {
     }
     
     public void getTotalDividend() {
+
         Cursor cursor = DB.readAllData();
         if(cursor.getCount() == 0) {
             Toast.makeText(this,"No Stocks", Toast.LENGTH_SHORT).show();

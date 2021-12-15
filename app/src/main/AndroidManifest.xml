@@ -12,11 +12,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".LineChartView"
+            android:name=".portfolio_V2"
             android:exported="false" />
         <activity
-            android:name=".TotalDividends"
+            android:name=".nuemorphism_example_2"
             android:exported="false" />
+        <activity
+            android:name=".neumorphismExample"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".LineChartView"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".TotalDividends"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".Portfolio"
             android:exported="true"

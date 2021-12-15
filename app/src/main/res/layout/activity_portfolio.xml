@@ -98,7 +98,7 @@
             android:background="@color/gray"
             android:backgroundTint="@color/gray"
             android:text="edit"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -134,6 +134,40 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/total_market_value"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="23dp"
+            android:layout_marginEnd="194dp"
+            android:layout_marginBottom="47dp"
+            android:text="Annual Dividend"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/PieChart"
+            app:layout_constraintEnd_toStartOf="@+id/textView5"
+            app:layout_constraintHorizontal_bias="0.357"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/total_market_value"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/annualDividendView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="230dp"
+            android:layout_marginBottom="28dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/PieChart"
+            app:layout_constraintEnd_toStartOf="@+id/totalProfitLossView"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView11"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

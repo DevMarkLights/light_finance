@@ -81,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                test("SLVO");
+               Intent intent = new Intent(MainActivity.this,portfolio_V2.class);
+               startActivity(intent);
 
             }
         });
