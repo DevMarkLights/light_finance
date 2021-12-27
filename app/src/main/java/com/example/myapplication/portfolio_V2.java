@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,11 +15,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
+import soup.neumorphism.NeumorphCardView;
+
 public class portfolio_V2 extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<String> tmv, Symbol, price, profit_loss, average_cost, Dividend_Yield, marketValue, frequency;
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
     DBHelper DB;
+    NeumorphCardView annualDividendCardView,divYieldPerStock;
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     double totalMV, totalProfitLoss, avgDY, annualDividend;
@@ -45,6 +50,8 @@ public class portfolio_V2 extends AppCompatActivity {
         avgDyview = findViewById(R.id.AvgDivYieldView);
         total_market_value = findViewById(R.id.TMVtextV);
         totalAnnualDiv = findViewById(R.id.AnnualDivView);
+        annualDividendCardView = findViewById(R.id.AnnualDividendCardView);
+        divYieldPerStock = findViewById(R.id.averageDividendYieldCard);
         //-----------------------------------------------
         recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
                 Dividend_Yield, marketValue, frequency);
@@ -52,11 +59,29 @@ public class portfolio_V2 extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         totalMarketValue();
-        // method throws and error
         totalProfitLoss();
         averageDividendYield();
         storeDataInArrays();
         annualDividend();
+
+        // click listener for cardview
+        annualDividendCardView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(portfolio_V2.this, TotalDividends.class);
+                startActivity(intent);
+            }
+        });
+
+        divYieldPerStock.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(portfolio_V2.this,dividendYieldPerStock.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+
     }
 
     void storeDataInArrays() {

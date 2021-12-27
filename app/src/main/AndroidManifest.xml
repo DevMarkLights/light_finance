@@ -12,8 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".dividendYieldPerStock"
+            android:exported="false"
+            android:parentActivityName=".portfolio_V2" />
+        <activity
             android:name=".portfolio_V2"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".nuemorphism_example_2"
             android:exported="false" />
@@ -28,7 +33,7 @@
         <activity
             android:name=".TotalDividends"
             android:exported="false"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".portfolio_V2" />
         <activity
             android:name=".Portfolio"
             android:exported="true"

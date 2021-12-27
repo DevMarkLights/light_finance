@@ -4,13 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UpcomingDividends"
+    android:background="@color/background_2"
+    tools:context=".TotalDividends"
     android:orientation="vertical">
 
-    <com.github.mikephil.charting.charts.BarChart
+    <soup.neumorphism.NeumorphCardView
+        android:layout_width="match_parent"
+        android:layout_height="310dp"
+        android:background="@color/background_2">
+
+        <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/fragment_verticalbarchart_chart"
         android:layout_width="match_parent"
+            android:background="@color/background"
         android:layout_height="300dp" />
+
+    </soup.neumorphism.NeumorphCardView>
+
 
     <TextView
         android:id="@+id/textView12"

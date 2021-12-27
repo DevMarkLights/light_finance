@@ -36,8 +36,6 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
     }
 
 
-
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
