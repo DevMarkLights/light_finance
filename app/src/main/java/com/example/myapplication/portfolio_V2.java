@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +23,19 @@ public class portfolio_V2 extends AppCompatActivity {
     ArrayList<String> tmv, Symbol, price, profit_loss, average_cost, Dividend_Yield, marketValue, frequency;
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
     DBHelper DB;
-    NeumorphCardView annualDividendCardView,divYieldPerStock;
+    Button test;
+    ApiCalls api = new ApiCalls();
+    NeumorphCardView annualDividendCardView,divYieldPerStock,marketValueCardView,ProfitValueCard;
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     double totalMV, totalProfitLoss, avgDY, annualDividend;
+
+    //for portfolio update
+    String symbolU,freqU;
+    double sharesU;
+    static double mktvalU;
+    double costbasisU;
+    //--------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,9 @@ public class portfolio_V2 extends AppCompatActivity {
         totalAnnualDiv = findViewById(R.id.AnnualDivView);
         annualDividendCardView = findViewById(R.id.AnnualDividendCardView);
         divYieldPerStock = findViewById(R.id.averageDividendYieldCard);
+        marketValueCardView = findViewById(R.id.totalMarketValueCard);
+        ProfitValueCard = findViewById(R.id.TPV_Card);
+        test = findViewById(R.id.test);
         //-----------------------------------------------
         recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
                 Dividend_Yield, marketValue, frequency);
@@ -64,14 +77,14 @@ public class portfolio_V2 extends AppCompatActivity {
         storeDataInArrays();
         annualDividend();
 
-        // click listener for cardview
+        // click listener for annual dividend cardview
         annualDividendCardView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(portfolio_V2.this, TotalDividends.class);
                 startActivity(intent);
             }
         });
-
+        // click listener for dividend per stock card view
         divYieldPerStock.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(portfolio_V2.this,dividendYieldPerStock.class);
@@ -79,8 +92,29 @@ public class portfolio_V2 extends AppCompatActivity {
             }
         });
 
+        marketValueCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(portfolio_V2.this,TotalMarketValuePerStock.class);
+                startActivity(intent);
+            }
+        });
 
+        ProfitValueCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(portfolio_V2.this,TotalProfitValuePerStock.class);
+                startActivity(intent);
+            }
+        });
 
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDataForUpdate();
+                relaodActivity();
+            }
+        });
 
     }
 
@@ -197,5 +231,41 @@ public class portfolio_V2 extends AppCompatActivity {
         overridePendingTransition(0, 0);
         startActivity(getIntent());
         overridePendingTransition(0, 0);
+    }
+
+    public void getDataForUpdate() {
+        Cursor cursor = DB.readAllData();
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
+        } else {
+            while (cursor.moveToNext()) {
+                symbolU = cursor.getString(0);
+                sharesU = Double.parseDouble(cursor.getString(2));
+                costbasisU = Double.parseDouble(cursor.getString(3));
+                freqU = cursor.getString(8);
+                // i need marketvalue, frequency
+                api.price(symbolU);
+                api.Dividend(symbolU);
+
+
+                updatePorfolio();
+
+            }
+        }
+    }
+
+    public void updatePorfolio() {
+        mktvalU = ApiCalls.stock_price * sharesU;
+        BigDecimal a = new BigDecimal(mktvalU);
+        BigDecimal b = a.setScale(2, RoundingMode.DOWN);
+        mktvalU = Double.parseDouble(String.valueOf(b));
+        ApiCalls.profit_loss(sharesU, costbasisU);
+        ApiCalls.getAnnualDividend(freqU);
+        ApiCalls.getDividendYield();
+
+
+        DB.updateDatabaseStocks(symbolU,sharesU);
+
+
     }
 }

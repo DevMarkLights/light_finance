@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 
 public class DBHelper extends SQLiteOpenHelper {
     ApiCalls api = new ApiCalls();
+    portfolio_V2 pt = new portfolio_V2();
 
     public DBHelper(Context context) {
         super(context, "Stocks.db", null, 1);
@@ -30,7 +31,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // inserts a new holding into the database
-
     public boolean addStock(String symbol, double shares, double average_cost) {
         // calling the method from database class to bring the dividend value in
         double annualDividend = ApiCalls.annualDividend;
@@ -62,7 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("Price", price);   // 1
         contentValues.put("shares", shares); // 2
         contentValues.put("averageCost", average_cost); // 3
-        contentValues.put("Profit_or_Loss", ApiCalls.profit_loss + "(" + percentage + "%)"); // 4
+        contentValues.put("Profit_or_Loss", ApiCalls.profit_loss); // 4
         contentValues.put("dividend", dividend); // 5
         contentValues.put("Dividend_Yield", dy); // 6
         contentValues.put("annualDividend", annualDividend); // 7
@@ -140,14 +140,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor Pie() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        if (db != null){
-            cursor = db.rawQuery("Select symbol,marketValue from Stocks", null);
-        }
-        return cursor;
-    }
 
     public boolean addStocksDialog(String symbol,double shares,double average_cost,String freqq){
         api.Dividend(symbol);
@@ -190,7 +182,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("Price", price);   // 1
         contentValues.put("shares", shares); // 2
         contentValues.put("averageCost", average_cost); // 3
-        contentValues.put("Profit_or_Loss", ApiCalls.profit_loss + "(" + percentage + "%)"); // 4
+        contentValues.put("Profit_or_Loss", ApiCalls.profit_loss); // 4
         contentValues.put("dividend", dividend); // 5
         contentValues.put("Dividend_Yield", dy); // 6
         contentValues.put("annualDividend", annualDividend); // 7
@@ -203,6 +195,37 @@ public class DBHelper extends SQLiteOpenHelper {
 
         DB.close();
         return results != -1;
+    }
+
+
+    public boolean updateDatabaseStocks(String symbol, double shares) {
+        SQLiteDatabase DB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("shares", shares);
+        contentValues.put("price", ApiCalls.stock_price);
+        contentValues.put("annualDividend", ApiCalls.annualDividend);
+        contentValues.put("Profit_or_Loss",ApiCalls.profit_loss);
+        contentValues.put("dividend", ApiCalls.amount_of_dividend);
+        contentValues.put("Dividend_Yield", ApiCalls.Dividend_Yield);
+        contentValues.put("marketValue",portfolio_V2.mktvalU);
+        contentValues.put("dateOfDividend", ApiCalls.date_of_dividend);
+
+        Cursor cursor = DB.rawQuery("select * from Stocks where symbol=?", new String[]{symbol});
+        if (cursor.getCount() > 0) {
+            long results = DB.update("Stocks", contentValues, "symbol =?", new String[]{symbol});
+            // if the update method did not work return false
+            if (results == -1) {
+                cursor.close();
+                return false;
+
+            } else {
+                return true;
+            }
+        } else {
+
+            return false;
+        }
+
     }
 }
 

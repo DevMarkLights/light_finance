@@ -71,7 +71,7 @@ public class ApiCalls {
         }
     }
 
-    public void getAnnualDividend(String freq) {
+    public static void getAnnualDividend(String freq) {
         if(freq.startsWith("M")) {
             annualDividend = amount_of_dividend * 12;
         } else if (freq.startsWith("Q")) {
@@ -85,7 +85,7 @@ public class ApiCalls {
         }
 
     }
-    public void getDividendYield() {
+    public static void getDividendYield() {
         double DY = annualDividend / stock_price;
         Dividend_Yield = DY * 100;
         // Rounding
@@ -94,12 +94,12 @@ public class ApiCalls {
         Dividend_Yield = Double.parseDouble(String.valueOf(b));
     }
 
-    public void profit_loss(double shares,double costbasis) {
+    public static void profit_loss(double shares, double costbasis) {
         double market_value = stock_price * shares;
         double cost_value = shares * costbasis;
         double pr = market_value - cost_value;
         BigDecimal l = new BigDecimal(pr);
-        BigDecimal m = l.setScale(3,RoundingMode.DOWN);
+        BigDecimal m = l.setScale(2,RoundingMode.DOWN);
         profit_loss = Double.parseDouble(String.valueOf(m));
         double p = (profit_loss/cost_value) * 100;
         // Rounding

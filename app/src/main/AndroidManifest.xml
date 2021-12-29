@@ -12,6 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".TotalProfitValuePerStock"
+            android:exported="false" />
+        <activity
+            android:name=".TotalMarketValuePerStock"
+            android:exported="false"
+            android:parentActivityName=".portfolio_V2"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
             android:name=".dividendYieldPerStock"
             android:exported="false"
             android:parentActivityName=".portfolio_V2" />

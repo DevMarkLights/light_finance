@@ -49,7 +49,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
         holder.symbol.setText(String.valueOf(symbol.get(position)));
         holder.price.setText("$"+ price.get(position));
         holder.average_cost.setText(String.valueOf(average_cost.get(position)));
-        holder.profit_loss.setText(String.valueOf(profit_loss.get(position)));
+        holder.profit_loss.setText("$"+String.valueOf(profit_loss.get(position)));
         holder.marketValue.setText("$"+ marketValue.get(position));
         holder.dividend_Yield.setText(dividend_Yield.get(position) + "%");
         holder.frequency.setText(String.valueOf(frequency.get(position)));
