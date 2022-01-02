@@ -6,29 +6,83 @@
     android:layout_height="match_parent"
     tools:context=".LineChartView">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/lineChart"
-        android:layout_width="411dp"
-        android:layout_height="423dp"
-        android:layout_marginBottom="308dp"
+    <soup.neumorphism.NeumorphCardView
+        android:id="@+id/lccv"
+        android:layout_width="419dp"
+        android:layout_height="430dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart"
+            android:layout_width="410dp"
+            android:layout_height="409dp"
+            android:layout_marginBottom="308dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </soup.neumorphism.NeumorphCardView>
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/sevenDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="208dp"
+        android:layout_marginTop="4dp"
+        android:text="7day"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lccv" />
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/thirtydayTV"
+        android:layout_width="46dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="248dp"
+        android:layout_marginTop="4dp"
+        android:text="30day"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lccv" />
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/NinetydayTV"
+        android:layout_width="45dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="280dp"
+        android:text="90day"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/thirtydayTV"
+        app:layout_constraintTop_toBottomOf="@+id/lccv"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/oneYear"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+        android:text="1yr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lccv" />
 
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="9dp"
-        android:layout_marginTop="13dp"
         android:layout_marginEnd="354dp"
-        android:layout_marginBottom="276dp"
+        android:layout_marginBottom="228dp"
         android:text="Highest"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lineChart" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/highestValue"
@@ -37,7 +91,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="9dp"
         android:layout_marginEnd="348dp"
-        android:layout_marginBottom="247dp"
+        android:layout_marginBottom="200dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,23 +103,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="26dp"
-        android:layout_marginTop="13dp"
         android:layout_marginEnd="270dp"
-        android:layout_marginBottom="276dp"
+        android:layout_marginBottom="228dp"
         android:text="Lowest"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/lineChart" />
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toEndOf="@+id/textView7" />
 
     <TextView
         android:id="@+id/lowestValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="263dp"
-        android:layout_marginBottom="247dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="8dp"
+
+        android:layout_marginEnd="262dp"
+        android:layout_marginBottom="201dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

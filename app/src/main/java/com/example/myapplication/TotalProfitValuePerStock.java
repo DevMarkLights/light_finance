@@ -27,7 +27,7 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_total_profit_value_per_stock);
-
+        setTitle("Total Profit Value Per Stock");
         DB = new DBHelper(this);
         profitValue = new ArrayList<>();
         stocks = new ArrayList<>();

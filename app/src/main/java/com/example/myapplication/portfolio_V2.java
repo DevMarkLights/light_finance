@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import soup.neumorphism.NeumorphCardView;
 
-public class portfolio_V2 extends AppCompatActivity {
+public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInterface {
     RecyclerView recyclerView;
     ArrayList<String> tmv, Symbol, price, profit_loss, average_cost, Dividend_Yield, marketValue, frequency;
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
@@ -67,7 +67,7 @@ public class portfolio_V2 extends AppCompatActivity {
         test = findViewById(R.id.test);
         //-----------------------------------------------
         recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
-                Dividend_Yield, marketValue, frequency);
+                Dividend_Yield, marketValue, frequency,this);
         recyclerView.setAdapter(recViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -112,7 +112,7 @@ public class portfolio_V2 extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getDataForUpdate();
-                relaodActivity();
+                reloadActivity();
             }
         });
 
@@ -226,7 +226,7 @@ public class portfolio_V2 extends AppCompatActivity {
         }
     }
 
-    public void relaodActivity () {
+    public void reloadActivity () {
         finish();
         overridePendingTransition(0, 0);
         startActivity(getIntent());
@@ -248,13 +248,13 @@ public class portfolio_V2 extends AppCompatActivity {
                 api.Dividend(symbolU);
 
 
-                updatePorfolio();
+                updatePortfolio();
 
             }
         }
     }
 
-    public void updatePorfolio() {
+    public void updatePortfolio() {
         mktvalU = ApiCalls.stock_price * sharesU;
         BigDecimal a = new BigDecimal(mktvalU);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
@@ -267,5 +267,13 @@ public class portfolio_V2 extends AppCompatActivity {
         DB.updateDatabaseStocks(symbolU,sharesU);
 
 
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(portfolio_V2.this,LineChartView.class);
+        String s = Symbol.get(position);
+        intent.putExtra("Symbol",s);
+        startActivity(intent);
     }
 }

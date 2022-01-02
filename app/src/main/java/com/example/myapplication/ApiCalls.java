@@ -20,7 +20,7 @@ public class ApiCalls {
     static String date_of_dividend;
     static double amount_of_dividend,stock_price, annualDividend, Dividend_Yield,profit_loss,
             percentage_profit_loss;
-    String todayy,today30,today90;
+    String todayy,today30,today90,todayYear,today7;
     ArrayList<String> historicalPrice30 = new ArrayList<>();
     ArrayList<String> historicalDates30 = new ArrayList<>();
 
@@ -110,12 +110,21 @@ public class ApiCalls {
     }
 
     public void historicalPrices(String s, int days) throws IOException, JSONException {
+        if (historicalPrice30 != null){
+            historicalPrice30.clear();
+        }
         getDates();
         String date1 = "";
-        if(days == 30){
+
+        if(days== 7) {
+            date1 = today7;
+        }
+        else if(days == 30){
             date1 = today30;
-        } else{
+        } else if (days == 90){
             date1 = today90;
+        } else{
+            date1 = todayYear;
         }
 
         OkHttpClient client = new OkHttpClient();
@@ -141,6 +150,9 @@ public class ApiCalls {
     }
 
     public void getDates() {
+        if (historicalDates30 != null){
+            historicalDates30.clear();
+        }
         Date today = new Date();
         Calendar cal = new GregorianCalendar();
 
@@ -155,6 +167,20 @@ public class ApiCalls {
         }else {
             todayy = year + "-" + month + "-" + day;
         }
+        //
+        cal.add(Calendar.DAY_OF_MONTH, -7);
+        int month7 = cal.get(Calendar.MONTH);
+        int year7 = cal.get(Calendar.YEAR);
+        int day7 = cal.get(Calendar.DAY_OF_MONTH);
+        String mont7 = "";
+
+        if (month7 <10){
+            mont7 = "0"+month7;
+            today7 = year7 + "-" + mont7 + "-" + day7;
+        }else {
+            today7 = year7 + "-" + month7 + "-" + day7;
+        }
+        //
         // get the date for precious 30 days
         cal.add(Calendar.DAY_OF_MONTH, -30);
         int month30 = cal.get(Calendar.MONTH);
@@ -180,6 +206,19 @@ public class ApiCalls {
             today90 = year90 + "-" + mont90 + "-" + day90;
         }else {
             today90 = year90 + "-" + month90 + "-" + day90;
+        }
+
+        cal.add(Calendar.DAY_OF_MONTH, -365);
+        int month365 = cal.get(Calendar.MONTH);
+        int year365 = cal.get(Calendar.YEAR);
+        int day365 = cal.get(Calendar.DAY_OF_MONTH);
+        String mont365 = "";
+
+        if (month90 <10){
+            mont365 = "0"+month90;
+            todayYear = year365 + "-" + mont365 + "-" + day365;
+        }else {
+            todayYear = year365 + "-" + month365 + "-" + day365;
         }
 
     }

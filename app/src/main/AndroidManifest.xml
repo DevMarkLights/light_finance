@@ -37,7 +37,7 @@
         <activity
             android:name=".LineChartView"
             android:exported="false"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".portfolio_V2" />
         <activity
             android:name=".TotalDividends"
             android:exported="false"

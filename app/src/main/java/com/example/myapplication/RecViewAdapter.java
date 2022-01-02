@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHolder>{
-
+    private final RecyclerViewInterface recyclerViewInterface;
    private final Context context;
     private final ArrayList symbol;
     private final ArrayList price;
@@ -24,7 +24,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
 
     RecViewAdapter(Context context, ArrayList symbol, ArrayList price, ArrayList profit_loss,
                    ArrayList average_cost, ArrayList dividend_Yield, ArrayList marketValue,
-                   ArrayList frequency) {
+                   ArrayList frequency, RecyclerViewInterface recyclerViewInterface) {
         this.context = context;
         this.symbol = symbol;
         this.price = price;
@@ -33,6 +33,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
         this.dividend_Yield = dividend_Yield;
         this.marketValue = marketValue;
         this.frequency = frequency;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
 
@@ -41,7 +42,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflator = LayoutInflater.from(context);
         View view = inflator.inflate(R.layout.portfolio_row,parent,false);
-        return new MyViewHolder(view);
+        return new MyViewHolder(view, recyclerViewInterface);
     }
 
     @Override
@@ -62,7 +63,8 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView symbol,price,average_cost,profit_loss,marketValue,dividend_Yield,frequency;
-        public MyViewHolder(@NonNull View itemView) {
+
+        public MyViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
             symbol = itemView.findViewById(R.id.symbol);
             price = itemView.findViewById(R.id.price);
@@ -71,6 +73,19 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
             marketValue = itemView.findViewById(R.id.marketValue);
             dividend_Yield = itemView.findViewById(R.id.dividend_Yield);
             frequency = itemView.findViewById(R.id.frequency);
+
+            itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    if (recyclerViewInterface != null){
+                        int position = getAdapterPosition();
+
+                        if (position != RecyclerView.NO_POSITION) {
+                            recyclerViewInterface.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

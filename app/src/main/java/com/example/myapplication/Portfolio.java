@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 
-public class Portfolio extends AppCompatActivity implements OnMenuItemClickListener {
+public class Portfolio extends AppCompatActivity implements OnMenuItemClickListener, RecyclerViewInterface {
     SwipeRefreshLayout swipeRefreshLayout;
     private PieChart pieChart;
     RecyclerView recyclerView;
@@ -77,7 +77,7 @@ public class Portfolio extends AppCompatActivity implements OnMenuItemClickListe
         //------------------------------------------------
         // to display portfolio
         recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
-                Dividend_Yield, marketValue, frequency);
+                Dividend_Yield, marketValue, frequency,this);
         recyclerView.setAdapter(recViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -350,7 +350,12 @@ public class Portfolio extends AppCompatActivity implements OnMenuItemClickListe
             startActivity(getIntent());
             overridePendingTransition(0, 0);
         }
+
+    @Override
+    public void onItemClick(int position) {
+
     }
+}
 
 
 
