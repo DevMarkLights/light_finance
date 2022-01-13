@@ -21,6 +21,7 @@ public class ApiCalls {
     static double amount_of_dividend,stock_price, annualDividend, Dividend_Yield,profit_loss,
             percentage_profit_loss;
     String todayy,today30,today90,todayYear,today7;
+    String fifty_two_week_high, fifty_two_week_low,open,close,high,low;
     ArrayList<String> historicalPrice30 = new ArrayList<>();
     ArrayList<String> historicalDates30 = new ArrayList<>();
 
@@ -221,6 +222,61 @@ public class ApiCalls {
             todayYear = year365 + "-" + month365 + "-" + day365;
         }
 
+    }
+
+    public void stockQuote(String s) {
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://twelve-data1.p.rapidapi.com/quote?symbol="+s+"&interval=1day&outputsize=30&format=json")
+                .get()
+                .addHeader("x-rapidapi-host", "twelve-data1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            String all = response.body().string();
+            //open and close values for 1 day
+            open = new JSONObject(all).getString("open");
+            BigDecimal a = new BigDecimal(open);
+            BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+            open = String.valueOf(b);
+
+            close = new JSONObject(all).getString("close");
+            BigDecimal c = new BigDecimal(close);
+            BigDecimal d = c.setScale(3, RoundingMode.DOWN);
+            close = String.valueOf(d);
+
+            high = new JSONObject(all).getString("high");
+            BigDecimal e = new BigDecimal(high);
+            BigDecimal f = e.setScale(3, RoundingMode.DOWN);
+            high = String.valueOf(f);
+
+            low = new JSONObject(all).getString("low");
+            BigDecimal g = new BigDecimal(low);
+            BigDecimal h = g.setScale(3, RoundingMode.DOWN);
+            low = String.valueOf(h);
+
+            //fifty two week values
+            String fifty = new JSONObject(all).getString("fifty_two_week");
+            String ally = new JSONObject(fifty).getString("low");
+            String blly = new JSONObject(fifty).getString("high");
+
+            fifty_two_week_low = String.valueOf(ally);
+            BigDecimal i = new BigDecimal(fifty_two_week_low);
+            BigDecimal j = i.setScale(3, RoundingMode.DOWN);
+            fifty_two_week_low = String.valueOf(j);
+
+            fifty_two_week_high = String.valueOf(blly);
+            BigDecimal k = new BigDecimal(fifty_two_week_high);
+            BigDecimal l = k.setScale(3, RoundingMode.DOWN);
+            fifty_two_week_high = String.valueOf(l);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

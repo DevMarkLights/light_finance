@@ -43,7 +43,7 @@ public class TotalDividends extends AppCompatActivity {
         dividend = new ArrayList<>();
         stocks = new ArrayList<>();
         totalDividendAmount = new ArrayList<>();
-        totalDividendView = findViewById(R.id.totalDividendView);
+        totalDividendView = findViewById(R.id.totalDivVal);
         getTotalDividendPerMonth();
 
         BarDataSet barDataSet = new BarDataSet(dividend, "Stocks");

@@ -25,15 +25,23 @@ import java.util.Collections;
 import java.util.List;
 
 import soup.neumorphism.NeumorphButton;
+import soup.neumorphism.NeumorphTextView;
 
 public class LineChartView extends AppCompatActivity {
     ApiCalls api = new ApiCalls();
     LineChart lineChart;
     TextView highestvalue,lowestValue;
+    // For 1 day card view
+    TextView openValue,lowValue,highValue,closeValue,fifty_two_week_high_TV,fifty_two_week_low_TV,
+            divAmountView,exDivDate;
     double highVal;
+    NeumorphTextView symbolView,priceView;
     NeumorphButton thirtydaytv,NinetydayTV,oneYear,sevenDay;
     int days = 7;
     double lowest,highest;
+    String fifty_two_week_loww,fifty_two_week_highh,high,low,open,close, exDate;
+    double divAmount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,22 @@ public class LineChartView extends AppCompatActivity {
         NinetydayTV = findViewById(R.id.NinetydayTV);
         oneYear = findViewById(R.id.oneYear);
         sevenDay = findViewById(R.id.sevenDay);
+        openValue = findViewById(R.id.openValue);
+        lowValue = findViewById(R.id.lowValue);
+        highValue = findViewById(R.id.highValue);
+        closeValue = findViewById(R.id.closeValue);
+        fifty_two_week_high_TV = findViewById(R.id.fifty_two_week_high_TV);
+        fifty_two_week_low_TV = findViewById(R.id.fifty_two_week_low_TV);
+        divAmountView = findViewById(R.id.divAmountView);
+        exDivDate = findViewById(R.id.exDivDate);
+        symbolView = findViewById(R.id.symbolView);
+        priceView = findViewById(R.id.priceView);
+        api.price(sym);
+        priceView.setText("$"+String.valueOf(ApiCalls.stock_price));
+        symbolView.setText(sym);
+        fiftyTwoWeek(sym);
+        getDivAmount_ExDiv(sym);
+
 
         try {
             api.historicalPrices(sym,days);
@@ -91,7 +115,6 @@ public class LineChartView extends AppCompatActivity {
                 lineChart.getDescription().setText("Past 30 day stock price");
                 highestValueForLineChart();
                 lowestValueForLineChart();
-
             }
         });
         NinetydayTV.setOnClickListener(new View.OnClickListener(){
@@ -221,5 +244,33 @@ public class LineChartView extends AppCompatActivity {
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();
 
+    }
+
+    public void fiftyTwoWeek(String symb) {
+        api.stockQuote(symb);
+        high = api.high;
+        low = api.low;
+        open = api.open;
+        close = api.close;
+
+        openValue.setText("$"+open);
+        lowValue.setText("$"+low);
+        highValue.setText("$"+high);
+        closeValue.setText("$"+close);
+
+        fifty_two_week_loww = api.fifty_two_week_low;
+        fifty_two_week_highh = api.fifty_two_week_high;
+
+        fifty_two_week_low_TV.setText("$"+fifty_two_week_loww);
+        fifty_two_week_high_TV.setText("$"+fifty_two_week_highh);
+    }
+
+    public void getDivAmount_ExDiv(String sym){
+        api.Dividend(sym);
+        divAmount = ApiCalls.amount_of_dividend;
+        exDate = ApiCalls.date_of_dividend;
+        String amount = String.valueOf(divAmount);
+        divAmountView.setText("$"+amount);
+        exDivDate.setText(exDate);
     }
  }
