@@ -7,21 +7,39 @@
     tools:context=".TotalProfitValuePerStock">
 
     <soup.neumorphism.NeumorphCardView
-        android:layout_width="match_parent"
-        android:layout_height="310dp"
+        android:id="@+id/neumorphCardView3"
+        android:layout_width="400dp"
+        android:layout_height="656dp"
         android:layout_marginBottom="421dp"
         android:background="@color/background_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.github.mikephil.charting.charts.HorizontalBarChart
             android:id="@+id/fragment_verticalbarchart_chart"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="643dp"
             android:background="@color/background" />
 
     </soup.neumorphism.NeumorphCardView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="221dp"
+        android:text="*Values are in dollar amounts*"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/neumorphCardView3"
+        app:layout_constraintVertical_bias="0.125" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

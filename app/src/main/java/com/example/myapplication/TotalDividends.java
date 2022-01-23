@@ -18,8 +18,6 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class TotalDividends extends AppCompatActivity {
@@ -43,7 +41,7 @@ public class TotalDividends extends AppCompatActivity {
         dividend = new ArrayList<>();
         stocks = new ArrayList<>();
         totalDividendAmount = new ArrayList<>();
-        totalDividendView = findViewById(R.id.totalDivVal);
+
         getTotalDividendPerMonth();
 
         BarDataSet barDataSet = new BarDataSet(dividend, "Stocks");
@@ -71,7 +69,7 @@ public class TotalDividends extends AppCompatActivity {
         xAxis.setDrawGridLines(false);
         xAxis.setSpaceMin(0);
         chart.invalidate();
-        getTotalDividend();
+        //getTotalDividend();
     }
 
    
@@ -99,39 +97,6 @@ public class TotalDividends extends AppCompatActivity {
                 stocks.add(cursor.getString(0));
             }
         }
-    }
-    
-    public void getTotalDividend() {
-
-        Cursor cursor = DB.readAllData();
-        if(cursor.getCount() == 0) {
-            Toast.makeText(this,"No Stocks", Toast.LENGTH_SHORT).show();
-        }else{
-            while(cursor.moveToNext()){
-                float div = Float.parseFloat(cursor.getString(5));
-                float shares = Float.parseFloat(cursor.getString(2));
-                String f = cursor.getString(8);
-                float totaldiv = 0;
-                if(f.startsWith("M")){
-                    totaldiv = (div * shares)*12;
-                }else if(f.startsWith("Q")){
-                    totaldiv = (div * shares)*4;
-                }else if(f.startsWith("S")){
-                    totaldiv = (div * shares)*2;
-                } else{
-                    totaldiv = div * shares;
-                }
-                totalDividendAmount.add(String.valueOf(totaldiv));
-            }
-        }
-        double total = 0;
-        for(int i = 0; i<totalDividendAmount.size();i++) {
-            total = total + Double.parseDouble(String.valueOf(totalDividendAmount.get(i)));
-        }
-        total_div_amount = total;
-        BigDecimal a = new BigDecimal(total_div_amount);
-        BigDecimal b = a.setScale(2, RoundingMode.DOWN);
-        totalDividendView.setText("$"+String.valueOf(b)+" annually");
     }
 
 

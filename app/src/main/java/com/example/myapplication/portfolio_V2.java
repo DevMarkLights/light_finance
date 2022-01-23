@@ -1,10 +1,15 @@
 package com.example.myapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,8 +22,9 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import soup.neumorphism.NeumorphCardView;
+import soup.neumorphism.NeumorphFloatingActionButton;
 
-public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInterface {
+public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInterface, PopupMenu.OnMenuItemClickListener {
     RecyclerView recyclerView;
     ArrayList<String> tmv, Symbol, price, profit_loss, average_cost, Dividend_Yield, marketValue, frequency;
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
@@ -29,6 +35,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     double totalMV, totalProfitLoss, avgDY, annualDividend;
+    NeumorphFloatingActionButton neumorphFloatingActionButton;
 
     //for portfolio update
     String symbolU,freqU;
@@ -41,30 +48,14 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_portfolio_v2);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setTitle("Portfolio");
         DB = new DBHelper(this);
         //-------------------------------
-        Symbol = new ArrayList<>();
-        price = new ArrayList<>();
-        profit_loss = new ArrayList<>();
-        average_cost = new ArrayList<>();
-        Dividend_Yield = new ArrayList<>();
-        marketValue = new ArrayList<>();
-        frequency = new ArrayList<>();
-        tmv = new ArrayList<>();
-        total_Profit_Loss = new ArrayList<>();
-        average_Dividend_Yield = new ArrayList<>();
+        getAllArrayListForUI();
         //--------------------------------------------
-        recyclerView = findViewById(R.id.portfolio);
-        totalProfitLossView = findViewById(R.id.TPV_View);
-        avgDyview = findViewById(R.id.AvgDivYieldView);
-        total_market_value = findViewById(R.id.TMVtextV);
-        totalAnnualDiv = findViewById(R.id.AnnualDivView);
-        annualDividendCardView = findViewById(R.id.AnnualDividendCardView);
-        divYieldPerStock = findViewById(R.id.averageDividendYieldCard);
-        marketValueCardView = findViewById(R.id.totalMarketValueCard);
-        ProfitValueCard = findViewById(R.id.TPV_Card);
-        test = findViewById(R.id.test);
+        getUiElements();
         //-----------------------------------------------
         recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
                 Dividend_Yield, marketValue, frequency,this);
@@ -74,17 +65,23 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         totalMarketValue();
         totalProfitLoss();
         averageDividendYield();
-        storeDataInArrays();
         annualDividend();
+        storeDataInArrays();
+        //-------------------------
+        getAllOnClickListners();
 
-        // click listener for annual dividend cardview
+
+
+    }
+
+    public void getAllOnClickListners(){
         annualDividendCardView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(portfolio_V2.this, TotalDividends.class);
                 startActivity(intent);
             }
         });
-        // click listener for dividend per stock card view
+
         divYieldPerStock.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(portfolio_V2.this,dividendYieldPerStock.class);
@@ -111,11 +108,55 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getDataForUpdate();
+                try {
+                    getDataForUpdate();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 reloadActivity();
             }
         });
 
+        neumorphFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(portfolio_V2.this, view);
+                popup.setOnMenuItemClickListener(portfolio_V2.this);
+                popup.inflate(R.menu.menu_drop_down);
+                popup.show();
+            }
+        });
+
+
+
+    }
+
+    public void getUiElements() {
+        recyclerView = findViewById(R.id.portfolio);
+        totalProfitLossView = findViewById(R.id.TPV_View);
+        avgDyview = findViewById(R.id.AvgDivYieldView);
+        total_market_value = findViewById(R.id.TMVtextV);
+        totalAnnualDiv = findViewById(R.id.AnnualDivView);
+        annualDividendCardView = findViewById(R.id.AnnualDividendCardView);
+        divYieldPerStock = findViewById(R.id.averageDividendYieldCard);
+        marketValueCardView = findViewById(R.id.totalMarketValueCard);
+        ProfitValueCard = findViewById(R.id.TPV_Card);
+        neumorphFloatingActionButton = findViewById(R.id.neumorphFloatingActionButton);
+        test = findViewById(R.id.test);
+    }
+
+    public void getAllArrayListForUI() {
+        Symbol = new ArrayList<>();
+        price = new ArrayList<>();
+        profit_loss = new ArrayList<>();
+        average_cost = new ArrayList<>();
+        Dividend_Yield = new ArrayList<>();
+        marketValue = new ArrayList<>();
+        frequency = new ArrayList<>();
+        tmv = new ArrayList<>();
+        total_Profit_Loss = new ArrayList<>();
+        average_Dividend_Yield = new ArrayList<>();
     }
 
     void storeDataInArrays() {
@@ -180,14 +221,15 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     }
 
     public void totalProfitLoss() {
-        Cursor cursor = DB.readAllData();
-        if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No stocks", Toast.LENGTH_SHORT).show();
-        } else {
-            while (cursor.moveToNext()) {
-                total_Profit_Loss.add(Double.valueOf(cursor.getString(4).substring(0, 3)));
-            }
-        }
+                Cursor cursor = DB.readAllData();
+                if (cursor.getCount() == 0) {
+                    Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                } else {
+                    while (cursor.moveToNext()) {
+                        total_Profit_Loss.add(Double.valueOf(cursor.getString(4).substring(0, 3)));
+                    }
+                }
+
         double sum = 0;
         for (int i = 0; i < total_Profit_Loss.size(); i++) {
             sum = sum + Double.parseDouble(String.valueOf(total_Profit_Loss.get(i)));
@@ -200,6 +242,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     }
 
     public void annualDividend() {
+
         Cursor cursor = DB.readAllData();
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
@@ -233,7 +276,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         overridePendingTransition(0, 0);
     }
 
-    public void getDataForUpdate() {
+    public void getDataForUpdate() throws InterruptedException {
         Cursor cursor = DB.readAllData();
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
@@ -243,7 +286,6 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 sharesU = Double.parseDouble(cursor.getString(2));
                 costbasisU = Double.parseDouble(cursor.getString(3));
                 freqU = cursor.getString(8);
-                // i need marketvalue, frequency
                 api.price(symbolU);
                 api.Dividend(symbolU);
 
@@ -252,9 +294,10 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
 
             }
         }
+
     }
 
-    public void updatePortfolio() {
+    public void updatePortfolio() throws InterruptedException {
         mktvalU = ApiCalls.stock_price * sharesU;
         BigDecimal a = new BigDecimal(mktvalU);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
@@ -263,8 +306,15 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         ApiCalls.getAnnualDividend(freqU);
         ApiCalls.getDividendYield();
 
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DB.updateDatabaseStocks(symbolU,sharesU);
+            }
+        });
+        thread.start();
+        thread.join();
 
-        DB.updateDatabaseStocks(symbolU,sharesU);
 
 
     }
@@ -276,4 +326,96 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         intent.putExtra("Symbol",s);
         startActivity(intent);
     }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.addStock2:
+                Dialog dialog = new Dialog(this);
+                dialog.setContentView(R.layout.popup_input_dialog_addstock);
+                dialog.show();
+                Button add = (Button) dialog.findViewById(R.id.add_Stock_popup);
+                Button cancel = (Button) dialog.findViewById(R.id.button_cancel_user_data);
+                DBHelper DB = new DBHelper(this);
+                add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        EditText sy = (EditText) dialog.findViewById(R.id.symbol);
+                        EditText shar = (EditText) dialog.findViewById(R.id.Shares_add_stock_popup);
+                        EditText cps = (EditText) dialog.findViewById(R.id.average_cost_popup);
+                        EditText fr = (EditText) dialog.findViewById(R.id.frequency);
+                        String symbol = sy.getText().toString();
+                        String sha = shar.getText().toString();
+                        double shares = Double.parseDouble(String.valueOf(sha));
+                        String ag = cps.getText().toString();
+                        double avgCost = Double.parseDouble(String.valueOf(ag));
+                        String freqq = fr.getText().toString();
+                        DB.addStocksDialog(symbol, shares, avgCost, freqq);
+                        dialog.dismiss();
+                        reloadActivity();
+                    }
+                });
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+
+                    }
+                });
+                return true;
+            case R.id.delete2:
+                Dialog delete = new Dialog(this);
+                delete.setContentView(R.layout.popup_input_dialog_deletestock);
+                delete.show();
+                Button delete2 = (Button) delete.findViewById(R.id.delete_Stock_popup);
+                Button cancel2 = (Button) delete.findViewById(R.id.button_cancel_user_data);
+                DBHelper DB2 = new DBHelper(this);
+                delete2.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        EditText sy = (EditText) delete.findViewById(R.id.symbol);
+                        String symbol = sy.getText().toString();
+                        DB2.deleteStock(symbol);
+                        delete.dismiss();
+                        reloadActivity();
+                    }
+                });
+
+                cancel2.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        delete.dismiss();
+                    }
+                });
+                return true;
+            case R.id.updateStock2:
+                Dialog update = new Dialog(this);
+                update.setContentView(R.layout.popup_input_dialog_updatestock);
+                update.show();
+                Button update2 = (Button) update.findViewById(R.id.update_Stock_popup);
+                Button cancel3 = (Button) update.findViewById(R.id.button_cancel_user_data);
+                DBHelper DB3 = new DBHelper(this);
+                update2.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        EditText sym = (EditText) update.findViewById(R.id.symbol);
+                        EditText share = (EditText) update.findViewById(R.id.Shares_add_stock_popup);
+                        EditText Avg = (EditText) update.findViewById(R.id.average_cost_popup);
+                        String symbol2 = sym.getText().toString();
+                        double shares = Double.parseDouble(String.valueOf(share));
+                        double aveg = Double.parseDouble(String.valueOf(Avg));
+                        DB3.updateStock(symbol2, shares, aveg);
+                        update.dismiss();
+                        reloadActivity();
+                    }
+                });
+                cancel3.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        update.dismiss();
+                    }
+                });
+
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }

@@ -13,20 +13,27 @@
         android:theme="@style/Theme.MyApplication">
         <activity
             android:name=".TotalProfitValuePerStock"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".portfolio_V2"/>
         <activity
             android:name=".TotalMarketValuePerStock"
             android:exported="false"
-            android:parentActivityName=".portfolio_V2"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:parentActivityName=".portfolio_V2" />
         <activity
             android:name=".dividendYieldPerStock"
             android:exported="false"
             android:parentActivityName=".portfolio_V2" />
         <activity
             android:name=".portfolio_V2"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:exported="true"
+            android:label="Lights Finance"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".nuemorphism_example_2"
             android:exported="false" />
@@ -52,12 +59,9 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
+            android:label="Lights Finance"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
