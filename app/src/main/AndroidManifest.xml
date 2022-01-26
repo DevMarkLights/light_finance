@@ -12,9 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".splashScreen"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".TotalProfitValuePerStock"
             android:exported="false"
-            android:parentActivityName=".portfolio_V2"/>
+            android:parentActivityName=".portfolio_V2" />
         <activity
             android:name=".TotalMarketValuePerStock"
             android:exported="false"
@@ -28,19 +37,10 @@
             android:exported="true"
             android:label="Lights Finance"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".nuemorphism_example_2"
             android:exported="false" />
-        <activity
-            android:name=".neumorphismExample"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".LineChartView"
             android:exported="false"
@@ -50,19 +50,13 @@
             android:exported="false"
             android:parentActivityName=".portfolio_V2" />
         <activity
-            android:name=".Portfolio"
-            android:exported="true"
-            android:parentActivityName=".MainActivity" />
-        <activity
             android:name=".Database"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:label="Lights Finance"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"
+            android:label="Lights Finance"></activity>
     </application>
 
 </manifest>

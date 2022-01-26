@@ -4,22 +4,25 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.17083333333333334" />
+        <entry key="app/src/main/res/drawable/app_logo.xml" value="0.33541666666666664" />
         <entry key="app/src/main/res/drawable/cursor.xml" value="0.2953703703703704" />
         <entry key="app/src/main/res/drawable/ic_addstock.xml" value="0.31927083333333334" />
         <entry key="app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.33541666666666664" />
         <entry key="app/src/main/res/drawable/ic_delete_stock.xml" value="0.31927083333333334" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.31927083333333334" />
         <entry key="app/src/main/res/drawable/ic_update_stock.xml" value="0.31927083333333334" />
+        <entry key="app/src/main/res/drawable/splash_image.xml" value="0.1205" />
         <entry key="app/src/main/res/layout/activity_curious.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_database.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_dividend_yield_per_stock.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_fullscreen.xml" value="0.16302083333333334" />
-        <entry key="app/src/main/res/layout/activity_line_chart.xml" value="0.3307291666666667" />
+        <entry key="app/src/main/res/layout/activity_line_chart.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_neumorphism_example.xml" value="0.31927083333333334" />
         <entry key="app/src/main/res/layout/activity_nuemorphism_example2.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_portfolio.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_portfolio_v2.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_total_dividends.xml" value="0.165" />
         <entry key="app/src/main/res/layout/activity_total_market_value_per_stock.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/activity_total_profit_value_per_stock.xml" value="0.21822916666666667" />
@@ -32,6 +35,7 @@
         <entry key="app/src/main/res/layout/popup_input_dialog_updatestock.xml" value="0.335" />
         <entry key="app/src/main/res/layout/portfolio_row.xml" value="0.5" />
         <entry key="app/src/main/res/layout/single_item.xml" value="0.2708333333333333" />
+        <entry key="app/src/main/res/menu/menu_drop_down.xml" value="0.31927083333333334" />
       </map>
     </option>
   </component>

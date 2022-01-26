@@ -27,6 +27,7 @@ public class ApiCalls {
 
 
 
+
     // api call to get the dividend amount and dividend yield
     public void Dividend(String s) {
         OkHttpClient client = new OkHttpClient();
@@ -126,6 +127,7 @@ public class ApiCalls {
         }
 
     }
+
     public static void getDividendYield() {
         double DY = annualDividend / stock_price;
         Dividend_Yield = DY * 100;
@@ -322,6 +324,8 @@ public class ApiCalls {
             e.printStackTrace();
         }
     }
+
+
 
 }
 

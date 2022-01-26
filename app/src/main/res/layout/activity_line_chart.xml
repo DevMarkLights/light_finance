@@ -27,6 +27,28 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+    <soup.neumorphism.NeumorphTextView
+        android:id="@+id/ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:text="In Portfolio"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imp_View_in_Portfolio"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@+id/ip"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/green_check_mark" />
+
+
     <soup.neumorphism.NeumorphCardView
         android:id="@+id/lccv"
         android:layout_width="419dp"

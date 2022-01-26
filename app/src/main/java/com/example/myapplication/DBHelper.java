@@ -137,6 +137,7 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor = DB.rawQuery("Select * from Stocks", null);
 
         }
+
         return cursor;
     }
 

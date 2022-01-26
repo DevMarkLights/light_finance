@@ -1,10 +1,13 @@
 package com.example.myapplication;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,6 +37,7 @@ import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphTextView;
 
 public class LineChartView extends AppCompatActivity {
+    DBHelper DB;
     ApiCalls api = new ApiCalls();
     LineChart lineChart;
     // For card view
@@ -42,20 +46,26 @@ public class LineChartView extends AppCompatActivity {
     double highVal;
     NeumorphTextView symbolView,priceView,highestvalue,lowestValue;
     NeumorphButton threeMoTV,sixMoTV,oneYear,fiveDay;
+    ImageView imp_View_in_Portfolio;
     int days = 5;
     double lowest,highest;
     String fifty_two_week_loww,fifty_two_week_highh,high,low,open,close, exDate;
     double divAmount;
     ArrayList<String> historicalPrice30 = new ArrayList<>();
+    List<Entry> lineEntries = new ArrayList<Entry>();
+    boolean stockInPortfolio = false;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_line_chart);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setTitle("stock price history");
+
+        DB = new DBHelper(this);
+
         String sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
 
         getUiElements();
@@ -70,17 +80,22 @@ public class LineChartView extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //api.price(sym);
+
         priceView.setText("$"+String.valueOf(ApiCalls.stock_price));
         symbolView.setText(sym);
-        fiftyTwoWeek(sym);
+        try {
+            fiftyTwoWeek(sym);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         getDivAmount_ExDiv(sym);
 
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    historicalPrices(sym, days);
+                    historicalPrices(sym,days);
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
@@ -102,7 +117,13 @@ public class LineChartView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 days = 90;
-                dataForLineChart(sym,days);
+                try {
+                    historicalPrices(sym,days);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 negOrPos();
                 lineChart();
                 lineChart.getDescription().setText("Past 3 months day stock price");
@@ -124,7 +145,13 @@ public class LineChartView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 days = 180;
-                dataForLineChart(sym,days);
+                try {
+                    historicalPrices(sym,days);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 lineChart.getDescription().setText("Past 6 months day stock price");
                 negOrPos();
                 lineChart();
@@ -146,7 +173,13 @@ public class LineChartView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 days = 365;
-                dataForLineChart(sym,days);
+                try {
+                    historicalPrices(sym,days);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 lineChart.getDescription().setText("Past year day stock price");
                 negOrPos();
                 lineChart();
@@ -169,14 +202,20 @@ public class LineChartView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 days = 5;
-                dataForLineChart(sym,days);
+                try {
+                    historicalPrices(sym,days);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 lineChart.getDescription().setText("Past 5 day stock price");
                 negOrPos();
                 lineChart();
                 highestValueForLineChart();
                 lowestValueForLineChart();
                 negOrPos();
-                highestView.setText("7 day lowest");
+                highestView.setText("7 day highest");
                 lowestView.setText("7 day lowest");
                 threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
                 sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
@@ -189,7 +228,11 @@ public class LineChartView extends AppCompatActivity {
             }
         });
 
+        inPortfolio(sym);
 
+        //if(stockInPortfolio = false) {
+            imp_View_in_Portfolio.setImageResource(R.drawable.red_x);
+        //}
     }
 
     public void getUiElements() {
@@ -211,6 +254,7 @@ public class LineChartView extends AppCompatActivity {
         priceView = findViewById(R.id.priceView);
         highestView = findViewById(R.id.highest);
         lowestView = findViewById(R.id.lowest);
+        imp_View_in_Portfolio = findViewById(R.id.imp_View_in_Portfolio);
     }
 
     public void historicalPrices(String s, int days) throws IOException, JSONException {
@@ -247,19 +291,12 @@ public class LineChartView extends AppCompatActivity {
             String T = String.valueOf(t.get(i));
             historicalPrice30.add(T);
         }
-    }
-
-    void dataForLineChart(String sym, int days) {
-        try {
-            historicalPrices(sym,days);
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
         getDataSet();
     }
 
+
     private List<Entry> getDataSet() {
-        List<Entry> lineEntries = new ArrayList<Entry>();
+        lineEntries.clear();
         for(int i = 0; i <historicalPrice30.size(); i++) {
             float data = Float.parseFloat(historicalPrice30.get(i));
             lineEntries.add(new Entry(i, data));
@@ -310,7 +347,9 @@ public class LineChartView extends AppCompatActivity {
 
     public void lineChart() {
         lineChart = findViewById(R.id.lineChart);
-        List<Entry> lineEntries = getDataSet();
+        if(lineEntries.isEmpty()){
+            getDataSet();
+        }
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "");
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineDataSet.setLineWidth(2);
@@ -331,7 +370,7 @@ public class LineChartView extends AppCompatActivity {
         lineChart.getAxisRight().setDrawGridLines(false);
 
         LineData lineData = new LineData(lineDataSet);
-        //lineChart.getDescription().setText("Past 7 day stock price");
+        lineChart.getDescription().setText("Past 5 day stock price");
         lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTH_SIDED);
         lineChart.setData(lineData);
 
@@ -345,8 +384,14 @@ public class LineChartView extends AppCompatActivity {
 
     }
 
-    public void fiftyTwoWeek(String symb) {
-        //api.stockQuote(symb);
+    public void fiftyTwoWeek(String symb) throws InterruptedException {
+       Thread thread = new Thread(new Runnable() {
+           @Override
+           public void run() {
+               api.stockQuote(symb);
+           }
+       }); thread.start(); //thread.join();
+
         high = api.high;
         low = api.low;
         open = api.open;
@@ -371,5 +416,17 @@ public class LineChartView extends AppCompatActivity {
         String amount = String.valueOf(divAmount);
         divAmountView.setText("$"+amount);
         exDivDate.setText(exDate);
+    }
+
+    public void inPortfolio(String sym) {
+        Cursor cursor = DB.readAllData();
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
+        } else {
+            while(cursor.moveToNext()) {
+                if (sym == cursor.getString(0));
+                stockInPortfolio = true;
+            }
+        }
     }
  }
