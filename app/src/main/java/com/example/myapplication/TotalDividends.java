@@ -34,8 +34,6 @@ public class TotalDividends extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_total_dividends);
         setTitle("Total Dividends Per Stock");
-
-
         DB = new DBHelper(this);
         chart = (BarChart) findViewById(R.id.fragment_verticalbarchart_chart);
         dividend = new ArrayList<>();
@@ -55,7 +53,7 @@ public class TotalDividends extends AppCompatActivity {
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,dividend.size());
-        chart.animateY(2000);
+        chart.animateY(1000);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
         XAxis xAxis = chart.getXAxis();

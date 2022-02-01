@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -36,7 +38,9 @@ import okhttp3.Response;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphTextView;
 
-public class LineChartView extends AppCompatActivity {
+public class LineChartView extends AppCompatActivity implements RecyclerViewInterface {
+    RecyclerView recyclerView;
+    RecViewAdpSimStocks RecViewAdpSimStocks;
     DBHelper DB;
     ApiCalls api = new ApiCalls();
     LineChart lineChart;
@@ -54,6 +58,7 @@ public class LineChartView extends AppCompatActivity {
     ArrayList<String> historicalPrice30 = new ArrayList<>();
     List<Entry> lineEntries = new ArrayList<Entry>();
     boolean stockInPortfolio = false;
+    ArrayList<String> symbol, price, DivYeild, dividend_amount,percent_Change;
 
 
     @Override
@@ -63,12 +68,35 @@ public class LineChartView extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setTitle("stock price history");
-
         DB = new DBHelper(this);
-
         String sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
+        try {
+            api.similarStocks(sym);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        //------------------------
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getArraysForRecView();
+            }
+        }); th.start();
+        try {
+            th.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //getArraysForRecView();
+        //-------------------------
+        try {
+            store_data_in_arrays();
+        } catch (JSONException | IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        getUiElements();
+        //getUiElements();
+        //-----------------------
         Thread thread1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -80,7 +108,7 @@ public class LineChartView extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        //getUiElements();
         priceView.setText("$"+String.valueOf(ApiCalls.stock_price));
         symbolView.setText(sym);
         try {
@@ -230,10 +258,65 @@ public class LineChartView extends AppCompatActivity {
 
         inPortfolio(sym);
 
-        //if(stockInPortfolio = false) {
+        if(stockInPortfolio = false) {
             imp_View_in_Portfolio.setImageResource(R.drawable.red_x);
-        //}
+        }
+        //getUiElements();
     }
+
+    private void getArraysForRecView() {
+        symbol = new ArrayList<>();
+        price = new ArrayList<>();
+        DivYeild = new ArrayList<>();
+        dividend_amount = new ArrayList<>();
+        percent_Change = new ArrayList<>();
+    }
+
+    public void store_data_in_arrays() throws JSONException, IOException, InterruptedException {
+               Thread t = new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                for (int i = 0; i <api.recommendedSymbols.size();i++){
+                    String temp = api.recommendedSymbols.get(i);
+                    symbol.add(temp);
+                    try {
+                        api.regularMarketPrice(temp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    price.add(String.valueOf(api.stock_price));
+                    api.Dividend(temp);
+                    dividend_amount.add(String.valueOf(api.amount_of_dividend));
+                    try {
+                        api.getDivYield(temp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    if(api.Dividend_Yield == 0.0){
+                        DivYeild.add("no dividend");
+                    } else {
+                        DivYeild.add(String.valueOf(api.Dividend_Yield));
+                    }
+                    try {
+                        api.getPercentChange(temp);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    percent_Change.add(String.valueOf(api.percent_Change));
+                }
+
+                 }
+                });
+               t.start();
+               t.join();
+               getUiElements();
+        }
 
     public void getUiElements() {
         highestvalue = findViewById(R.id.highestValue);
@@ -255,6 +338,12 @@ public class LineChartView extends AppCompatActivity {
         highestView = findViewById(R.id.highest);
         lowestView = findViewById(R.id.lowest);
         imp_View_in_Portfolio = findViewById(R.id.imp_View_in_Portfolio);
+        recyclerView = findViewById(R.id.similarStocksRecView);
+        RecViewAdpSimStocks = new RecViewAdpSimStocks(this, symbol, price,
+                DivYeild, dividend_amount,percent_Change,this);
+        recyclerView.setAdapter(RecViewAdpSimStocks);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     public void historicalPrices(String s, int days) throws IOException, JSONException {
@@ -293,7 +382,6 @@ public class LineChartView extends AppCompatActivity {
         }
         getDataSet();
     }
-
 
     private List<Entry> getDataSet() {
         lineEntries.clear();
@@ -429,4 +517,9 @@ public class LineChartView extends AppCompatActivity {
             }
         }
     }
- }
+
+    @Override
+    public void onItemClick(int position) {
+
+    }
+}

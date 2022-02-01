@@ -47,7 +47,7 @@ public class dividendYieldPerStock extends AppCompatActivity {
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,dividendYield.size());
-        chart.animateY(0);
+        chart.animateY(1000);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
         XAxis xAxis = chart.getXAxis();

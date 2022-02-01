@@ -46,7 +46,7 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,profitValue.size());
-        chart.animateY(2000);
+        chart.animateY(1000);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
         XAxis xAxis = chart.getXAxis();

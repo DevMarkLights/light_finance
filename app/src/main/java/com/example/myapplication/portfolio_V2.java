@@ -70,8 +70,6 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         //-------------------------
         getAllOnClickListners();
 
-
-
     }
 
     public void getAllOnClickListners(){

@@ -64,7 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("averageCost", average_cost); // 3
         contentValues.put("Profit_or_Loss", ApiCalls.profit_loss); // 4
         contentValues.put("dividend", dividend); // 5
-        contentValues.put("Dividend_Yield", dy); // 6
+        contentValues.put("ytd_return", dy); // 6
         contentValues.put("annualDividend", annualDividend); // 7
         contentValues.put("frequency", frequency);// 8
         contentValues.put("dateOfDividend", dateOfDividend);// 9
@@ -185,7 +185,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("averageCost", average_cost); // 3
         contentValues.put("Profit_or_Loss", ApiCalls.profit_loss); // 4
         contentValues.put("dividend", dividend); // 5
-        contentValues.put("Dividend_Yield", dy); // 6
+        contentValues.put("ytd_return", dy); // 6
         contentValues.put("annualDividend", annualDividend); // 7
         contentValues.put("frequency", frequency);// 8
         contentValues.put("dateOfDividend", dateOfDividend);// 9
@@ -207,7 +207,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("annualDividend", ApiCalls.annualDividend);
         contentValues.put("Profit_or_Loss",ApiCalls.profit_loss);
         contentValues.put("dividend", ApiCalls.amount_of_dividend);
-        contentValues.put("Dividend_Yield", ApiCalls.Dividend_Yield);
+        contentValues.put("ytd_return", ApiCalls.Dividend_Yield);
         contentValues.put("marketValue",portfolio_V2.mktvalU);
         contentValues.put("dateOfDividend", ApiCalls.date_of_dividend);
 

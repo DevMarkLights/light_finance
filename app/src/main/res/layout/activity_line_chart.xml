@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".LineChartView">
 
-    <soup.neumorphism.NeumorphTextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
+
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/symbolView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/priceView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,8 +30,7 @@
         app:layout_constraintStart_toEndOf="@+id/symbolView"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/ip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+        <ImageView
         android:id="@+id/imp_View_in_Portfolio"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -48,8 +51,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/green_check_mark" />
 
-
-    <soup.neumorphism.NeumorphCardView
+        <soup.neumorphism.NeumorphCardView
         android:id="@+id/lccv"
         android:layout_width="419dp"
         android:layout_height="430dp"
@@ -61,18 +63,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.053">
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart"
-            android:layout_width="410dp"
-            android:layout_height="409dp"
-            android:layout_marginBottom="308dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </soup.neumorphism.NeumorphCardView>
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart"
+                android:layout_width="410dp"
+                android:layout_height="409dp"
+                android:layout_marginBottom="308dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </soup.neumorphism.NeumorphCardView>
 
-    <soup.neumorphism.NeumorphButton
+        <soup.neumorphism.NeumorphButton
         android:id="@+id/fiveDay"
         style="@style/Widget.Neumorph.Button"
         android:layout_width="94dp"
@@ -83,7 +85,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lccv" />
 
-    <soup.neumorphism.NeumorphButton
+        <soup.neumorphism.NeumorphButton
         android:id="@+id/threeMoTV"
         style="@style/Widget.Neumorph.Button"
         android:layout_width="100dp"
@@ -95,7 +97,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lccv" />
 
-    <soup.neumorphism.NeumorphButton
+        <soup.neumorphism.NeumorphButton
         android:id="@+id/sixMoTV"
         style="@style/Widget.Neumorph.Button"
         android:layout_width="100dp"
@@ -106,7 +108,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lccv" />
 
-    <soup.neumorphism.NeumorphButton
+        <soup.neumorphism.NeumorphButton
         android:id="@+id/oneYear"
         style="@style/Widget.Neumorph.Button"
         android:layout_width="104dp"
@@ -116,7 +118,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lccv" />
 
-    <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/highest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -127,7 +129,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fiveDay" />
 
-    <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/highestValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -138,7 +140,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/lowest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -149,7 +151,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
         android:id="@+id/lowestValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -160,178 +162,222 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <soup.neumorphism.NeumorphCardView
-        android:layout_width="418dp"
-        android:layout_height="178dp"
-        android:layout_marginTop="23dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/highestValue">
+        <soup.neumorphism.NeumorphCardView
+            android:id="@+id/fiftyCardView"
+            android:layout_width="411dp"
+            android:layout_height="154dp"
+            android:layout_marginTop="23dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/highestValue"
+            app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="7dp"
+                android:text="Today"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="7dp"
+                android:paddingTop="15dp"
+                android:text="Open"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/openValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="60dp"
+                android:paddingTop="15dp"
+                android:text="value"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="6dp"
+                android:paddingTop="35dp"
+                android:text="Low"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/lowValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="60dp"
+                android:paddingTop="35dp"
+                android:text="value"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="6dp"
+                android:paddingTop="55dp"
+                android:text="High"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/highValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="60dp"
+                android:paddingTop="55dp"
+                android:text="value"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="6dp"
+                android:paddingTop="75dp"
+                android:text="Close"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/closeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="60dp"
+                android:paddingTop="75dp"
+                android:text="value"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="300dp"
+                android:text="52 Week"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="275dp"
+                android:paddingTop="16dp"
+                android:text="Low"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/fifty_two_week_low_TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="325dp"
+                android:paddingTop="16dp"
+                android:text="value"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="275dp"
+                android:paddingTop="35dp"
+                android:text="High"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/fifty_two_week_high_TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="325dp"
+                android:paddingTop="35dp"
+                android:text="value"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="300dp"
+                android:paddingTop="60dp"
+                android:text="Dividend"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="260dp"
+                android:paddingTop="75dp"
+                android:text="Ex-Div"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/exDivDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="315dp"
+                android:paddingTop="75dp"
+                android:text="date"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="260dp"
+                android:paddingTop="95dp"
+                android:text="Amount"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/divAmountView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="335dp"
+                android:paddingTop="95dp"
+                android:text="amount"
+                android:textColor="@color/black" />
+
+
+        </soup.neumorphism.NeumorphCardView>
+
+        <soup.neumorphism.NeumorphCardView
+            android:id="@+id/similarStocksCard"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="7dp"
-            android:text="Today"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fiftyCardView">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="7dp"
-            android:paddingTop="15dp"
-            android:text="Open"
-            android:textColor="@color/black" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
 
-        <TextView
-            android:id="@+id/openValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="60dp"
-            android:paddingTop="15dp"
-            android:text="value"
-            android:textColor="@color/black" />
+                <soup.neumorphism.NeumorphTextView
+                    android:id="@+id/Symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="284dp"
+                    android:layout_marginBottom="1dp"
+                    android:text="Similar Stocks"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="2dp"
+                    app:layout_constraintBottom_toTopOf="@+id/similarStocksRecView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="6dp"
-            android:paddingTop="35dp"
-            android:text="Low"
-            android:textColor="@color/black" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/similarStocksRecView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/Symbol" />
 
-        <TextView
-            android:id="@+id/lowValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="60dp"
-            android:paddingTop="35dp"
-            android:text="value"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="6dp"
-            android:paddingTop="55dp"
-            android:text="High"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/highValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="60dp"
-            android:paddingTop="55dp"
-            android:text="value"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="6dp"
-            android:paddingTop="75dp"
-            android:text="Close"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/closeValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="60dp"
-            android:paddingTop="75dp"
-            android:text="value"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="300dp"
-            android:text="52 Week"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="275dp"
-            android:paddingTop="16dp"
-            android:text="Low"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/fifty_two_week_low_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="325dp"
-            android:paddingTop="16dp"
-            android:text="value"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="275dp"
-            android:paddingTop="35dp"
-            android:text="High"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/fifty_two_week_high_TV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="325dp"
-            android:paddingTop="35dp"
-            android:text="value"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="300dp"
-            android:paddingTop="60dp"
-            android:text="Dividend"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="260dp"
-            android:paddingTop="75dp"
-            android:text="Ex-Div"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/exDivDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="315dp"
-            android:paddingTop="75dp"
-            android:text="date"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="260dp"
-            android:paddingTop="95dp"
-            android:text="Amount"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/divAmountView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="335dp"
-            android:paddingTop="95dp"
-            android:text="amount"
-            android:textColor="@color/black" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </soup.neumorphism.NeumorphCardView>
+</soup.neumorphism.NeumorphCardView>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

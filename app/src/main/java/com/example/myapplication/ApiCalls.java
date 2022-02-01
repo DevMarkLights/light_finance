@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,14 +16,10 @@ import okhttp3.Response;
 public class ApiCalls {
     static String date_of_dividend;
     static double amount_of_dividend,stock_price, annualDividend, Dividend_Yield,profit_loss,
-            percentage_profit_loss;
+            percentage_profit_loss, percent_Change,ytdReturn;
     String todayy,today30,today90,todayYear,today7;
     String fifty_two_week_high, fifty_two_week_low,open,close,high,low;
-    ArrayList<String> historicalPrice30 = new ArrayList<>();
-    ArrayList<String> historicalDates30 = new ArrayList<>();
-
-
-
+    ArrayList<String> recommendedSymbols = new ArrayList<>();
 
     // api call to get the dividend amount and dividend yield
     public void Dividend(String s) {
@@ -55,7 +48,6 @@ public class ApiCalls {
 
             }
 
-
     public void price(String s) {
 
         OkHttpClient client = new OkHttpClient();
@@ -71,7 +63,6 @@ public class ApiCalls {
         String allres = response.body().string();
         String ab = new JSONObject(allres).getString("quoteResponse");
         String al = new JSONObject(ab).getString("result");
-        //String all = new JSONObject(al).getString("regularMarketPrice");
         JSONArray t = new JSONArray(al);
         JSONObject l = new JSONObject(String.valueOf(t.get(0)));
         String k = String.valueOf(l.get("regularMarketPrice"));
@@ -152,120 +143,6 @@ public class ApiCalls {
 
     }
 
-    public void historicalPrices(String s, int days) throws IOException, JSONException {
-        if (historicalPrice30 != null){
-            historicalPrice30.clear();
-        }
-        getDates();
-        String date1 = "";
-
-        if(days== 7) {
-            date1 = today7;
-        }
-        else if(days == 30){
-            date1 = today30;
-        } else if (days == 90){
-            date1 = today90;
-        } else{
-            date1 = todayYear;
-        }
-
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-prices?EndDateInclusive="+todayy+"&StartDateInclusive="+date1+"&Symbol="+s+"&OrderBy=Ascending")
-                .get()
-                .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
-                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
-                .build();
-
-        Response response = client.newCall(request).execute();
-        String all = response.body().string();
-        String allres = new JSONObject(all).getString("results");
-        JSONArray t = new JSONArray(allres);
-        for(int i = 0; i < t.length();i++){
-            JSONObject T = t.getJSONObject(i);
-            String date = T.getString("date");
-            String adjClose = T.getString("adjClose");
-            historicalPrice30.add(adjClose);
-            historicalDates30.add(date);
-        }
-    }
-
-    public void getDates() {
-        if (historicalDates30 != null){
-            historicalDates30.clear();
-        }
-        Date today = new Date();
-        Calendar cal = new GregorianCalendar();
-
-        cal.setTime(today);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String mont = "";
-        if (month <10){
-            mont = "0"+month;
-            todayy = year+"-"+mont+"-"+day;
-        }else {
-            todayy = year + "-" + month + "-" + day;
-        }
-        //
-        cal.add(Calendar.DAY_OF_MONTH, -7);
-        int month7 = cal.get(Calendar.MONTH);
-        int year7 = cal.get(Calendar.YEAR);
-        int day7 = cal.get(Calendar.DAY_OF_MONTH);
-        String mont7 = "";
-
-        if (month7 <10){
-            mont7 = "0"+month7;
-            today7 = year7 + "-" + mont7 + "-" + day7;
-        }else {
-            today7 = year7 + "-" + month7 + "-" + day7;
-        }
-        //
-        // get the date for precious 30 days
-        cal.add(Calendar.DAY_OF_MONTH, -30);
-        int month30 = cal.get(Calendar.MONTH);
-        int year30 = cal.get(Calendar.YEAR);
-        int day30 = cal.get(Calendar.DAY_OF_MONTH);
-        String mont30 = "";
-
-        if (month30 <10){
-             mont30 = "0"+month30;
-             today30 = year30 + "-" + mont30 + "-" + day30;
-        }else {
-            today30 = year30 + "-" + month30 + "-" + day30;
-        }
-        // get the date for precious 90 days
-        cal.add(Calendar.DAY_OF_MONTH, -90);
-        int month90 = cal.get(Calendar.MONTH);
-        int year90 = cal.get(Calendar.YEAR);
-        int day90 = cal.get(Calendar.DAY_OF_MONTH);
-        String mont90 = "";
-
-        if (month90 <10){
-            mont90 = "0"+month90;
-            today90 = year90 + "-" + mont90 + "-" + day90;
-        }else {
-            today90 = year90 + "-" + month90 + "-" + day90;
-        }
-
-        cal.add(Calendar.DAY_OF_MONTH, -365);
-        int month365 = cal.get(Calendar.MONTH);
-        int year365 = cal.get(Calendar.YEAR);
-        int day365 = cal.get(Calendar.DAY_OF_MONTH);
-        String mont365 = "";
-
-        if (month90 <10){
-            mont365 = "0"+month90;
-            todayYear = year365 + "-" + mont365 + "-" + day365;
-        }else {
-            todayYear = year365 + "-" + month365 + "-" + day365;
-        }
-
-    }
-
     public void stockQuote(String s) {
 
         OkHttpClient client = new OkHttpClient();
@@ -325,8 +202,109 @@ public class ApiCalls {
         }
     }
 
+    public void similarStocks(String s) throws IOException, JSONException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/recommendationsbysymbol/"+s)
+                .get()
+                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String allres = response.body().string();
+        String ab = new JSONObject(allres).getString("finance");
+        String b = new JSONObject(ab).getString("result");
+        JSONArray t = new JSONArray(b);
+        JSONObject l = new JSONObject(String.valueOf(t.get(0)));
+        String k = String.valueOf(l.get("recommendedSymbols"));
+        JSONArray m = new JSONArray(k);
+        for (int i = 0; i<m.length();i++) {
+            JSONObject n = new JSONObject(String.valueOf(m.get(i)));
+            String o = String.valueOf(n.get("symbol"));
+            recommendedSymbols.add(o);
+        }
 
 
+    }
+
+    public void regularMarketPrice(String s) throws IOException, JSONException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols=" + s)
+                .get()
+                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String allres = response.body().string();
+            String ab = new JSONObject(allres).getString("quoteResponse");
+            String al = new JSONObject(ab).getString("result");
+            JSONArray t = new JSONArray(al);
+            JSONObject l = new JSONObject(String.valueOf(t.get(0)));
+            String k = String.valueOf(l.get("regularMarketPrice"));
+            stock_price = Double.parseDouble(k);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getPercentChange(String s) throws IOException, JSONException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-metadata?Symbol="+s)
+                .get()
+                .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String all = response.body().string();
+        String allres = new JSONObject(all).getString("result");
+        String allre = new JSONObject(allres).getString("fiftyDayAverageChangePercent");
+        double t = Float.parseFloat(allre) * 100;
+        BigDecimal a = new BigDecimal(t);
+        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+        percent_Change = Double.parseDouble(String.valueOf(b));
+
+    }
+
+    public void getDivYield(String s) throws IOException, JSONException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-key-data?symbol="+s)
+                .get()
+                .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String all = response.body().string();
+        String allres = new JSONObject(all).getString("data");
+        JSONArray t = new JSONArray(allres);
+        JSONObject l = new JSONObject(String.valueOf(t.get(0)));
+        String k = String.valueOf(l.get("attributes"));
+        String m = new JSONObject(k).getString("divYield");
+        if (m == null) {
+            Dividend_Yield = 0.0;
+        } else {
+            Dividend_Yield = Double.parseDouble(m);
+        }
+
+
+
+    }
 }
 
 
