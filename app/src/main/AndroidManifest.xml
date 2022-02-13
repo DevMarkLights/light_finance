@@ -6,14 +6,18 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@drawable/lights_finance_light_logo"
+        android:label="@string/LightFinance"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".LineChart_V2"
+            android:exported="false"
+            android:parentActivityName=".portfolio_V2"/>
+        <activity
             android:name=".splashScreen"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,8 +40,7 @@
             android:name=".portfolio_V2"
             android:exported="true"
             android:label="Lights Finance"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".nuemorphism_example_2"
             android:exported="false" />
@@ -56,7 +59,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="Lights Finance"></activity>
+            android:label="Lights Finance" />
     </application>
 
 </manifest>

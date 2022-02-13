@@ -53,7 +53,7 @@ public class RecViewAdpSimStocks extends RecyclerView.Adapter<RecViewAdpSimStock
 
     @Override
     public int getItemCount() {
-        return 0;
+        return symbol.size();
     }
 
     public static class MyViewSimHolder extends RecyclerView.ViewHolder {

@@ -13,7 +13,8 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-            <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
+            android:id="@+id/neumorphTextView2"
             style="@style/Widget.Neumorph.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,9 +28,40 @@
             app:layout_constraintHorizontal_bias="0.06"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.538" />
 
-            <soup.neumorphism.NeumorphCardView
+        <soup.neumorphism.NeumorphCardView
+            android:layout_width="211dp"
+            android:layout_height="67dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:neumorph_lightSource="leftTop">
+
+            <EditText
+                android:id="@+id/searchInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="0dp"
+                android:hint="Enter symbol"
+                android:minHeight="48dp"
+                app:layout_constraintStart_toEndOf="@+id/neumorphTextView2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <soup.neumorphism.NeumorphFloatingActionButton
+                android:id="@+id/search_stocks"
+                android:layout_width="58dp"
+                android:layout_height="47dp"
+                android:layout_marginStart="120dp"
+                android:src="@drawable/search_stocks_foreground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </soup.neumorphism.NeumorphCardView>
+
+        <soup.neumorphism.NeumorphCardView
             android:id="@+id/totalMarketValueCard"
             style="@style/Widget.Neumorph.CardView"
             android:layout_width="wrap_content"
@@ -214,7 +246,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/portfolio"
                 android:layout_width="394dp"
-                android:layout_height="500dp" />
+                android:layout_height="wrap_content" />
 
         </soup.neumorphism.NeumorphCardView>
 

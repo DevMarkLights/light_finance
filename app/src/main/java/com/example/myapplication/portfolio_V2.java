@@ -28,6 +28,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     RecyclerView recyclerView;
     ArrayList<String> tmv, Symbol, price, profit_loss, average_cost, Dividend_Yield, marketValue, frequency;
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
+    EditText searchInput;
     DBHelper DB;
     Button test;
     ApiCalls api = new ApiCalls();
@@ -35,7 +36,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     double totalMV, totalProfitLoss, avgDY, annualDividend;
-    NeumorphFloatingActionButton neumorphFloatingActionButton;
+    NeumorphFloatingActionButton neumorphFloatingActionButton,search_stocks;
 
     //for portfolio update
     String symbolU,freqU;
@@ -116,7 +117,6 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         });
 
         neumorphFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 PopupMenu popup = new PopupMenu(portfolio_V2.this, view);
@@ -126,7 +126,36 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             }
         });
 
+        search_stocks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String s = searchInput.getText().toString();
+                if (s.isEmpty()){
+                    return;
+                }else{
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            api.checkSymbol(s);
+                        }
+                    }); thread.start();
+                    try {
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
+                    //if stock doesn't exist then tells the user its doesn't exist and check input
+                    if(!api.stockExists){
+                        Toast.makeText(portfolio_V2.this, "Stock doesnt exist. Check input", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Intent intent = new Intent(portfolio_V2.this,LineChart_V2.class);
+                    intent.putExtra("Symbol",s);
+                    startActivity(intent);
+                }
+            }
+        });
 
     }
 
@@ -142,6 +171,8 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         ProfitValueCard = findViewById(R.id.TPV_Card);
         neumorphFloatingActionButton = findViewById(R.id.neumorphFloatingActionButton);
         test = findViewById(R.id.test);
+        searchInput = findViewById(R.id.searchInput);
+        search_stocks = findViewById(R.id.search_stocks);
     }
 
     public void getAllArrayListForUI() {
@@ -240,7 +271,6 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     }
 
     public void annualDividend() {
-
         Cursor cursor = DB.readAllData();
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
@@ -284,10 +314,8 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 sharesU = Double.parseDouble(cursor.getString(2));
                 costbasisU = Double.parseDouble(cursor.getString(3));
                 freqU = cursor.getString(8);
-                api.price(symbolU);
+                ApiCalls.getOnlyStockPrice(symbolU);
                 api.Dividend(symbolU);
-
-
                 updatePortfolio();
 
             }
@@ -319,10 +347,11 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
 
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(portfolio_V2.this,LineChartView.class);
+        Intent intent = new Intent(portfolio_V2.this,LineChart_V2.class);
         String s = Symbol.get(position);
         intent.putExtra("Symbol",s);
         startActivity(intent);
+
     }
 
     @Override
@@ -397,8 +426,10 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                         EditText share = (EditText) update.findViewById(R.id.Shares_add_stock_popup);
                         EditText Avg = (EditText) update.findViewById(R.id.average_cost_popup);
                         String symbol2 = sym.getText().toString();
-                        double shares = Double.parseDouble(String.valueOf(share));
-                        double aveg = Double.parseDouble(String.valueOf(Avg));
+                        String sha = share.getText().toString();
+                        String avgg = Avg.getText().toString();
+                        double shares = Double.parseDouble(String.valueOf(sha));
+                        double aveg = Double.parseDouble(String.valueOf(avgg));
                         DB3.updateStock(symbol2, shares, aveg);
                         update.dismiss();
                         reloadActivity();

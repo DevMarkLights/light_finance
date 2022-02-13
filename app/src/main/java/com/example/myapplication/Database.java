@@ -110,7 +110,7 @@ public class Database extends AppCompatActivity {
     public void addStock() {
         String symbolTXT = symbol.getText().toString();
         api.Dividend(symbolTXT);
-        api.price(symbolTXT);
+        ApiCalls.getOnlyStockPrice(symbolTXT);
         amount_of_dividend = ApiCalls.amount_of_dividend;
         price = ApiCalls.stock_price;
         date_of_dividend = ApiCalls.date_of_dividend;

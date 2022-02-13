@@ -1,5 +1,5 @@
 <resources>
-    <string name="LightFinance">My Application</string>
+    <string name="LightFinance">Lights Finance</string>
     <string name="Light_Finance" />
     <string name="app_name" />
     <string name="title_activity_fullscreen">FullscreenActivity</string>

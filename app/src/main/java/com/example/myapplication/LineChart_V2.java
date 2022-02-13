@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,7 +34,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,7 +41,7 @@ import okhttp3.Response;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphTextView;
 
-public class LineChartView extends AppCompatActivity implements RecyclerViewInterface {
+public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInterface  {
     RecyclerView recyclerView;
     RecViewAdpSimStocks RecViewAdpSimStocks;
     DBHelper DB;
@@ -62,18 +63,52 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
     List<Entry> lineEntries = new ArrayList<Entry>();
     boolean stockInPortfolio = false;
     ArrayList<String> symbol, price, DivYeild, dividend_amount,percent_Change;
-
+    String sym = "";
+    int linechartcount = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_line_chart);
+        setContentView(R.layout.activity_line_chart_v2);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setTitle("stock price history");
         DB = new DBHelper(this);
-        String sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
+        sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
 
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ApiCalls.getOnlyStockPrice(sym);
+
+                // Create a handler that associated with Looper of the main thread
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+
+// Send a task to the MessageQueue of the main thread
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Code will be executed on the main thread
+                        priceView.setText("$"+String.valueOf(ApiCalls.stock_price));
+                    }
+                });
+            }
+        }); thread1.start();
+
+        getUiElements();
+        // similar stocks thread
+        Thread simStocksThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    api.similarStocks(sym);
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }); simStocksThread.start();
+
+        // historical prices
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -83,60 +118,40 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
                     e.printStackTrace();
                 }
             }
-        });
-        thread.start();
+        });thread.start();
         try {
             thread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        try {
-            api.similarStocks(sym);
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-        //------------------------
-        getArraysForRecView();
-
-        //-------------------------
-        try {
-            store_data_in_arrays();
-        } catch (JSONException | IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //-----------------------
-        Thread thread1 = new Thread(new Runnable() {
+        Thread newCall = new Thread(new Runnable() {
             @Override
             public void run() {
-                ApiCalls.getOnlyStockPrice(sym);
+                inPortfolio(sym);
             }
-        }); thread1.start();
-        try {
-            thread1.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        priceView.setText("$"+String.valueOf(ApiCalls.stock_price));
-        symbolView.setText(sym.toUpperCase(Locale.ROOT));
+        }); newCall.start();
+        //52 week thread
         try {
             fiftyTwoWeek(sym);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        getDivAmount_ExDiv(sym);
+        // store data in arrays
+        try {
+            store_data_in_arrays();
+        } catch (JSONException | IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
-        highestValueForLineChart();
-        lowestValueForLineChart();
-        negOrPos();
-        lineChart();
-
+    private void setOnClickListeners() {
         threeMoTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                linechartcount++;
                 days = 90;
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -174,6 +189,7 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
         sixMoTV.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                linechartcount++;
                 days = 180;
                 Thread t = new Thread(new Runnable() {
                     @Override
@@ -210,6 +226,7 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
         oneYear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                linechartcount++;
                 days = 365;
                 Thread t = new Thread(new Runnable() {
                     @Override
@@ -247,6 +264,7 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
         fiveDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                linechartcount++;
                 days = 5;
                 Thread t = new Thread(new Runnable() {
                     @Override
@@ -281,13 +299,6 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
                 }
             }
         });
-
-        inPortfolio(sym);
-
-        if(!stockInPortfolio) {
-            imp_View_in_Portfolio.setImageResource(R.drawable.red_x);
-        }
-
     }
 
     private void getArraysForRecView() {
@@ -299,25 +310,25 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
     }
 
     public void store_data_in_arrays() throws JSONException, IOException, InterruptedException {
-               Thread t = new Thread(new Runnable() {
-                   @Override
-                   public void run() {
-                        for (int i = 0; i <api.recommendedSymbols.size();i++){
-                            String temp = api.recommendedSymbols.get(i);
-                            symbol.add(temp);
-                            api.stockQuote(temp);
-                            try {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i <api.recommendedSymbols.size();i++){
+                    String temp = api.recommendedSymbols.get(i);
+                    symbol.add(temp);
+                    api.stockQuote(temp);
+                    try {
                         api.regularMarketPrice(temp);
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
-                            price.add(String.valueOf(ApiCalls.stock_price));
-                            try {
+                    price.add(String.valueOf(ApiCalls.stock_price));
+                    try {
                         api.getDivYield(temp);
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
-                            if(ApiCalls.Dividend_Yield == (0.0)) {
+                    if(ApiCalls.Dividend_Yield == (0.0)) {
                         DivYeild.add("no dividend");
                         dividend_amount.add("0.0");
                     } else {
@@ -325,20 +336,23 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
                         DivYeild.add(String.valueOf(ApiCalls.Dividend_Yield));
                     }
 
-                            try {
+                    try {
                         api.getPercentChange(temp);
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
-                            percent_Change.add(String.valueOf(ApiCalls.percent_Change));
-                        }
+                    percent_Change.add(String.valueOf(ApiCalls.percent_Change));
 
-                   }
-               });
-               t.start();
-               t.join();
-               getUiElements();
-        }
+                }
+
+               setRecyclerView();
+
+            }
+        });
+        t.start();
+        getUiElements();
+
+    }
 
     public void getUiElements() {
         highestvalue = findViewById(R.id.highestValue);
@@ -363,10 +377,32 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
         imp_View_in_Portfolio = findViewById(R.id.imp_View_in_Portfolio);
 
         recyclerView = findViewById(R.id.similarStocksRecView);
-        RecViewAdpSimStocks = new RecViewAdpSimStocks(this, symbol, price,
+        /*RecViewAdpSimStocks = new RecViewAdpSimStocks(this, symbol, price,
                 DivYeild, dividend_amount,percent_Change,this);
         recyclerView.setAdapter(RecViewAdpSimStocks);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));*/
+
+        setOnClickListeners();
+        getArraysForRecView();
+        symbolView.setText(sym.toUpperCase());
+
+    }
+
+    public void setRecyclerView() {
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        // Send a task to the MessageQueue of the main thread
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                // Code will be executed on the main thread
+                recyclerView = findViewById(R.id.similarStocksRecView);
+                RecViewAdpSimStocks = new RecViewAdpSimStocks(LineChart_V2.this, symbol, price,
+                        DivYeild, dividend_amount,percent_Change,LineChart_V2.this);
+                recyclerView.setAdapter(RecViewAdpSimStocks);
+                recyclerView.setLayoutManager(new LinearLayoutManager(LineChart_V2.this));
+            }
+        });
+
 
     }
 
@@ -414,14 +450,30 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
             lineEntries.add(new Entry(i, data));
 
         }
+        // Create a handler that associated with Looper of the main thread
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+
+        // Send a task to the MessageQueue of the main thread
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                // Code will be executed on the main thread
+                lineChart();
+                highestValueForLineChart();
+                lowestValueForLineChart();
+                negOrPos();
+            }
+        });
         return lineEntries;
+
     }
 
     public void highestValueForLineChart() {
         highVal = Double.parseDouble(Collections.max(historicalPrice5));
         BigDecimal a = new BigDecimal(highVal);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
-        highestvalue.setText(String.format("$%s", String.valueOf(b)));
+        highVal = Double.parseDouble(String.valueOf(b));
+        highestvalue.setText(String.format("$%s", String.valueOf(highVal)));
 
     }
 
@@ -492,54 +544,74 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
 
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();
-        if(lowest > highest){
-            fiveDay.setBackgroundColor(Color.rgb(255, 0, 0));
-        }else {
-            fiveDay.setBackgroundColor(Color.rgb(0, 150, 255));
+        if (linechartcount == 0){
+            if (lowest > highest) {
+                fiveDay.setBackgroundColor(Color.rgb(255, 0, 0));
+            } else {
+                fiveDay.setBackgroundColor(Color.rgb(0, 150, 255));
+            }
         }
-
     }
 
     public void fiftyTwoWeek(String symb) throws InterruptedException {
-       Thread thread = new Thread(new Runnable() {
-           @Override
-           public void run() {
-               api.stockQuote(symb);
-           }
-       }); thread.start();
-       thread.join();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                api.stockQuote(symb);
+                api.Dividend(sym);
+                // Create a handler that associated with Looper of the main thread
+                Handler mainHandler = new Handler(Looper.getMainLooper());
 
-        high = api.high;
-        low = api.low;
-        open = api.open;
-        close = api.close;
+                // Send a task to the MessageQueue of the main thread
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Code will be executed on the main thread
+                        high = api.high;
+                        low = api.low;
+                        open = api.open;
+                        close = api.close;
 
-        openValue.setText("$"+open);
-        lowValue.setText("$"+low);
-        highValue.setText("$"+high);
-        closeValue.setText("$"+close);
+                        openValue.setText("$"+open);
+                        lowValue.setText("$"+low);
+                        highValue.setText("$"+high);
+                        closeValue.setText("$"+close);
 
-        fifty_two_week_loww = api.fifty_two_week_low;
-        fifty_two_week_highh = api.fifty_two_week_high;
+                        fifty_two_week_loww = api.fifty_two_week_low;
+                        fifty_two_week_highh = api.fifty_two_week_high;
 
-        fifty_two_week_low_TV.setText("$"+fifty_two_week_loww);
-        fifty_two_week_high_TV.setText("$"+fifty_two_week_highh);
+                        fifty_two_week_low_TV.setText("$"+fifty_two_week_loww);
+                        fifty_two_week_high_TV.setText("$"+fifty_two_week_highh);
+
+                        divAmount = ApiCalls.amount_of_dividend;
+                        exDate = ApiCalls.date_of_dividend;
+                        String amount = String.valueOf(divAmount);
+                        divAmountView.setText("$"+amount);
+                        exDivDate.setText(exDate);
+                    }
+                });
+            }
+        }); thread.start();
+
     }
 
-    public void getDivAmount_ExDiv(String sym){
-        api.Dividend(sym);
-        divAmount = ApiCalls.amount_of_dividend;
-        exDate = ApiCalls.date_of_dividend;
-        String amount = String.valueOf(divAmount);
-        divAmountView.setText("$"+amount);
-        exDivDate.setText(exDate);
-    }
 
     public void inPortfolio(String sym) {
         stockInPortfolio = false;
         Cursor cursor = DB.readAllData();
         if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
+            // Create a handler that associated with Looper of the main thread
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+
+            // Send a task to the MessageQueue of the main thread
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    // Code will be executed on the main thread
+                    Toast.makeText(LineChart_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
+                }
+            });
+            //Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
         } else {
             while(cursor.moveToNext()) {
                 String t = cursor.getString(0);
@@ -555,7 +627,7 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
 
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(LineChartView.this,LineChartView.class);
+        Intent intent = new Intent(LineChart_V2.this,LineChart_V2.class);
         String s = symbol.get(position);
         intent.putExtra("Symbol",s);
         startActivity(intent);
