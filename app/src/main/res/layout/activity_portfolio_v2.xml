@@ -12,6 +12,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/futureValue_foreground"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="284dp"
+            android:layout_marginEnd="104dp"
+            android:src="@drawable/future_value_foreground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <soup.neumorphism.NeumorphTextView
             android:id="@+id/neumorphTextView2"
@@ -31,6 +40,7 @@
             app:layout_constraintVertical_bias="0.538" />
 
         <soup.neumorphism.NeumorphCardView
+            android:id="@+id/neumorphCardView6"
             android:layout_width="211dp"
             android:layout_height="67dp"
             android:layout_marginEnd="4dp"
@@ -66,15 +76,13 @@
             style="@style/Widget.Neumorph.CardView"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="76dp"
             android:layout_marginEnd="239dp"
             android:background="@color/background"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.06">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:layout_width="match_parent"
@@ -95,55 +103,19 @@
                 android:textColor="@color/black" />
         </soup.neumorphism.NeumorphCardView>
 
-            <soup.neumorphism.NeumorphCardView
-            android:id="@+id/averageDividendYieldCard"
-            style="@style/Widget.Neumorph.CardView"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/totalMarketValueCard"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.066">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                android:text="Average Dividend Yield"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/AvgDivYieldView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                android:paddingTop="20dp"
-                android:text="tmv value"
-                android:textColor="@color/black" />
-
-        </soup.neumorphism.NeumorphCardView>
-
-            <soup.neumorphism.NeumorphCardView
+        <soup.neumorphism.NeumorphCardView
             android:id="@+id/AnnualDividendCardView"
             style="@style/Widget.Neumorph.CardView"
             android:layout_width="168dp"
             android:layout_height="85dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="184dp"
             android:layout_marginEnd="250dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/neumorphTextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.857"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/totalMarketValueCard"
-            app:layout_constraintVertical_bias="0.012">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.129">
 
             <TextView
                 android:layout_width="match_parent"
@@ -165,19 +137,17 @@
 
         </soup.neumorphism.NeumorphCardView>
 
-            <soup.neumorphism.NeumorphCardView
+        <soup.neumorphism.NeumorphCardView
             android:id="@+id/TPV_Card"
             style="@style/Widget.Neumorph.CardView"
             android:layout_width="188dp"
             android:layout_height="83dp"
             android:layout_marginStart="43dp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintBottom_toTopOf="@+id/neumorphCardView"
+            android:layout_marginTop="188dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.855"
+            app:layout_constraintHorizontal_bias="0.85"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/averageDividendYieldCard"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:layout_width="match_parent"
@@ -199,37 +169,32 @@
 
         </soup.neumorphism.NeumorphCardView>
 
-            <soup.neumorphism.NeumorphTextView
+        <soup.neumorphism.NeumorphTextView
             android:id="@+id/neumorphTextView"
             style="@style/Widget.Neumorph.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="196dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="300dp"
             android:text="Portfolio"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="30sp"
-            app:layout_constraintBottom_toTopOf="@+id/neumorphCardView"
-            app:layout_constraintEnd_toStartOf="@+id/neumorphFloatingActionButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/AnnualDividendCardView" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <soup.neumorphism.NeumorphFloatingActionButton
             android:id="@+id/neumorphFloatingActionButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
             android:layout_gravity="center"
+            android:layout_marginTop="284dp"
             android:scaleType="center"
             android:src="@drawable/ic_baseline_edit_24"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.905"
+            app:layout_constraintHorizontal_bias="0.953"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/TPV_Card"
-            app:layout_constraintVertical_bias="0.013"
+            app:layout_constraintTop_toTopOf="parent"
             app:neumorph_shapeType="flat"
             tools:ignore="SpeakableTextPresentCheck" />
 
@@ -238,10 +203,11 @@
             style="@style/Widget.Neumorph.CardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="352dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/AnnualDividendCardView">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/portfolio"
@@ -250,18 +216,35 @@
 
         </soup.neumorphism.NeumorphCardView>
 
-        <soup.neumorphism.NeumorphButton
-            android:id="@+id/test"
-            style="@style/Widget.Neumorph.Button"
-            android:layout_width="126dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="31dp"
-            android:layout_marginEnd="38dp"
-            android:text="update"
-            app:layout_constraintBottom_toTopOf="@+id/neumorphCardView"
-            app:layout_constraintEnd_toStartOf="@+id/neumorphFloatingActionButton"
-            app:layout_constraintStart_toEndOf="@+id/neumorphTextView"
-            app:layout_constraintTop_toBottomOf="@+id/TPV_Card" />
+        <soup.neumorphism.NeumorphCardView
+            android:id="@+id/averageDividendYieldCard"
+            style="@style/Widget.Neumorph.CardView"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/neumorphCardView6">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                android:text="Average Dividend Yield"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/AvgDivYieldView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                android:paddingTop="20dp"
+                android:text="tmv value"
+                android:textColor="@color/black" />
+
+        </soup.neumorphism.NeumorphCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -234,6 +234,36 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
     }
+
+    public boolean updateDatabaseStocksRegularly(String symbol, double shares) {
+        SQLiteDatabase DB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("shares", shares);
+        contentValues.put("price", ApiCalls.stockPriceU);
+        contentValues.put("annualDividend", ApiCalls.annualDividendUpdate);
+        contentValues.put("Profit_or_Loss",ApiCalls.profitLossU);
+        contentValues.put("dividend", ApiCalls.amountOfDividendU);
+        contentValues.put("Dividend_Yield", ApiCalls.dividendYieldU);
+        contentValues.put("marketValue",ApiCalls.marketValueU);
+        contentValues.put("dateOfDividend", ApiCalls.dateOfDividendU);
+
+        Cursor cursor = DB.rawQuery("select * from Stocks where symbol=?", new String[]{symbol});
+        if (cursor.getCount() > 0) {
+            long results = DB.update("Stocks", contentValues, "symbol =?", new String[]{symbol});
+            // if the update method did not work return false
+            if (results == -1) {
+                cursor.close();
+                return false;
+
+            } else {
+                return true;
+            }
+        } else {
+
+            return false;
+        }
+
+    }
 }
 
 

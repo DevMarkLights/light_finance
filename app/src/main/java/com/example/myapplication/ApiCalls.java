@@ -21,6 +21,11 @@ public class ApiCalls {
     ArrayList<String> recommendedSymbols = new ArrayList<>();
     boolean stockExists = true;
 
+    //------------------------------
+    // values for portfolio update
+    static double amountOfDividendU,stockPriceU,dividendYieldU,profitLossU,annualDividendUpdate,marketValueU;
+    static String dateOfDividendU;
+    //------------------------------
     // api call to get the dividend amount and dividend yield
 
     public void checkSymbol (String s){
@@ -146,6 +151,12 @@ public class ApiCalls {
     }
 
     public void stockQuote(String s) {
+        open = "";
+        close = "";
+        high = "";
+        low = "";
+        fifty_two_week_low = "";
+        fifty_two_week_high = "";
 
         OkHttpClient client = new OkHttpClient();
 
@@ -301,6 +312,125 @@ public class ApiCalls {
         } else {
             Dividend_Yield = Double.parseDouble(m);
             annualDividendSimStockStocks = Double.parseDouble(n);
+        }
+
+
+
+
+    }
+
+    //---------------------------------------
+    /*
+    methods for stock update
+     */
+
+    public static void dividendUpdate(String s) throws IOException, JSONException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-dividend-history?symbol="+s+"&years=1&group_by=month")
+                .get()
+                .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String all = response.body().string();
+        String allres = new JSONObject(all).getString("data");
+        JSONArray t = new JSONArray(allres);
+        JSONObject l = new JSONObject(String.valueOf(t.get(t.length()-1)));
+        String c = new JSONObject(String.valueOf(l)).getString("attributes");
+        String d = new JSONObject(c).getString("amount");
+        amountOfDividendU = Double.parseDouble(d);
+        dateOfDividendU = new JSONObject(c).getString("pay_date");
+
+
+    }
+
+    public static void getOnlyStockPriceUpdadte(String s) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols=" + s)
+                .get()
+                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String allres = response.body().string();
+            String ab = new JSONObject(allres).getString("quoteResponse");
+            String al = new JSONObject(ab).getString("result");
+            JSONArray t = new JSONArray(al);
+            JSONObject l = new JSONObject(String.valueOf(t.get(0)));
+            String k = String.valueOf(l.get("regularMarketPrice"));
+            stockPriceU = Double.parseDouble(k);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void profitLossUpdate(double shares, double costbasis) {
+        marketValueU = stockPriceU * shares;
+        BigDecimal a = new BigDecimal(marketValueU);
+        BigDecimal b = a.setScale(2,RoundingMode.DOWN);
+        marketValueU = Double.parseDouble(String.valueOf(b));
+        double cost_value = shares * costbasis;
+        double pr = marketValueU - cost_value;
+        BigDecimal l = new BigDecimal(pr);
+        BigDecimal m = l.setScale(2,RoundingMode.DOWN);
+        profitLossU = Double.parseDouble(String.valueOf(m));
+    }
+
+    public static void getAnnualDividendUpdate(String freq) {
+        if(freq.startsWith("M")) {
+            annualDividendUpdate = amountOfDividendU * 12;
+            BigDecimal a = new BigDecimal(annualDividendUpdate);
+            BigDecimal b = a.setScale(2,RoundingMode.DOWN);
+            annualDividendUpdate = Double.parseDouble(String.valueOf(b));
+        } else if (freq.startsWith("Q")) {
+            annualDividendUpdate = amountOfDividendU * 4;
+            BigDecimal a = new BigDecimal(annualDividendUpdate);
+            BigDecimal b = a.setScale(2,RoundingMode.DOWN);
+            annualDividendUpdate = Double.parseDouble(String.valueOf(b));
+        }
+        else if (freq.startsWith("S")) {
+            annualDividendUpdate = amountOfDividendU * 2;
+            BigDecimal a = new BigDecimal(annualDividendUpdate);
+            BigDecimal b = a.setScale(2,RoundingMode.DOWN);
+            annualDividendUpdate = Double.parseDouble(String.valueOf(b));
+        }
+        else {
+            annualDividendUpdate = amountOfDividendU;
+        }
+
+    }
+
+    public static void dividendYieldUpdate(String s) throws IOException, JSONException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-key-data?symbol="+s)
+                .get()
+                .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String all = response.body().string();
+        String allres = new JSONObject(all).getString("data");
+        JSONArray t = new JSONArray(allres);
+        JSONObject l = new JSONObject(String.valueOf(t.get(0)));
+        String k = String.valueOf(l.get("attributes"));
+        String m = new JSONObject(k).getString("divYield");
+        if (m.isEmpty() || m.equals("null")) {
+            dividendYieldU = 0.0;
+        } else {
+            dividendYieldU = Double.parseDouble(m);
         }
 
 

@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,9 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import soup.neumorphism.NeumorphCardView;
 import soup.neumorphism.NeumorphFloatingActionButton;
@@ -35,14 +42,15 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     NeumorphCardView annualDividendCardView,divYieldPerStock,marketValueCardView,ProfitValueCard;
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
-    double totalMV, totalProfitLoss, avgDY, annualDividend;
-    NeumorphFloatingActionButton neumorphFloatingActionButton,search_stocks;
+    static double totalMV, totalProfitLoss, avgDY, annualDividend;
+    NeumorphFloatingActionButton neumorphFloatingActionButton,search_stocks,futureValue_foreground;
 
     //for portfolio update
     String symbolU,freqU;
     double sharesU;
     static double mktvalU;
     double costbasisU;
+    static boolean dataUpdated = false;
     //--------------------
 
     @Override
@@ -70,9 +78,26 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         storeDataInArrays();
         //-------------------------
         getAllOnClickListners();
+        // if stocks in database has been updated once then skip step
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String time = sdf.format(Calendar.getInstance().getTime());
 
+        if(!dataUpdated && time.startsWith("09") || time.startsWith("10") || time.startsWith("11") || time.startsWith("12") ||
+                time.startsWith("13") || time.startsWith("14") || time.startsWith("15")|| time.startsWith("16")) {
+            Thread newCall = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getDataForUpdate();
+                    } catch (InterruptedException | JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            newCall.start();
+        }
     }
-
     public void getAllOnClickListners(){
         annualDividendCardView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -101,18 +126,6 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             public void onClick(View view) {
                 Intent intent = new Intent(portfolio_V2.this,TotalProfitValuePerStock.class);
                 startActivity(intent);
-            }
-        });
-
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    getDataForUpdate();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                reloadActivity();
             }
         });
 
@@ -157,6 +170,14 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             }
         });
 
+        futureValue_foreground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(portfolio_V2.this,FutureValue.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public void getUiElements() {
@@ -170,9 +191,9 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         marketValueCardView = findViewById(R.id.totalMarketValueCard);
         ProfitValueCard = findViewById(R.id.TPV_Card);
         neumorphFloatingActionButton = findViewById(R.id.neumorphFloatingActionButton);
-        test = findViewById(R.id.test);
         searchInput = findViewById(R.id.searchInput);
         search_stocks = findViewById(R.id.search_stocks);
+        futureValue_foreground = findViewById(R.id.futureValue_foreground);
     }
 
     public void getAllArrayListForUI() {
@@ -206,95 +227,157 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     }
 
     public void totalMarketValue() {
-        Cursor cursor = DB.readAllData();
-        if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No stocks", Toast.LENGTH_SHORT).show();
-        } else {
-            while (cursor.moveToNext()) {
-                tmv.add(cursor.getString(10));
-            }
-        }
-        double total = 0.0;
-        for (int i = 0; i < tmv.size(); i++) {
-            total = total + Double.parseDouble(tmv.get(i));
-            totalMV = total;
-        }
-        BigDecimal a = new BigDecimal(totalMV);
-        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
-        totalMV = Double.parseDouble(String.valueOf(b));
-        total_market_value.setText("");
-        total_market_value.setText(String.format("$%s", totalMV));
-    }
-
-    public void averageDividendYield() {
-        Cursor cursor = DB.readAllData();
-        if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
-        } else {
-            while (cursor.moveToNext()) {
-                average_Dividend_Yield.add(Double.valueOf(cursor.getString(6)));
-            }
-        }
-        double size = average_Dividend_Yield.size();
-        double total = 0.0;
-        for (int i = 0; i < average_Dividend_Yield.size(); i++) {
-            total = total + Double.parseDouble(String.valueOf(average_Dividend_Yield.get(i)));
-            avgDY = total / size;
-        }
-        BigDecimal a = new BigDecimal(avgDY);
-        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
-        avgDY = Double.parseDouble(String.valueOf(b));
-        avgDyview.setText("");
-        avgDyview.setText(avgDY + "%");
-
-    }
-
-    public void totalProfitLoss() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
                 Cursor cursor = DB.readAllData();
                 if (cursor.getCount() == 0) {
                     Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
                 } else {
                     while (cursor.moveToNext()) {
-                        total_Profit_Loss.add(Double.valueOf(cursor.getString(4).substring(0, 3)));
+                        tmv.add(cursor.getString(10));
                     }
                 }
+                double total = 0.0;
+                for (int i = 0; i < tmv.size(); i++) {
+                    total = total + Double.parseDouble(tmv.get(i));
+                    totalMV = total;
+                }
+                BigDecimal a = new BigDecimal(totalMV);
+                BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+                totalMV = Double.parseDouble(String.valueOf(b));
 
-        double sum = 0;
-        for (int i = 0; i < total_Profit_Loss.size(); i++) {
-            sum = sum + Double.parseDouble(String.valueOf(total_Profit_Loss.get(i)));
-        }
-        totalProfitLoss = sum;
-        BigDecimal a = new BigDecimal(totalProfitLoss);
-        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
-        double tpl = Double.parseDouble(String.valueOf(b));
-        totalProfitLossView.setText(String.format("$%s", tpl));
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                // Send a task to the MessageQueue of the main thread
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Code will be executed on the main thread
+                        total_market_value.setText("");
+                        total_market_value.setText(String.format("$%s", totalMV));
+                    }
+                });
+
+            }
+        }); t.start();
+
+    }
+
+    public void averageDividendYield() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Cursor cursor = DB.readAllData();
+                if (cursor.getCount() == 0) {
+                    Toast.makeText(portfolio_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
+                } else {
+                    while (cursor.moveToNext()) {
+                        average_Dividend_Yield.add(Double.valueOf(cursor.getString(6)));
+                    }
+                }
+                double size = average_Dividend_Yield.size();
+                double total = 0.0;
+                for (int i = 0; i < average_Dividend_Yield.size(); i++) {
+                    total = total + Double.parseDouble(String.valueOf(average_Dividend_Yield.get(i)));
+                    avgDY = total / size;
+                }
+                BigDecimal a = new BigDecimal(avgDY);
+                BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+                avgDY = Double.parseDouble(String.valueOf(b));
+
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                // Send a task to the MessageQueue of the main thread
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Code will be executed on the main thread
+                        avgDyview.setText("");
+                        avgDyview.setText(avgDY + "%");
+                    }
+                });
+
+            }
+        }); t.start();
+
+    }
+
+    public void totalProfitLoss() {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Cursor cursor = DB.readAllData();
+                    if (cursor.getCount() == 0) {
+                        Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                    } else {
+                        while (cursor.moveToNext()) {
+                            total_Profit_Loss.add(Double.valueOf(cursor.getString(4).substring(0, 3)));
+                        }
+                    }
+                    double sum = 0;
+                    for (int i = 0; i < total_Profit_Loss.size(); i++) {
+                        sum = sum + Double.parseDouble(String.valueOf(total_Profit_Loss.get(i)));
+                    }
+                    totalProfitLoss = sum;
+                    BigDecimal a = new BigDecimal(totalProfitLoss);
+                    BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+                    double tpl = Double.parseDouble(String.valueOf(b));
+
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // Send a task to the MessageQueue of the main thread
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Code will be executed on the main thread
+                            totalProfitLossView.setText(String.format("$%s", tpl));
+                        }
+                    });
+                }
+            });
+            t.start();
+
     }
 
     public void annualDividend() {
-        Cursor cursor = DB.readAllData();
-        if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
-        } else {
-            while (cursor.moveToNext()) {
-                float div = Float.parseFloat(cursor.getString(5));
-                float shares = Float.parseFloat(cursor.getString(2));
-                String f = cursor.getString(8);
-                float totaldiv = 0;
-                if (f.startsWith("M")) {
-                    totaldiv = (div * shares) * 12;
-                } else if (f.startsWith("Q")) {
-                    totaldiv = (div * shares) * 4;
-                } else if (f.startsWith("S")) {
-                    totaldiv = (div * shares) * 2;
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Cursor cursor = DB.readAllData();
+                if (cursor.getCount() == 0) {
+                    Toast.makeText(portfolio_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
                 } else {
-                    totaldiv = div * shares;
+                    while (cursor.moveToNext()) {
+                        float div = Float.parseFloat(cursor.getString(5));
+                        float shares = Float.parseFloat(cursor.getString(2));
+                        String f = cursor.getString(8);
+                        float totaldiv = 0;
+                        if (f.startsWith("M")) {
+                            totaldiv = (div * shares) * 12;
+                        } else if (f.startsWith("Q")) {
+                            totaldiv = (div * shares) * 4;
+                        } else if (f.startsWith("S")) {
+                            totaldiv = (div * shares) * 2;
+                        } else {
+                            totaldiv = div * shares;
+                        }
+                        annualDividend = annualDividend + totaldiv;
+                    }
+
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // Send a task to the MessageQueue of the main thread
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Code will be executed on the main thread
+                            BigDecimal a = new BigDecimal(annualDividend);
+                            BigDecimal b = a.setScale(2, RoundingMode.DOWN);
+                            totalAnnualDiv.setText(String.format("$%s", String.valueOf(b)));
+                        }
+                    });
                 }
-                annualDividend = annualDividend + totaldiv;
+
             }
-            BigDecimal a = new BigDecimal(annualDividend);
-            BigDecimal b = a.setScale(2, RoundingMode.DOWN);
-            totalAnnualDiv.setText(String.format("$%s", String.valueOf(b)));
-        }
+        }); t.start();
+
     }
 
     public void reloadActivity () {
@@ -304,7 +387,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         overridePendingTransition(0, 0);
     }
 
-    public void getDataForUpdate() throws InterruptedException {
+    public void getDataForUpdate() throws InterruptedException, JSONException, IOException {
         Cursor cursor = DB.readAllData();
         if (cursor.getCount() == 0) {
             Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
@@ -314,37 +397,28 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 sharesU = Double.parseDouble(cursor.getString(2));
                 costbasisU = Double.parseDouble(cursor.getString(3));
                 freqU = cursor.getString(8);
-                ApiCalls.getOnlyStockPrice(symbolU);
-                api.Dividend(symbolU);
+                ApiCalls.getOnlyStockPriceUpdadte(symbolU);
+                ApiCalls.dividendUpdate(symbolU);
                 updatePortfolio();
-
             }
-        }
+            dataUpdated = true;
 
+        }
     }
 
-    public void updatePortfolio() throws InterruptedException {
-        mktvalU = ApiCalls.stock_price * sharesU;
+    public void updatePortfolio() throws JSONException, IOException {
+        mktvalU = ApiCalls.stockPriceU * sharesU;
         BigDecimal a = new BigDecimal(mktvalU);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
         mktvalU = Double.parseDouble(String.valueOf(b));
-        ApiCalls.profit_loss(sharesU, costbasisU);
-        ApiCalls.getAnnualDividend(freqU);
-        ApiCalls.getDividendYield();
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DB.updateDatabaseStocks(symbolU,sharesU);
-            }
-        });
-        thread.start();
-        thread.join();
-
-
+        ApiCalls.profitLossUpdate(sharesU, costbasisU);
+        ApiCalls.getAnnualDividendUpdate(freqU);
+        ApiCalls.dividendYieldUpdate(symbolU);
+        DB.updateDatabaseStocksRegularly(symbolU,sharesU);
 
     }
 
+    // for recycler view
     @Override
     public void onItemClick(int position) {
         Intent intent = new Intent(portfolio_V2.this,LineChart_V2.class);

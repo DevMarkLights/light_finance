@@ -336,7 +336,7 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
                    }
                });
                t.start();
-               t.join();
+               //t.join();
                getUiElements();
         }
 

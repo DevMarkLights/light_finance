@@ -146,7 +146,6 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         }
     }
 
-
     private void setOnClickListeners() {
         threeMoTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,7 +315,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 for (int i = 0; i <api.recommendedSymbols.size();i++){
                     String temp = api.recommendedSymbols.get(i);
                     symbol.add(temp);
-                    api.stockQuote(temp);
+                   // api.stockQuote(temp);
                     try {
                         api.regularMarketPrice(temp);
                     } catch (IOException | JSONException e) {
@@ -377,14 +376,12 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         imp_View_in_Portfolio = findViewById(R.id.imp_View_in_Portfolio);
 
         recyclerView = findViewById(R.id.similarStocksRecView);
-        /*RecViewAdpSimStocks = new RecViewAdpSimStocks(this, symbol, price,
-                DivYeild, dividend_amount,percent_Change,this);
-        recyclerView.setAdapter(RecViewAdpSimStocks);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));*/
 
         setOnClickListeners();
         getArraysForRecView();
         symbolView.setText(sym.toUpperCase());
+        imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.blank_square));
+
 
     }
 
@@ -618,10 +615,23 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 String symU = sym.toUpperCase();
                 String tU = t.toUpperCase();
                 if (symU.equals(tU)) {
-                    stockInPortfolio = true;
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+
+                    // Send a task to the MessageQueue of the main thread
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Code will be executed on the main thread
+                            // if stock in portfolio set drawable to green
+                            imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.green_check_mark));
+                        }
+                    });
                     return;
                 }
             }
+            // set the image to red x
+            imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.red_x));
+
         }
     }
 
@@ -631,5 +641,6 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         String s = symbol.get(position);
         intent.putExtra("Symbol",s);
         startActivity(intent);
+        linechartcount++;
     }
 }

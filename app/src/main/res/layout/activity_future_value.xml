@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FutureValue">
+
+
+    <soup.neumorphism.NeumorphCardView
+        android:id="@+id/neumorphCardView7"
+        android:layout_width="465dp"
+        android:layout_height="377dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/futureValueChart"
+            android:layout_width="435dp"
+            android:layout_height="361dp" />
+
+    </soup.neumorphism.NeumorphCardView>
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/oneYearftv"
+        style="@style/Widget.Neumorph.Button"
+        android:layout_width="91dp"
+        android:layout_height="68dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="304dp"
+        android:layout_marginBottom="116dp"
+        android:text="1yr"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/neumorphCardView7"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/fiveYearftv"
+        style="@style/Widget.Neumorph.Button"
+        android:layout_width="93dp"
+        android:layout_height="68dp"
+        android:layout_marginEnd="212dp"
+        android:text="5yr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/neumorphCardView7" />
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/tenYearftv"
+        style="@style/Widget.Neumorph.Button"
+        android:layout_width="103dp"
+        android:layout_height="67dp"
+        android:text="10yr"
+        app:layout_constraintEnd_toStartOf="@+id/twentyFiveYearftv"
+        app:layout_constraintTop_toBottomOf="@+id/neumorphCardView7" />
+
+    <soup.neumorphism.NeumorphButton
+        android:id="@+id/twentyFiveYearftv"
+        style="@style/Widget.Neumorph.Button"
+        android:layout_width="107dp"
+        android:layout_height="68dp"
+        android:layout_marginEnd="2dp"
+        android:text="25yr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/neumorphCardView7" />
+
+    <soup.neumorphism.NeumorphCardView
+        android:layout_width="405dp"
+        android:layout_height="148dp"
+        android:layout_marginTop="574dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Total Dividends Received"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/totalDividendsReceived"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="25dp"
+            android:text="value"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="55dp"
+            android:text="Ending Value"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/endingAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="80dp"
+            android:text="value"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="55dp"
+            android:text="Expected dividends"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/expectedDiv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="80dp"
+            android:text="value"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="250dp"
+            android:text="Present Value"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/presentValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="250dp"
+            android:layout_marginTop="25dp"
+            android:text="value"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+
+    </soup.neumorphism.NeumorphCardView>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/reinvestDivSwitch"
+        android:layout_width="124dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="476dp"
+        android:layout_marginEnd="16dp"
+        android:text="Re-invest dividends"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="244dp"
+        android:text="Annual Contributions"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/annualContributions"
+        android:layout_width="131dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="492dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:text="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="714dp"
+        android:text="*Disclaimer: this is reflective of normal markert conditions*"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
