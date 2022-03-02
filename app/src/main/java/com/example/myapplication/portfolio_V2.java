@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,6 +25,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,6 +54,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     double costbasisU;
     static boolean dataUpdated = false;
     //--------------------
+    DecimalFormat formatter = new DecimalFormat("#,###.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,18 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 public void run() {
                     try {
                         getDataForUpdate();
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+                        // Send a task to the MessageQueue of the main thread
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Code will be executed on the main thread
+                                totalMarketValue();
+                                totalProfitLoss();
+                                averageDividendYield();
+                                annualDividend();
+                            }
+                        });
                     } catch (InterruptedException | JSONException | IOException e) {
                         e.printStackTrace();
                     }
@@ -98,6 +113,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             newCall.start();
         }
     }
+
     public void getAllOnClickListners(){
         annualDividendCardView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -230,6 +246,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                tmv.clear();
                 Cursor cursor = DB.readAllData();
                 if (cursor.getCount() == 0) {
                     Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
@@ -254,7 +271,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                     public void run() {
                         // Code will be executed on the main thread
                         total_market_value.setText("");
-                        total_market_value.setText(String.format("$%s", totalMV));
+                        total_market_value.setText("$"+formatter.format(totalMV));
                     }
                 });
 
@@ -305,6 +322,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    total_Profit_Loss.clear();
                     Cursor cursor = DB.readAllData();
                     if (cursor.getCount() == 0) {
                         Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
@@ -328,7 +346,8 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                         @Override
                         public void run() {
                             // Code will be executed on the main thread
-                            totalProfitLossView.setText(String.format("$%s", tpl));
+                            totalProfitLossView.setText("$"+formatter.format(tpl));
+                            totalProfitLossView.setTextColor(Color.rgb(80, 200, 120));
                         }
                     });
                 }
@@ -341,6 +360,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                annualDividend=0;
                 Cursor cursor = DB.readAllData();
                 if (cursor.getCount() == 0) {
                     Toast.makeText(portfolio_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
@@ -370,7 +390,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                             // Code will be executed on the main thread
                             BigDecimal a = new BigDecimal(annualDividend);
                             BigDecimal b = a.setScale(2, RoundingMode.DOWN);
-                            totalAnnualDiv.setText(String.format("$%s", String.valueOf(b)));
+                            totalAnnualDiv.setText("$"+formatter.format(b));
                         }
                     });
                 }

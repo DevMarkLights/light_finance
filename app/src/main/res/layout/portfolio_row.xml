@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="price "
+                android:text="Price"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:text="averageCost "
+                android:text="Average Cost"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -106,8 +106,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
-                android:layout_marginEnd="112dp"
-                android:text="marketValue"
+                android:layout_marginEnd="116dp"
+                android:text="Market Value"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -117,65 +117,57 @@
                 android:id="@+id/textView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dividend_Yield"
+                android:layout_marginTop="45dp"
+                android:layout_marginEnd="111dp"
+                android:text="Dividend Yield"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.69"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView14" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="frequency"
+                android:layout_marginEnd="131dp"
+                android:text="Frequency"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.64"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView15"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/marketValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
                 android:layout_marginTop="28dp"
+                android:layout_marginEnd="24dp"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.2"
-                app:layout_constraintStart_toEndOf="@+id/textView14"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/dividend_Yield"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginEnd="24dp"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView15"
                 app:layout_constraintTop_toBottomOf="@+id/marketValue" />
 
             <TextView
                 android:id="@+id/frequency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="34dp"
+                android:layout_marginEnd="24dp"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView16"
                 app:layout_constraintTop_toBottomOf="@+id/dividend_Yield" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,13 +3,17 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,6 +75,18 @@ public class LineChartView extends AppCompatActivity implements RecyclerViewInte
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setTitle("stock price history");
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        int color = Color.parseColor("#808080");
+        window.setStatusBarColor(color);
+
+        ActionBar bar;
+        bar = getSupportActionBar();
+        ColorDrawable cd = new ColorDrawable(Color.parseColor("#808080"));
+        bar.setBackgroundDrawable(cd);
+
+
+
         DB = new DBHelper(this);
         String sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
 

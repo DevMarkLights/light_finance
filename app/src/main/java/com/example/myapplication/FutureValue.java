@@ -1,13 +1,17 @@
 package com.example.myapplication;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -24,7 +28,8 @@ import java.util.Calendar;
 
 import soup.neumorphism.NeumorphButton;
 
-public class FutureValue extends AppCompatActivity {
+
+public class FutureValue extends AppCompatActivity  {
     portfolio_V2 pt = new portfolio_V2();
     float totalMarketValue;
     private BarChart chart;
@@ -42,6 +47,16 @@ public class FutureValue extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_future_value);
         setTitle("Future Value");
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        int color = Color.parseColor("#808080");
+        window.setStatusBarColor(color);
+
+        ActionBar bar;
+        bar = getSupportActionBar();
+        ColorDrawable cd = new ColorDrawable(Color.parseColor("#808080"));
+        bar.setBackgroundDrawable(cd);
 
         chart = (BarChart) findViewById(R.id.futureValueChart);
         oneYearftv = findViewById(R.id.oneYearftv);
@@ -130,12 +145,14 @@ public class FutureValue extends AppCompatActivity {
         BarData barData = new BarData(barDataSet);
         chart.setFitBars(true);
         chart.setData(barData);
+        barData.setDrawValues(false);
         chart.setScaleEnabled(true);
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,futureMarketvalue.size());
         chart.animateY(1000);
         chart.setHorizontalScrollBarEnabled(true);
+        chart.setTouchEnabled(true);
         barData.setBarWidth(.7f);
         XAxis xAxis = chart.getXAxis();
         xAxis.setLabelCount(futureMarketvalue.size());
@@ -147,9 +164,10 @@ public class FutureValue extends AppCompatActivity {
         chart.getXAxis().setSpaceMax(1);
         xAxis.setDrawGridLines(false);
         xAxis.setSpaceMin(0);
+        CustomMarkerClass mv = new CustomMarkerClass(this, R.layout.custom_marker_layout);
+        chart.setMarker(mv);
         chart.invalidate();
     }
-
 
     public void calculateTheFutureValue(int length){
         float AC = Float.parseFloat(annualContributions.getText().toString());

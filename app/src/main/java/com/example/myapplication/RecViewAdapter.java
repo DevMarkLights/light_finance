@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHolder>{
@@ -21,6 +23,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
     private final ArrayList dividend_Yield;
     private final ArrayList marketValue;
     private final ArrayList frequency;
+    DecimalFormat formatter = new DecimalFormat("#,###.00");
 
     RecViewAdapter(Context context, ArrayList symbol, ArrayList price, ArrayList profit_loss,
                    ArrayList average_cost, ArrayList dividend_Yield, ArrayList marketValue,
@@ -47,13 +50,18 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RecViewAdapter.MyViewHolder holder, int position) {
-        holder.symbol.setText(String.valueOf(symbol.get(position)));
-        holder.price.setText("$"+ price.get(position));
-        holder.average_cost.setText(String.valueOf(average_cost.get(position)));
-        holder.profit_loss.setText("$"+String.valueOf(profit_loss.get(position)));
-        holder.marketValue.setText("$"+ marketValue.get(position));
+        holder.symbol.setText(String.valueOf(symbol.get(position)).toUpperCase());
+        holder.price.setText("$"+formatter.format(Double.parseDouble(String.valueOf(price.get(position)))));
+        holder.average_cost.setText("$"+formatter.format(Double.parseDouble(String.valueOf(average_cost.get(position)))));
+        holder.profit_loss.setText("$"+formatter.format(Double.parseDouble(String.valueOf(profit_loss.get(position)))));
+        holder.marketValue.setText("$"+ formatter.format(Double.parseDouble(String.valueOf(marketValue.get(position)))));
         holder.dividend_Yield.setText(dividend_Yield.get(position) + "%");
         holder.frequency.setText(String.valueOf(frequency.get(position)));
+        if(Double.parseDouble(String.valueOf(profit_loss.get(position))) < 0){
+            holder.profit_loss.setTextColor(Color.rgb(255, 0, 0));
+        }else {
+            holder.profit_loss.setTextColor(Color.rgb(80, 200, 120));
+        }
     }
 
     @Override
@@ -79,6 +87,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
                 public void onClick(View view) {
                     if (recyclerViewInterface != null){
                         int position = getAdapterPosition();
+
 
                         if (position != RecyclerView.NO_POSITION) {
                             recyclerViewInterface.onItemClick(position);

@@ -2,9 +2,13 @@ package com.example.myapplication;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -28,6 +32,17 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_total_profit_value_per_stock);
         setTitle("Total Profit Value Per Stock");
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        int color = Color.parseColor("#808080");
+        window.setStatusBarColor(color);
+
+        ActionBar bar;
+        bar = getSupportActionBar();
+        ColorDrawable cd = new ColorDrawable(Color.parseColor("#808080"));
+        bar.setBackgroundDrawable(cd);
+
+
         DB = new DBHelper(this);
         profitValue = new ArrayList<>();
         stocks = new ArrayList<>();
@@ -43,12 +58,14 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
         chart.setFitBars(true);
         chart.setData(barData);
         chart.setScaleEnabled(true);
+        chart.setDrawValueAboveBar(true);
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,profitValue.size());
         chart.animateY(1000);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
+        barData.setDrawValues(true);
         XAxis xAxis = chart.getXAxis();
         xAxis.setLabelCount(profitValue.size());
         xAxis.setValueFormatter(new IndexAxisValueFormatter(stocks));

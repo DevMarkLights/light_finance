@@ -2,9 +2,13 @@ package com.example.myapplication;
 
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -29,6 +33,16 @@ public class dividendYieldPerStock extends AppCompatActivity {
         setContentView(R.layout.activity_dividend_yield_per_stock);
         setTitle("Dividend Yield Per Stock");
 
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        int color = Color.parseColor("#808080");
+        window.setStatusBarColor(color);
+
+        ActionBar bar;
+        bar = getSupportActionBar();
+        ColorDrawable cd = new ColorDrawable(Color.parseColor("#808080"));
+        bar.setBackgroundDrawable(cd);
+
         DB = new DBHelper(this);
         chart = (BarChart) findViewById(R.id.fragment_verticalbarchart_chart);
         dividendYield = new ArrayList<>();
@@ -50,6 +64,7 @@ public class dividendYieldPerStock extends AppCompatActivity {
         chart.animateY(1000);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
+        barData.setDrawValues(true);
         XAxis xAxis = chart.getXAxis();
         xAxis.setLabelCount(dividendYield.size());
         xAxis.setValueFormatter(new IndexAxisValueFormatter(stocks));

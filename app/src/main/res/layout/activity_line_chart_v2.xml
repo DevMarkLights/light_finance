@@ -7,16 +7,17 @@
     tools:context=".LineChartView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <soup.neumorphism.NeumorphTextView
             android:id="@+id/symbolView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="symbol"
-            android:textSize="20sp"
+            android:textSize="22sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,28 +26,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="price"
-            android:textSize="20sp"
+            android:textSize="22sp"
             app:layout_constraintStart_toEndOf="@+id/symbolView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <soup.neumorphism.NeumorphTextView
             android:id="@+id/ip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="36dp"
+            android:layout_width="87dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="32dp"
             android:text="In Portfolio"
             android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/imp_View_in_Portfolio"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="26dp"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="12dp"
             app:layout_constraintStart_toEndOf="@+id/ip"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/green_check_mark" />
@@ -61,7 +64,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.053">
+            app:layout_constraintVertical_bias="0.07">
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
@@ -118,61 +121,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lccv" />
 
-        <soup.neumorphism.NeumorphTextView
-            android:id="@+id/highest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="512dp"
-            android:text="5 day highest"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <soup.neumorphism.NeumorphTextView
-            android:id="@+id/highestValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="535dp"
-            android:text="TextView"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <soup.neumorphism.NeumorphTextView
-            android:id="@+id/lowest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="140dp"
-            android:layout_marginTop="510dp"
-            android:text="5 day lowest"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <soup.neumorphism.NeumorphTextView
-            android:id="@+id/lowestValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="140dp"
-            android:layout_marginTop="535dp"
-            android:text="TextView"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <soup.neumorphism.NeumorphCardView
             android:id="@+id/fiftyCardView"
             android:layout_width="411dp"
             android:layout_height="154dp"
-            android:layout_marginTop="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/highestValue"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintTop_toBottomOf="@+id/neumorphCardView8"
+            app:layout_constraintVertical_bias="0.031">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -378,6 +337,63 @@
 
 
         </soup.neumorphism.NeumorphCardView>
+
+        <soup.neumorphism.NeumorphCardView
+            android:id="@+id/neumorphCardView8"
+            android:layout_width="278dp"
+            android:layout_height="70dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/threeMoTV">
+
+            <soup.neumorphism.NeumorphTextView
+                android:id="@+id/highest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="2dp"
+                android:text="5 day highest"
+                android:textColor="@color/black" />
+
+            <soup.neumorphism.NeumorphTextView
+                android:id="@+id/highestValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="20dp"
+                android:text="TextView"
+                android:textColor="@color/black" />
+
+            <soup.neumorphism.NeumorphTextView
+                android:id="@+id/lowest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="120dp"
+                android:layout_marginTop="2dp"
+                android:text="5 day lowest"
+                android:textColor="@color/black" />
+
+            <soup.neumorphism.NeumorphTextView
+                android:id="@+id/lowestValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="120dp"
+                android:layout_marginTop="20dp"
+                android:text="TextView"
+                android:textColor="@color/black" />
+
+        </soup.neumorphism.NeumorphCardView>
+
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/addStock"
+            style="@style/Widget.Neumorph.FloatingActionButton"
+            android:layout_width="63dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="120dp"
+            android:backgroundTint="#FBF9F9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/plus_math_icon_163346" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

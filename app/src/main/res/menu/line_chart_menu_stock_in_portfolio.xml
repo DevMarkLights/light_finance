@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/updateStockLineChart"
+        android:icon="@drawable/ic_update_stock"
+        android:title="Update Stock"/>
+    app:showAsAction="ifRoom" />
+    <item android:id="@+id/delete2"
+        android:icon="@drawable/ic_delete_stock"
+        android:title="delete" />
+</menu>
