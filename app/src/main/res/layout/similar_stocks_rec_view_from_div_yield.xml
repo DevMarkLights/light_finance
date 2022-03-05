@@ -47,12 +47,12 @@
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="84dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginStart="113dp"
+                android:layout_marginTop="44dp"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="11sp"
-                app:layout_constraintStart_toEndOf="@+id/textView8"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -60,33 +60,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginTop="61dp"
-                android:text="1yr Percent change"
+                android:layout_marginTop="4dp"
+                android:text="price change ytd"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
 
             <TextView
-                android:id="@+id/one_yr_percent_change"
+                android:id="@+id/percent_change"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="114dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="4dp"
                 android:text="change"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/price" />
 
             <TextView
                 android:id="@+id/textView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="192dp"
-                android:layout_marginTop="40dp"
-                android:text="Dividend_Yield"
+                android:layout_marginStart="190dp"
+                android:layout_marginTop="44dp"
+                android:text="Dividend Yield"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,8 +96,8 @@
                 android:id="@+id/DivYeild"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="17dp"
+                android:layout_marginTop="44dp"
+                android:layout_marginEnd="44dp"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="11sp"
@@ -108,25 +108,25 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="192dp"
-                android:layout_marginTop="60dp"
-                android:text="Annaual Dividend Amount"
-                android:textColor="@color/black"
-                android:textSize="11sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/dividend_amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="18dp"
-                android:text="text view"
+                android:layout_marginTop="62dp"
+                android:layout_marginEnd="100dp"
+                android:text="Annual Dividend Amount"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/AnnualDividendAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="46dp"
+                android:text="text view"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/DivYeild" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier5"

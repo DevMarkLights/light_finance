@@ -12,9 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".FutureValue"
+            android:name=".SimilarStocks"
             android:exported="false"
             android:parentActivityName=".portfolio_V2"/>
+        <activity
+            android:name=".FutureValue"
+            android:exported="false"
+            android:parentActivityName=".portfolio_V2" />
         <activity
             android:name=".LineChart_V2"
             android:exported="false"

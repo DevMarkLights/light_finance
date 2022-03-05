@@ -21,6 +21,9 @@ public class ApiCalls {
     ArrayList<String> recommendedSymbols = new ArrayList<>();
     boolean stockExists = true;
 
+
+
+
     //------------------------------
     // values for portfolio update
     static double amountOfDividendU,stockPriceU,dividendYieldU,profitLossU,annualDividendUpdate,marketValueU;
@@ -318,9 +321,7 @@ public class ApiCalls {
     }
 
     //---------------------------------------
-    /*
-    methods for stock update
-     */
+    //methods for stock update
 
     public static void dividendUpdate(String s) throws IOException, JSONException {
 
@@ -435,6 +436,10 @@ public class ApiCalls {
 
 
     }
+
+
+
+
 }
 
 

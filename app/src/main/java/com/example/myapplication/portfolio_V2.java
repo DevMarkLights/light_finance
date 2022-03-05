@@ -39,9 +39,9 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
     EditText searchInput;
     DBHelper DB;
-    Button test;
+
     ApiCalls api = new ApiCalls();
-    NeumorphCardView annualDividendCardView,divYieldPerStock,marketValueCardView,ProfitValueCard;
+    NeumorphCardView annualDividendCardView,divYieldPerStock,marketValueCardView,ProfitValueCard,similarStocksCardView;
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     static double totalMV, totalProfitLoss, avgDY, annualDividend;
@@ -56,6 +56,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     //--------------------
     DecimalFormat formatter = new DecimalFormat("#,###.00");
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +64,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setTitle("Portfolio");
+
         DB = new DBHelper(this);
         //-------------------------------
         getAllArrayListForUI();
@@ -194,6 +196,13 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             }
         });
 
+        similarStocksCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(portfolio_V2.this,SimilarStocks.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void getUiElements() {
@@ -210,6 +219,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         searchInput = findViewById(R.id.searchInput);
         search_stocks = findViewById(R.id.search_stocks);
         futureValue_foreground = findViewById(R.id.futureValue_foreground);
+        similarStocksCardView = findViewById(R.id.similarStocksCardView);
     }
 
     public void getAllArrayListForUI() {
