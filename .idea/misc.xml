@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/app_logo.xml" value="0.33541666666666664" />
         <entry key="app/src/main/res/drawable/blank_square.xml" value="0.2165" />
         <entry key="app/src/main/res/drawable/cursor.xml" value="0.2953703703703704" />
+        <entry key="app/src/main/res/drawable/edit.xml" value="0.3" />
         <entry key="app/src/main/res/drawable/futureValue_foreground.xml" value="0.2165" />
         <entry key="app/src/main/res/drawable/future_value_foreground.xml" value="0.2795" />
         <entry key="app/src/main/res/drawable/ic_addstock.xml" value="0.31927083333333334" />
@@ -48,7 +49,7 @@
         <entry key="app/src/main/res/layout/popup_input_dialog_addstock.xml" value="0.35237426757812507" />
         <entry key="app/src/main/res/layout/popup_input_dialog_deletestock.xml" value="0.335" />
         <entry key="app/src/main/res/layout/popup_input_dialog_updatestock.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/portfolio_row.xml" value="0.38130563798219586" />
+        <entry key="app/src/main/res/layout/portfolio_row.xml" value="0.375" />
         <entry key="app/src/main/res/layout/similar_stocks_rec_view.xml" value="0.6265328874024526" />
         <entry key="app/src/main/res/layout/similar_stocks_rec_view_from_div_yield.xml" value="0.6350282485875707" />
         <entry key="app/src/main/res/layout/single_item.xml" value="0.2708333333333333" />
@@ -56,7 +57,9 @@
         <entry key="app/src/main/res/menu/line_chart_menu_stock_in_portfolio.xml" value="0.3307291666666667" />
         <entry key="app/src/main/res/menu/line_chart_menu_stock_not_in_portfolio.xml" value="0.3307291666666667" />
         <entry key="app/src/main/res/menu/menu_drop_down.xml" value="0.31927083333333334" />
+        <entry key="app/src/main/res/menu/portfolio_row_update_delete.xml" value="0.30416666666666664" />
         <entry key="app/src/main/res/menu/search_stock_drop_down.xml" value="0.3307291666666667" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/futureValue.xml" value="0.158" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.187" />
       </map>
     </option>

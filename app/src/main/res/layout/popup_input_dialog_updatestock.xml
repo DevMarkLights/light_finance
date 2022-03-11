@@ -13,19 +13,6 @@
                 android:orientation="horizontal">
                 <TextView
                     android:gravity="end"
-                    android:text="Symbol : " />
-                <EditText
-                    android:id="@+id/symbol"
-                    android:hint="enter symbol"
-                    android:inputType="text" />
-            </TableRow>
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-                <TextView
-                    android:gravity="end"
                     android:text="Shares : " />
                 <EditText
                     android:id="@+id/Shares_add_stock_popup"

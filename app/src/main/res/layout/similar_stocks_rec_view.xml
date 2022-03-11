@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="61dp"
-                android:text="1yr Percent change"
+                android:text="Today % Change"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"

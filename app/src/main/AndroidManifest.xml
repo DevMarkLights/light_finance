@@ -8,7 +8,7 @@
         android:allowBackup="true"
         android:icon="@drawable/lights_finance_light_logo"
         android:label="@string/LightFinance"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/lights_finance_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity

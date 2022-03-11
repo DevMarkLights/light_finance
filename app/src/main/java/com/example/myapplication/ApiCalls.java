@@ -1,5 +1,9 @@
 package com.example.myapplication;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,29 +11,49 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/*
+if the api call does not have a response check and see how many request are being made per second
+ */
 public class ApiCalls {
-    static String date_of_dividend;
-    static double amount_of_dividend,stock_price, annualDividend, Dividend_Yield,profit_loss,
-            percentage_profit_loss, percent_Change,annualDividendSimStockStocks;
+    //----------------------=
+    // variables for adding stock to database
+    static String date_of_dividend,frequency;
+    static double amount_of_dividend, stock_price, annualDividend, Dividend_Yield, profit_loss;
+    //-----------------------
+
+    static double percentage_profit_loss;
+    static double stock_price_for_updating_single_stock;
     String fifty_two_week_high, fifty_two_week_low,open,close,high,low;
-    ArrayList<String> recommendedSymbols = new ArrayList<>();
+    //-----------------
+    // variables for recommended symbols
+    static ArrayList<String> recommendedSymbols = new ArrayList<>();
+    static ArrayList<Float> priceSim = new ArrayList<>();
+    static ArrayList<Float> percentChange = new ArrayList<>();
+    static double DivYieldSim,DivAmountSim,annualDividendSimStockStocks,percent_Change;
+    static String FreqSim;
+    //------------------
+
+    // for checking if the stock exist in the stock market
     boolean stockExists = true;
-
-
-
+    //----------------------
 
     //------------------------------
     // values for portfolio update
     static double amountOfDividendU,stockPriceU,dividendYieldU,profitLossU,annualDividendUpdate,marketValueU;
-    static String dateOfDividendU;
+    static String dateOfDividendU,frequencyU;
     //------------------------------
-    // api call to get the dividend amount and dividend yield
+    static DecimalFormat formatter = new DecimalFormat("#,###.00");
 
     public void checkSymbol (String s){
         stockExists = true;
@@ -43,13 +67,12 @@ public class ApiCalls {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            String allres = response.body().string();
+            String allres = Objects.requireNonNull(response.body()).string();
             String ab = new JSONObject(allres).getString("quoteResponse");
             String al = new JSONObject(ab).getString("result");
             int T = al.length();
             if(T < 3){
                 stockExists = false;
-                return;
             }
         } catch (JSONException | IOException e) {
             e.printStackTrace();
@@ -67,7 +90,7 @@ public class ApiCalls {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            String all = response.body().string();
+            String all = Objects.requireNonNull(response.body()).string();
             String allres = new JSONObject(all).getString("results");
             String check = new JSONObject(all).getString("total");
             if(check.equals("0")) {
@@ -92,6 +115,27 @@ public class ApiCalls {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
+                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-metadata?Symbol=am")
+                .get()
+                .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+        try{
+            Response response = client.newCall(request).execute();
+            String allres = Objects.requireNonNull(response.body()).string();
+            String ab = new JSONObject(allres).getString("result");
+            String k = new JSONObject(ab).getString("regularMarketPrice");
+            stock_price = Double.parseDouble(k);
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void getOnlyStockPriceForSingleStockUpdating(String s) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
                 .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols=" + s)
                 .get()
                 .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
@@ -99,16 +143,14 @@ public class ApiCalls {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            String allres = response.body().string();
+            String allres = Objects.requireNonNull(response.body()).string();
             String ab = new JSONObject(allres).getString("quoteResponse");
             String al = new JSONObject(ab).getString("result");
             JSONArray t = new JSONArray(al);
             JSONObject l = new JSONObject(String.valueOf(t.get(0)));
             String k = String.valueOf(l.get("regularMarketPrice"));
             stock_price = Double.parseDouble(k);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
 
@@ -171,7 +213,7 @@ public class ApiCalls {
                 .build();
         try{
             Response response = client.newCall(request).execute();
-            String allres = response.body().string();
+            String allres = Objects.requireNonNull(response.body()).string();
             String ab = new JSONObject(allres).getString("quoteResponse");
             String al = new JSONObject(ab).getString("result");
             //String all = new JSONObject(al).getString("regularMarketPrice");
@@ -216,6 +258,7 @@ public class ApiCalls {
     }
 
     public void similarStocks(String s) throws IOException, JSONException {
+        recommendedSymbols.clear();
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -226,7 +269,7 @@ public class ApiCalls {
                 .build();
 
         Response response = client.newCall(request).execute();
-        String allres = response.body().string();
+        String allres = Objects.requireNonNull(response.body()).string();
         String ab = new JSONObject(allres).getString("finance");
         String b = new JSONObject(ab).getString("result");
         JSONArray t = new JSONArray(b);
@@ -242,31 +285,27 @@ public class ApiCalls {
 
     }
 
-    public void regularMarketPrice(String s) throws IOException, JSONException {
+    public static void regularMarketPrice(String s) throws IOException, JSONException {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols=" + s)
+                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-key-data?symbol="+s)
                 .get()
-                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                 .build();
-        try {
+        try{
             Response response = client.newCall(request).execute();
-            String allres = response.body().string();
-            String ab = new JSONObject(allres).getString("quoteResponse");
-            String al = new JSONObject(ab).getString("result");
-            JSONArray t = new JSONArray(al);
+            String allres = Objects.requireNonNull(response.body()).string();
+            String ab = new JSONObject(allres).getString("data");
+            JSONArray t = new JSONArray(ab);
             JSONObject l = new JSONObject(String.valueOf(t.get(0)));
-            String k = String.valueOf(l.get("regularMarketPrice"));
+            String n = String.valueOf(l.get("attributes"));
+            String k = new JSONObject(n).getString("last");
             stock_price = Double.parseDouble(k);
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
+        } catch (IOException | JSONException | NumberFormatException e) {
             e.printStackTrace();
         }
     }
@@ -275,18 +314,20 @@ public class ApiCalls {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-metadata?Symbol="+s)
+                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols="+s)
                 .get()
-                .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
+                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                 .build();
 
         Response response = client.newCall(request).execute();
-        String all = response.body().string();
-        String allres = new JSONObject(all).getString("result");
-        String allre = new JSONObject(allres).getString("fiftyDayAverageChangePercent");
-        double t = Float.parseFloat(allre) * 100;
-        BigDecimal a = new BigDecimal(t);
+        String all = Objects.requireNonNull(response.body()).string();
+        String allres = new JSONObject(all).getString("quoteResponse");
+        String al = new JSONObject(allres).getString("result");
+        JSONArray t = new JSONArray(al);
+        JSONObject l = new JSONObject(String.valueOf(t.get(0)));
+        String allre = String.valueOf(l.get("regularMarketChangePercent"));
+        BigDecimal a = new BigDecimal(allre);
         BigDecimal b = a.setScale(3, RoundingMode.DOWN);
         percent_Change = Double.parseDouble(String.valueOf(b));
 
@@ -303,14 +344,14 @@ public class ApiCalls {
                 .build();
 
         Response response = client.newCall(request).execute();
-        String all = response.body().string();
+        String all = Objects.requireNonNull(response.body()).string();
         String allres = new JSONObject(all).getString("data");
         JSONArray t = new JSONArray(allres);
         JSONObject l = new JSONObject(String.valueOf(t.get(0)));
         String k = String.valueOf(l.get("attributes"));
         String m = new JSONObject(k).getString("divYield");
         String n = new JSONObject(k).getString("divRate");
-        if (m.isEmpty() || m=="null") {
+        if (m.isEmpty() || m.equals("null")) {
             Dividend_Yield = 0.0;
         } else {
             Dividend_Yield = Double.parseDouble(m);
@@ -320,10 +361,61 @@ public class ApiCalls {
 
     }
 
-    //---------------------------------------
-    //methods for stock update
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void simplifiedDividendForAddingStocks(String symbol) throws IOException, JSONException {
+        // get the date to check the dividend dates
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        String thisMonth = dtf.format(now);
+        // if the dividend stock is a quarterly stock, I need to get the dates before the current one for
+        // accurate dividend dates
+        LocalDate now2 = LocalDate.now();
+        String oneMonthBefore = String.valueOf(now2.minusMonths(1));
+        String twoMonthBefore = String.valueOf(now2.minusMonths(2));
 
-    public static void dividendUpdate(String s) throws IOException, JSONException {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-dividend-history?symbol="+symbol+"&years=1&group_by=month")
+                .get()
+                .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String all = Objects.requireNonNull(response.body()).string();
+        String allres = new JSONObject(all).getString("data");
+        JSONArray t = new JSONArray(allres);
+        // gets the dividend yeild for this month
+        for (int i = t.length()-1; i >= 0; i--){
+            JSONObject l = new JSONObject(String.valueOf(t.get(i)));
+            String k = String.valueOf(l.get("attributes"));
+            String m = new JSONObject(k).getString("pay_date");
+            String n = m.substring(0, 7);
+            if(thisMonth.startsWith(n) || oneMonthBefore.startsWith(n) || twoMonthBefore.startsWith(n)){
+                amount_of_dividend = Double.parseDouble(new JSONObject(k).getString("amount"));
+                frequencyU = new JSONObject(k).getString("freq");
+                date_of_dividend = new JSONObject(k).getString("pay_date");
+                getAnnualDividend(frequency);
+                getOnlyStockPrice(symbol);
+                getDividendYield();
+                break;
+            }
+        }
+
+    }
+
+    // method for simStockLineChartView
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void getDivYieldSimStocks(String s) throws IOException, JSONException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        String thisMonth = dtf.format(now);
+        // if the dividend stock is a quarterly stock, I need to get the dates before the current one for
+        // accurate dividend dates
+        LocalDate now2 = LocalDate.now();
+        String oneMonthBefore = String.valueOf(now2.minusMonths(1));
+        String twoMonthBefore = String.valueOf(now2.minusMonths(2));
 
         OkHttpClient client = new OkHttpClient();
 
@@ -335,18 +427,84 @@ public class ApiCalls {
                 .build();
 
         Response response = client.newCall(request).execute();
-        String all = response.body().string();
+        String all = Objects.requireNonNull(response.body()).string();
         String allres = new JSONObject(all).getString("data");
+        if(allres.length() < 3){
+            DivYieldSim = 0.0;
+            annualDividendSimStockStocks = 0.0;
+            return;
+        }
         JSONArray t = new JSONArray(allres);
-        JSONObject l = new JSONObject(String.valueOf(t.get(t.length()-1)));
-        String c = new JSONObject(String.valueOf(l)).getString("attributes");
-        String d = new JSONObject(c).getString("amount");
-        amountOfDividendU = Double.parseDouble(d);
-        dateOfDividendU = new JSONObject(c).getString("pay_date");
+        for (int i = t.length()-1; i >= 0; i--){
+            JSONObject l = new JSONObject(String.valueOf(t.get(i)));
+            String k = String.valueOf(l.get("attributes"));
+            String m = new JSONObject(k).getString("pay_date");
+            String n = m.substring(0, 7);
+            if(thisMonth.startsWith(n) || oneMonthBefore.startsWith(n) || twoMonthBefore.startsWith(n)){
+                DivAmountSim = Double.parseDouble(new JSONObject(k).getString("amount"));
+                FreqSim = new JSONObject(k).getString("freq");
+                getAnnualDividendSim(FreqSim);
+                getDividendYieldSim();
+                break;
+            }
+        }
+
+    }
+    public static void getDividendYieldSim() {
+        double DY = annualDividendUpdate / stockPriceU;
+        DivYieldSim = DY * 100;
+        // Rounding
+        BigDecimal a = new BigDecimal(DivYieldSim);
+        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+        DivYieldSim = Double.parseDouble(String.valueOf(b));
+    }
+    public static void getOnlyStockPriceSim() throws IOException, JSONException {
+        priceSim.clear();
+        percentChange.clear();
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols="+recommendedSymbols.get(0)+"%2C"+recommendedSymbols.get(1)+"%2C"+
+                        recommendedSymbols.get(2)+"%2C"+recommendedSymbols.get(3)+"%2C"+recommendedSymbols.get(4))
+                .get()
+                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
+                .build();
+
+
+        Response response = client.newCall(request).execute();
+        String allres = Objects.requireNonNull(response.body()).string();
+        String ab = new JSONObject(allres).getString("quoteResponse");
+        String al = new JSONObject(ab).getString("result");
+        JSONArray t = new JSONArray(al);
+        for (int i = 0; i < t.length(); i++){
+            JSONObject l = new JSONObject(String.valueOf(t.get(i)));
+            priceSim.add(Float.parseFloat(String.valueOf(l.get("regularMarketPrice"))));
+            percentChange.add(Float.parseFloat(formatter.format(Double.parseDouble(String.valueOf(l.get("regularMarketChangePercent"))))));
+        }
 
 
     }
+    public static void getAnnualDividendSim(String freq) {
+        if(freq.startsWith("M")) {
+            annualDividendSimStockStocks = DivAmountSim * 12;
+        } else if (freq.startsWith("Q")) {
+            annualDividendSimStockStocks = DivAmountSim * 4;
+        }
+        else if (freq.startsWith("S")) {
+            annualDividendSimStockStocks = DivAmountSim * 2;
+        }
+        else {
+            annualDividendSimStockStocks = DivAmountSim;
+        }
 
+    }
+    //-----------------------
+
+
+
+    //---------------------------------------
+    //methods for stock update
     public static void getOnlyStockPriceUpdadte(String s) {
         OkHttpClient client = new OkHttpClient();
 
@@ -358,16 +516,14 @@ public class ApiCalls {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            String allres = response.body().string();
+            String allres = Objects.requireNonNull(response.body()).string();
             String ab = new JSONObject(allres).getString("quoteResponse");
             String al = new JSONObject(ab).getString("result");
             JSONArray t = new JSONArray(al);
             JSONObject l = new JSONObject(String.valueOf(t.get(0)));
             String k = String.valueOf(l.get("regularMarketPrice"));
             stockPriceU = Double.parseDouble(k);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
 
@@ -385,60 +541,71 @@ public class ApiCalls {
         profitLossU = Double.parseDouble(String.valueOf(m));
     }
 
-    public static void getAnnualDividendUpdate(String freq) {
-        if(freq.startsWith("M")) {
-            annualDividendUpdate = amountOfDividendU * 12;
-            BigDecimal a = new BigDecimal(annualDividendUpdate);
-            BigDecimal b = a.setScale(2,RoundingMode.DOWN);
-            annualDividendUpdate = Double.parseDouble(String.valueOf(b));
-        } else if (freq.startsWith("Q")) {
-            annualDividendUpdate = amountOfDividendU * 4;
-            BigDecimal a = new BigDecimal(annualDividendUpdate);
-            BigDecimal b = a.setScale(2,RoundingMode.DOWN);
-            annualDividendUpdate = Double.parseDouble(String.valueOf(b));
-        }
-        else if (freq.startsWith("S")) {
-            annualDividendUpdate = amountOfDividendU * 2;
-            BigDecimal a = new BigDecimal(annualDividendUpdate);
-            BigDecimal b = a.setScale(2,RoundingMode.DOWN);
-            annualDividendUpdate = Double.parseDouble(String.valueOf(b));
-        }
-        else {
-            annualDividendUpdate = amountOfDividendU;
-        }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void dividendYieldUpdate(String s, double shares) throws IOException, JSONException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        String thisMonth = dtf.format(now);
+        // if the dividend stock is a quarterly stock, I need to get the dates before the current one for
+        // accurate dividend dates
+        LocalDate now2 = LocalDate.now();
+        String oneMonthBefore = String.valueOf(now2.minusMonths(1));
+        String twoMonthBefore = String.valueOf(now2.minusMonths(2));
 
-    }
-
-    public static void dividendYieldUpdate(String s) throws IOException, JSONException {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-key-data?symbol="+s)
+                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-dividend-history?symbol="+s+"&years=1&group_by=month")
                 .get()
                 .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                 .build();
 
         Response response = client.newCall(request).execute();
-        String all = response.body().string();
+        String all = Objects.requireNonNull(response.body()).string();
         String allres = new JSONObject(all).getString("data");
         JSONArray t = new JSONArray(allres);
-        JSONObject l = new JSONObject(String.valueOf(t.get(0)));
-        String k = String.valueOf(l.get("attributes"));
-        String m = new JSONObject(k).getString("divYield");
-        if (m.isEmpty() || m.equals("null")) {
-            dividendYieldU = 0.0;
-        } else {
-            dividendYieldU = Double.parseDouble(m);
+        for (int i = t.length()-1; i >= 0; i--){
+            JSONObject l = new JSONObject(String.valueOf(t.get(i)));
+            String k = String.valueOf(l.get("attributes"));
+            String m = new JSONObject(k).getString("pay_date");
+            String n = m.substring(0, 7);
+            if(thisMonth.startsWith(n) || oneMonthBefore.startsWith(n) || twoMonthBefore.startsWith(n)){
+                amountOfDividendU = Double.parseDouble(new JSONObject(k).getString("amount"));
+                frequencyU = new JSONObject(k).getString("freq");
+                dateOfDividendU = new JSONObject(k).getString("pay_date");
+                getAnnualDividendUpdate(frequencyU);
+                getOnlyStockPriceUpdadte(s);
+                getDividendYieldUpdate();
+                break;
+            }
         }
-
-
-
 
     }
 
+    public static void getDividendYieldUpdate() {
+        double DY = annualDividendUpdate / stockPriceU;
+        dividendYieldU = DY * 100;
+        // Rounding
+        BigDecimal a = new BigDecimal(dividendYieldU);
+        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+        dividendYieldU = Double.parseDouble(String.valueOf(b));
+    }
 
+    public static void getAnnualDividendUpdate(String freq) {
+        if(freq.startsWith("M")) {
+            annualDividendUpdate = amountOfDividendU * 12;
+        } else if (freq.startsWith("Q")) {
+            annualDividendUpdate = amountOfDividendU * 4;
+        }
+        else if (freq.startsWith("S")) {
+            annualDividendUpdate = amountOfDividendU * 2;
+        }
+        else {
+            annualDividendUpdate = amountOfDividendU;
+        }
 
+    }
 
 }
 

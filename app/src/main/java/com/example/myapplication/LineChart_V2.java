@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -20,6 +20,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,6 +45,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -72,13 +74,14 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
     double divAmount;
     ArrayList<String> historicalPrice5 = new ArrayList<>();
 
-    List<Entry> lineEntries = new ArrayList<Entry>();
+    List<Entry> lineEntries = new ArrayList<>();
     boolean stockInPortfolio = false;
     ArrayList<String> symbol, price, DivYeild, dividend_amount,percent_Change;
     String sym = "";
     int linechartcount = 0;
     DecimalFormat formatter = new DecimalFormat("#,###.00");
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,53 +97,56 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         ActionBar bar;
         bar = getSupportActionBar();
         ColorDrawable cd = new ColorDrawable(Color.parseColor("#808080"));
-        bar.setBackgroundDrawable(cd);
-
+        if (bar != null) {
+            bar.setBackgroundDrawable(cd);
+        }
 
         DB = new DBHelper(this);
         sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
 
-        Thread thread1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ApiCalls.getOnlyStockPrice(sym);
+        Thread thread1 = new Thread(() -> {
+            try {
+                ApiCalls.regularMarketPrice(sym);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
 
-                // Create a handler that associated with Looper of the main thread
-                Handler mainHandler = new Handler(Looper.getMainLooper());
+            // Create a handler that associated with Looper of the main thread
+            Handler mainHandler = new Handler(Looper.getMainLooper());
 
 // Send a task to the MessageQueue of the main thread
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Code will be executed on the main thread
-                        priceView.setText("$"+String.valueOf(ApiCalls.stock_price));
-                    }
-                });
-            }
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                priceView.setText(String.format("$%s", ApiCalls.stock_price));
+            });
         }); thread1.start();
 
         getUiElements();
-        // similar stocks thread
-        Thread simStocksThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        // similar stocks thread && store data in arrays
+        Thread simStocksThread = new Thread(() -> {
+            try {
+                api.similarStocks(sym);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            // Send a task to the MessageQueue of the main thread
+            mainHandler.post(() -> {
                 try {
-                    api.similarStocks(sym);
-                } catch (IOException | JSONException e) {
+                    store_data_in_arrays();
+                } catch (JSONException | IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
+            });
         }); simStocksThread.start();
 
         // historical prices
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    historicalPrices(sym,days);
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
+        Thread thread = new Thread(() -> {
+            try {
+                historicalPrices(sym,days);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
         });thread.start();
         try {
@@ -149,177 +155,145 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
             e.printStackTrace();
         }
 
-        Thread newCall = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                inPortfolio(sym);
-            }
-        }); newCall.start();
+        Thread newCall = new Thread(() ->
+                inPortfolio(sym));
+        newCall.start();
         //52 week thread
         try {
             fiftyTwoWeek(sym);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         // store data in arrays
-        try {
-            store_data_in_arrays();
-        } catch (JSONException | IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private void setOnClickListeners() {
-        threeMoTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                linechartcount++;
-                days = 90;
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            historicalPrices(sym,days);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });thread.start();
+        threeMoTV.setOnClickListener(view -> {
+            linechartcount++;
+            days = 90;
+            Thread thread = new Thread(() -> {
                 try {
-                    thread.join();
-                } catch (InterruptedException e) {
+                    historicalPrices(sym,days);
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
-                negOrPos();
-                lineChart();
-                lineChart.getDescription().setText("Past 3 months day stock price");
-                highestValueForLineChart();
-                lowestValueForLineChart();
-                highestView.setText("3 month highest");
-                lowestView.setText("3 month lowest");
-                if(lowest > highest){
-                    threeMoTV.setBackgroundColor(Color.rgb(255, 0, 0));
-                }else {
-                    threeMoTV.setBackgroundColor(Color.rgb(0, 150, 255));
-                }
-                sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
-                oneYear.setBackgroundColor(Color.rgb(255,255,255));
-                fiveDay.setBackgroundColor(Color.rgb(255,255,255));
+            });thread.start();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            negOrPos();
+            lineChart();
+            lineChart.getDescription().setText("Past 3 months day stock price");
+            highestValueForLineChart();
+            lowestValueForLineChart();
+            highestView.setText("3 month highest");
+            lowestView.setText("3 month lowest");
+            if(lowest > highest){
+                threeMoTV.setBackgroundColor(Color.rgb(255, 0, 0));
+            }else {
+                threeMoTV.setBackgroundColor(Color.rgb(0, 150, 255));
+            }
+            sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
+            oneYear.setBackgroundColor(Color.rgb(255,255,255));
+            fiveDay.setBackgroundColor(Color.rgb(255,255,255));
 
-            }
         });
-        sixMoTV.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                linechartcount++;
-                days = 180;
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            historicalPrices(sym,days);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });t.start();
+        sixMoTV.setOnClickListener(view -> {
+            linechartcount++;
+            days = 180;
+            Thread t = new Thread(() -> {
                 try {
-                    t.join();
-                } catch (InterruptedException e) {
+                    historicalPrices(sym,days);
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
-                lineChart.getDescription().setText("Past 6 months day stock price");
-                negOrPos();
-                lineChart();
-                highestValueForLineChart();
-                lowestValueForLineChart();
-                highestView.setText("6 month highest");
-                lowestView.setText("6 month lowest");
-                threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
-                if(lowest > highest){
-                    sixMoTV.setBackgroundColor(Color.rgb(255, 0, 0));
-                }else {
-                    sixMoTV.setBackgroundColor(Color.rgb(0, 150, 255));
-                }
-                oneYear.setBackgroundColor(Color.rgb(255,255,255));
-                fiveDay.setBackgroundColor(Color.rgb(255,255,255));
+            });t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            lineChart.getDescription().setText("Past 6 months day stock price");
+            negOrPos();
+            lineChart();
+            highestValueForLineChart();
+            lowestValueForLineChart();
+            highestView.setText("6 month highest");
+            lowestView.setText("6 month lowest");
+            threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
+            if(lowest > highest){
+                sixMoTV.setBackgroundColor(Color.rgb(255, 0, 0));
+            }else {
+                sixMoTV.setBackgroundColor(Color.rgb(0, 150, 255));
+            }
+            oneYear.setBackgroundColor(Color.rgb(255,255,255));
+            fiveDay.setBackgroundColor(Color.rgb(255,255,255));
         });
-        oneYear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                linechartcount++;
-                days = 365;
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            historicalPrices(sym,days);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });t.start();
+        oneYear.setOnClickListener(view -> {
+            linechartcount++;
+            days = 365;
+            Thread t = new Thread(() -> {
                 try {
-                    t.join();
-                } catch (InterruptedException e) {
+                    historicalPrices(sym,days);
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
-                lineChart.getDescription().setText("Past year day stock price");
-                negOrPos();
-                lineChart();
-                highestValueForLineChart();
-                lowestValueForLineChart();
-                negOrPos();
-                highestView.setText("Year highest");
-                lowestView.setText("Year lowest");
-                threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
-                sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
-                if(lowest > highest){
-                    oneYear.setBackgroundColor(Color.rgb(255, 0, 0));
-                }else {
-                    oneYear.setBackgroundColor(Color.rgb(0, 150, 255));
-                }
-                fiveDay.setBackgroundColor(Color.rgb(255,255,255));
+            });t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            lineChart.getDescription().setText("Past year day stock price");
+            negOrPos();
+            lineChart();
+            highestValueForLineChart();
+            lowestValueForLineChart();
+            negOrPos();
+            highestView.setText("Year highest");
+            lowestView.setText("Year lowest");
+            threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
+            sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
+            if(lowest > highest){
+                oneYear.setBackgroundColor(Color.rgb(255, 0, 0));
+            }else {
+                oneYear.setBackgroundColor(Color.rgb(0, 150, 255));
+            }
+            fiveDay.setBackgroundColor(Color.rgb(255,255,255));
         });
-        fiveDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                linechartcount++;
-                days = 5;
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            historicalPrices(sym,days);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });t.start();
+        fiveDay.setOnClickListener(view -> {
+            linechartcount++;
+            days = 5;
+            Thread t = new Thread(() -> {
                 try {
-                    t.join();
-                } catch (InterruptedException e) {
+                    historicalPrices(sym,days);
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
-                lineChart.getDescription().setText("Past 5 day stock price");
-                negOrPos();
-                lineChart();
-                highestValueForLineChart();
-                lowestValueForLineChart();
-                negOrPos();
-                highestView.setText("7 day highest");
-                lowestView.setText("7 day lowest");
-                threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
-                sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
-                oneYear.setBackgroundColor(Color.rgb(255,255,255));
-                if(lowest > highest){
-                    fiveDay.setBackgroundColor(Color.rgb(255, 0, 0));
-                }else {
-                    fiveDay.setBackgroundColor(Color.rgb(0, 150, 255));
-                }
+            });t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            lineChart.getDescription().setText("Past 5 day stock price");
+            negOrPos();
+            lineChart();
+            highestValueForLineChart();
+            lowestValueForLineChart();
+            negOrPos();
+            highestView.setText("7 day highest");
+            lowestView.setText("7 day lowest");
+            threeMoTV.setBackgroundColor(Color.rgb(255, 255, 255));
+            sixMoTV.setBackgroundColor(Color.rgb(255,255,255));
+            oneYear.setBackgroundColor(Color.rgb(255,255,255));
+            if(lowest > highest){
+                fiveDay.setBackgroundColor(Color.rgb(255, 0, 0));
+            }else {
+                fiveDay.setBackgroundColor(Color.rgb(0, 150, 255));
             }
         });
 
@@ -333,48 +307,34 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         percent_Change = new ArrayList<>();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void store_data_in_arrays() throws JSONException, IOException, InterruptedException {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i <api.recommendedSymbols.size();i++){
-                    String temp = api.recommendedSymbols.get(i);
+        Thread t = new Thread(() -> {
+            try {
+                ApiCalls.getOnlyStockPriceSim();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            for (int i = 0; i < ApiCalls.recommendedSymbols.size(); i++){
+                    String temp = ApiCalls.recommendedSymbols.get(i);
                     symbol.add(temp);
-                   // api.stockQuote(temp);
+                    price.add(String.valueOf(ApiCalls.priceSim.get(i)));
                     try {
-                        api.regularMarketPrice(temp);
+                        ApiCalls.getDivYieldSimStocks(temp);
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
-                    price.add(String.valueOf(ApiCalls.stock_price));
-                    try {
-                        api.getDivYield(temp);
-                    } catch (IOException | JSONException e) {
-                        e.printStackTrace();
-                    }
-                    if(ApiCalls.Dividend_Yield == (0.0)) {
-                        DivYeild.add("no dividend");
-                        dividend_amount.add("0.0");
-                    } else {
-                        dividend_amount.add(String.valueOf(ApiCalls.annualDividendSimStockStocks));
-                        DivYeild.add(String.valueOf(ApiCalls.Dividend_Yield));
-                    }
-
-                    try {
-                        api.getPercentChange(temp);
-                    } catch (IOException | JSONException e) {
-                        e.printStackTrace();
-                    }
-                    percent_Change.add(String.valueOf(ApiCalls.percent_Change));
-
+                    dividend_amount.add(String.valueOf(ApiCalls.annualDividendSimStockStocks));
+                    DivYeild.add(formatter.format(ApiCalls.DivYieldSim));
+                    percent_Change.add(String.valueOf(ApiCalls.percentChange.get(i)));
                 }
 
-               setRecyclerView();
 
-            }
+           setRecyclerView();
+
         });
         t.start();
-        getUiElements();
+
 
     }
 
@@ -408,21 +368,19 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         symbolView.setText(sym.toUpperCase());
         imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.blank_square));
 
+
     }
 
     public void setRecyclerView() {
         Handler mainHandler = new Handler(Looper.getMainLooper());
         // Send a task to the MessageQueue of the main thread
-        mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                // Code will be executed on the main thread
-                recyclerView = findViewById(R.id.similarStocksRecView);
-                RecViewAdpSimStocks = new RecViewAdpSimStocks(LineChart_V2.this, symbol, price,
-                        DivYeild, dividend_amount,percent_Change,LineChart_V2.this);
-                recyclerView.setAdapter(RecViewAdpSimStocks);
-                recyclerView.setLayoutManager(new LinearLayoutManager(LineChart_V2.this));
-            }
+        mainHandler.post(() -> {
+            // Code will be executed on the main thread
+            recyclerView = findViewById(R.id.similarStocksRecView);
+            RecViewAdpSimStocks = new RecViewAdpSimStocks(LineChart_V2.this, symbol, price,
+                    DivYeild, dividend_amount,percent_Change,LineChart_V2.this);
+            recyclerView.setAdapter(RecViewAdpSimStocks);
+            recyclerView.setLayoutManager(new LinearLayoutManager(LineChart_V2.this));
         });
 
 
@@ -454,7 +412,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 .build();
 
         Response response = client.newCall(request).execute();
-        String all = response.body().string();
+        String all = Objects.requireNonNull(response.body()).string();
         String allres = new JSONObject(all).getString(s);
         String allre = new JSONObject(allres).getString("close");
         JSONArray t = new JSONArray(allre);
@@ -462,10 +420,11 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
             String T = String.valueOf(t.get(i));
             historicalPrice5.add(T);
         }
+        negOrPos();
         getDataSet();
     }
 
-    private List<Entry> getDataSet() {
+    private void getDataSet() {
         lineEntries.clear();
         for(int i = 0; i < historicalPrice5.size(); i++) {
             float data = Float.parseFloat(historicalPrice5.get(i));
@@ -476,17 +435,12 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         Handler mainHandler = new Handler(Looper.getMainLooper());
 
         // Send a task to the MessageQueue of the main thread
-        mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                // Code will be executed on the main thread
-                lineChart();
-                highestValueForLineChart();
-                lowestValueForLineChart();
-                negOrPos();
-            }
+        mainHandler.post(() -> {
+            // Code will be executed on the main thread
+            lineChart();
+            highestValueForLineChart();
+            lowestValueForLineChart();
         });
-        return lineEntries;
 
     }
 
@@ -495,7 +449,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         BigDecimal a = new BigDecimal(highVal);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
         highVal = Double.parseDouble(String.valueOf(b));
-        highestvalue.setText(String.format("$%s", String.valueOf(highVal)));
+        highestvalue.setText(String.format("$%s",(highVal)));
 
     }
 
@@ -511,7 +465,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         }
         BigDecimal a = new BigDecimal(min);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
-        lowestValue.setText(String.format("$%s", String.valueOf(b)));
+        lowestValue.setText(String.format("$%s",(b)));
 
 
     }
@@ -576,43 +530,42 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
     }
 
     public void fiftyTwoWeek(String symb) throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                api.stockQuote(symb);
-                api.Dividend(symb);
-                // Create a handler that associated with Looper of the main thread
-                Handler mainHandler = new Handler(Looper.getMainLooper());
-
-                // Send a task to the MessageQueue of the main thread
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Code will be executed on the main thread
-                        high = api.high;
-                        low = api.low;
-                        open = api.open;
-                        close = api.close;
-
-                        openValue.setText("$"+formatter.format(Double.parseDouble(String.valueOf(open))));
-                        lowValue.setText("$"+formatter.format(Double.parseDouble(String.valueOf(low))));
-                        highValue.setText("$"+formatter.format(Double.parseDouble(String.valueOf(high))));
-                        closeValue.setText("$"+formatter.format(Double.parseDouble(String.valueOf(close))));
-
-                        fifty_two_week_loww = api.fifty_two_week_low;
-                        fifty_two_week_highh = api.fifty_two_week_high;
-
-                        fifty_two_week_low_TV.setText("$"+formatter.format(Double.parseDouble(String.valueOf(fifty_two_week_loww))));
-                        fifty_two_week_high_TV.setText("$"+formatter.format(Double.parseDouble(String.valueOf(fifty_two_week_highh))));
-
-                        divAmount = ApiCalls.amount_of_dividend;
-                        exDate = ApiCalls.date_of_dividend;
-                        String amount = String.valueOf(divAmount);
-                        divAmountView.setText("$"+amount);
-                        exDivDate.setText(exDate);
-                    }
-                });
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            api.stockQuote(symb);
+            api.Dividend(symb);
+            // Create a handler that associated with Looper of the main thread
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+
+            // Send a task to the MessageQueue of the main thread
+
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                high = api.high;
+                low = api.low;
+                open = api.open;
+                close = api.close;
+
+                openValue.setText(String.format("$%s", formatter.format(Double.parseDouble(String.valueOf(open)))));
+                lowValue.setText(String.format("$%s", formatter.format(Double.parseDouble(String.valueOf(low)))));
+                highValue.setText(String.format("$%s", formatter.format(Double.parseDouble(String.valueOf(high)))));
+                closeValue.setText(String.format("$%s", formatter.format(Double.parseDouble(String.valueOf(close)))));
+
+                fifty_two_week_loww = api.fifty_two_week_low;
+                fifty_two_week_highh = api.fifty_two_week_high;
+
+                fifty_two_week_low_TV.setText(String.format("$%s", formatter.format(Double.parseDouble(String.valueOf(fifty_two_week_loww)))));
+                fifty_two_week_high_TV.setText(String.format("$%s", formatter.format(Double.parseDouble(String.valueOf(fifty_two_week_highh)))));
+
+                divAmount = ApiCalls.amount_of_dividend;
+                exDate = ApiCalls.date_of_dividend;
+                divAmountView.setText(String.format("$%s", divAmount));
+                exDivDate.setText(exDate);
+            });
         }); thread.start();
 
     }
@@ -625,12 +578,9 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
             Handler mainHandler = new Handler(Looper.getMainLooper());
 
             // Send a task to the MessageQueue of the main thread
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Code will be executed on the main thread
-                    Toast.makeText(LineChart_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
-                }
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                Toast.makeText(LineChart_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
             });
             //Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
         } else {
@@ -642,22 +592,16 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 if (symU.equals(tU)) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
                     // Send a task to the MessageQueue of the main thread
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Code will be executed on the main thread
-                            // if stock in portfolio set drawable to green
-                            imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.green_check_mark));
-                            addStock.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    PopupMenu popup = new PopupMenu(LineChart_V2.this, view);
-                                    popup.setOnMenuItemClickListener(LineChart_V2.this);
-                                    popup.inflate(R.menu.line_chart_menu_stock_in_portfolio);
-                                    popup.show();
-                                }
-                            });
-                        }
+                    mainHandler.post(() -> {
+                        // Code will be executed on the main thread
+                        // if stock in portfolio set drawable to green
+                        imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.green_check_mark));
+                        addStock.setOnClickListener(view -> {
+                            PopupMenu popup = new PopupMenu(LineChart_V2.this, view);
+                            popup.setOnMenuItemClickListener(LineChart_V2.this);
+                            popup.inflate(R.menu.line_chart_menu_stock_in_portfolio);
+                            popup.show();
+                        });
                     });
                     return;
                 }
@@ -667,22 +611,16 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
             // Send a task to the MessageQueue of the main thread
             // if stock not in portfolio
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Code will be executed on the main thread
-                    // if stock in portfolio set drawable to green
-                    imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.red_x));
-                    addStock.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            PopupMenu popup = new PopupMenu(LineChart_V2.this, view);
-                            popup.setOnMenuItemClickListener(LineChart_V2.this);
-                            popup.inflate(R.menu.line_chart_menu_stock_not_in_portfolio);
-                            popup.show();
-                        }
-                    });
-                }
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                // if stock in portfolio set drawable to green
+                imp_View_in_Portfolio.setImageDrawable(getResources().getDrawable(R.drawable.red_x));
+                addStock.setOnClickListener(view -> {
+                    PopupMenu popup = new PopupMenu(LineChart_V2.this, view);
+                    popup.setOnMenuItemClickListener(LineChart_V2.this);
+                    popup.inflate(R.menu.line_chart_menu_stock_not_in_portfolio);
+                    popup.show();
+                });
             });
 
         }
@@ -698,6 +636,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         linechartcount++;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -708,28 +647,21 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 Button add = (Button) dialog.findViewById(R.id.add_Stock_popup);
                 Button cancel = (Button) dialog.findViewById(R.id.button_cancel_user_data);
                 DBHelper DB = new DBHelper(this);
-                add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        EditText shar = (EditText) dialog.findViewById(R.id.Shares_add_stock_popup);
-                        EditText cps = (EditText) dialog.findViewById(R.id.average_cost_popup);
-                        EditText fr = (EditText) dialog.findViewById(R.id.frequency);
-                        String sha = shar.getText().toString();
-                        double shares = Double.parseDouble(String.valueOf(sha));
-                        String ag = cps.getText().toString();
-                        double avgCost = Double.parseDouble(String.valueOf(ag));
-                        String freqq = fr.getText().toString();
-                        DB.addStocksDialog(sym, shares, avgCost, freqq);
-                        dialog.dismiss();
-                        reloadActivity();
+                add.setOnClickListener(view -> {
+                    EditText shar = (EditText) dialog.findViewById(R.id.Shares_add_stock_popup);
+                    EditText cps = (EditText) dialog.findViewById(R.id.average_cost_popup);
+                    String sha = shar.getText().toString();
+                    double shares = Double.parseDouble(sha);
+                    String ag = cps.getText().toString();
+                    double avgCost = Double.parseDouble(ag);
+                    try {
+                        DB.addStocksDialog(sym, shares, avgCost);
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
                     }
+                    dialog.dismiss();
                 });
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                cancel.setOnClickListener(view -> dialog.dismiss());
                 return true;
             case R.id.updateStockLineChart:
                 Dialog update = new Dialog(this);
@@ -738,24 +670,18 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 Button update2 = (Button) update.findViewById(R.id.update_Stock_popup);
                 Button cancel3 = (Button) update.findViewById(R.id.button_cancel_user_data);
                 DBHelper DB3 = new DBHelper(this);
-                update2.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        EditText share = (EditText) update.findViewById(R.id.Shares_add_stock_popup);
-                        EditText Avg = (EditText) update.findViewById(R.id.average_cost_popup);
-                        String sha = share.getText().toString();
-                        String avgg = Avg.getText().toString();
-                        double shares = Double.parseDouble(String.valueOf(sha));
-                        double aveg = Double.parseDouble(String.valueOf(avgg));
-                        DB3.updateStock(sym, shares, aveg);
-                        update.dismiss();
-                        reloadActivity();
-                    }
+                update2.setOnClickListener(view -> {
+                    EditText share = (EditText) update.findViewById(R.id.Shares_add_stock_popup);
+                    EditText Avg = (EditText) update.findViewById(R.id.average_cost_popup);
+                    String sha = share.getText().toString();
+                    String avgg = Avg.getText().toString();
+                    double shares = Double.parseDouble(sha);
+                    double aveg = Double.parseDouble(avgg);
+                    DB3.updateStock(sym, shares, aveg);
+                    update.dismiss();
                 });
-                cancel3.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        update.dismiss();
-                    }
-                });
+                cancel3.setOnClickListener(view ->
+                        update.dismiss());
                 return true;
             case R.id.delete2:
                 Dialog delete = new Dialog(this);
@@ -764,18 +690,12 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                 Button delete2 = (Button) delete.findViewById(R.id.delete_Stock_popup);
                 Button cancel2 = (Button) delete.findViewById(R.id.button_cancel_user_data);
                 DBHelper DB2 = new DBHelper(this);
-                delete2.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        DB2.deleteStock(sym);
-                        delete.dismiss();
-                        reloadActivity();
-                    }
+                delete2.setOnClickListener(view -> {
+                    DB2.deleteStock(sym);
+                    delete.dismiss();
                 });
-                cancel2.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        delete.dismiss();
-                    }
-                });
+                cancel2.setOnClickListener(view ->
+                        delete.dismiss());
                 return true;
             default:
                 return false;

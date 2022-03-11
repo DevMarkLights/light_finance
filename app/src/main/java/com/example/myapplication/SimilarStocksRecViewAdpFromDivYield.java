@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,11 @@ public class SimilarStocksRecViewAdpFromDivYield extends RecyclerView.Adapter<Si
         holder.DivYeild.setText(String.format("%s%%", dividend_yield_percent.get(position)));
         holder.AnnualDividendAmount.setText(String.format("$%s", dividend_rate_Annual.get(position)));
         holder.percent_change.setText(String.format("%s%%", price_change_percent_ytd.get(position)));
+        if(Double.parseDouble(String.valueOf(price_change_percent_ytd.get(position))) < 0){
+            holder.percent_change.setTextColor(Color.rgb(255, 0, 0));
+        }else {
+            holder.percent_change.setTextColor(Color.rgb(80, 200, 120));
+        }
 
     }
 

@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,8 +19,13 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TotalDividends extends AppCompatActivity {
@@ -29,8 +33,8 @@ public class TotalDividends extends AppCompatActivity {
     ArrayList<String> stocks,totalDividendAmount;
     private BarChart chart;
     DBHelper DB;
-    double total_div_amount;
-    TextView totalDividendView;
+    static DecimalFormat formatter = new DecimalFormat("#,###.00");
+
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -69,9 +73,10 @@ public class TotalDividends extends AppCompatActivity {
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,dividend.size());
-        chart.animateY(1000);
+        chart.animateY(0);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
+        barData.setValueFormatter(new IntValueFormatter());
         XAxis xAxis = chart.getXAxis();
         xAxis.setLabelCount(dividend.size());
         xAxis.setValueFormatter(new IndexAxisValueFormatter(stocks));
@@ -83,7 +88,6 @@ public class TotalDividends extends AppCompatActivity {
         xAxis.setDrawGridLines(false);
         xAxis.setSpaceMin(0);
         chart.invalidate();
-        //getTotalDividend();
     }
 
    
@@ -107,9 +111,19 @@ public class TotalDividends extends AppCompatActivity {
                 } else{
                     totaldiv = div * shares;
                 }
+                formatter.format(totaldiv);
                 dividend.add(new BarEntry(cursor.getPosition(), totaldiv));
                 stocks.add(cursor.getString(0));
             }
+        }
+    }
+
+    public static class IntValueFormatter extends ValueFormatter implements IValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            String t = String.valueOf(value);
+            return formatter.format(t);
         }
     }
 

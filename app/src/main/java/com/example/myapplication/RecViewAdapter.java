@@ -1,13 +1,21 @@
 package com.example.myapplication;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
@@ -15,7 +23,7 @@ import java.util.ArrayList;
 
 public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHolder>{
     private final RecyclerViewInterface recyclerViewInterface;
-   private final Context context;
+    private static Context context = null;
     private final ArrayList symbol;
     private final ArrayList price;
     private final ArrayList profit_loss;
@@ -23,6 +31,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
     private final ArrayList dividend_Yield;
     private final ArrayList marketValue;
     private final ArrayList frequency;
+    static ApiCalls api = new ApiCalls();
     DecimalFormat formatter = new DecimalFormat("#,###.00");
 
     RecViewAdapter(Context context, ArrayList symbol, ArrayList price, ArrayList profit_loss,
@@ -69,10 +78,11 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
         return symbol.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
         TextView symbol,price,average_cost,profit_loss,marketValue,dividend_Yield,frequency;
+        ImageButton editPortfolioRow;
 
-        public MyViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
+        public MyViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface)   {
             super(itemView);
             symbol = itemView.findViewById(R.id.symbol);
             price = itemView.findViewById(R.id.price);
@@ -81,6 +91,9 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
             marketValue = itemView.findViewById(R.id.marketValue);
             dividend_Yield = itemView.findViewById(R.id.dividend_Yield);
             frequency = itemView.findViewById(R.id.frequency);
+            editPortfolioRow = itemView.findViewById(R.id.editPortfolioRow);
+            editPortfolioRow.setOnClickListener(this);
+
 
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -95,6 +108,68 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
                     }
                 }
             });
+
+
+        }
+
+        @Override
+        public void onClick(View view) {
+           showPopUpMenu(view);
+           int position = getAdapterPosition();
+        }
+
+        private void showPopUpMenu(View view) {
+            PopupMenu popup = new PopupMenu(view.getContext(), view);
+            popup.inflate(R.menu.portfolio_row_update_delete);
+            popup.setOnMenuItemClickListener(this);
+            popup.show();
+
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.updateStock2:
+                    String sym2 = String.valueOf(symbol.getText());
+                    Dialog update = new Dialog(context);
+                    update.setContentView(R.layout.popup_input_dialog_updatestock);
+                    update.show();
+                    Button update2 = (Button) update.findViewById(R.id.update_Stock_popup);
+                    Button cancel3 = (Button) update.findViewById(R.id.button_cancel_user_data);
+                    DBHelper DB3 = new DBHelper(context);
+                    update2.setOnClickListener(view -> {
+                        EditText share = (EditText) update.findViewById(R.id.Shares_add_stock_popup);
+                        EditText Avg = (EditText) update.findViewById(R.id.average_cost_popup);
+                        String sha = share.getText().toString();
+                        String avgg = Avg.getText().toString();
+                        double shares = Double.parseDouble(sha);
+                        double aveg = Double.parseDouble(avgg);
+                        DB3.updateStock(sym2, shares, aveg);
+                        update.dismiss();
+                    });
+                    cancel3.setOnClickListener(view -> update.dismiss());
+                    return true;
+
+                case R.id.delete2:
+                    String sym = String.valueOf(symbol.getText());
+                    Dialog delete = new Dialog(context);
+                    delete.setContentView(R.layout.popup_input_dialog_deletestock);
+                    delete.show();
+                    Button delete2 = (Button) delete.findViewById(R.id.delete_Stock_popup);
+                    Button cancel2 = (Button) delete.findViewById(R.id.button_cancel_user_data);
+                    DBHelper DB2 = new DBHelper(context);
+                    delete2.setOnClickListener(view -> {
+                        EditText sy = (EditText) delete.findViewById(R.id.symbol);
+                        DB2.deleteStock(sym);
+                        delete.dismiss();
+                    });
+
+                    cancel2.setOnClickListener(view -> delete.dismiss());
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

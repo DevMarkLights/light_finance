@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +48,15 @@ public class RecViewAdpSimStocks extends RecyclerView.Adapter<RecViewAdpSimStock
         holder.symbol.setText(String.valueOf(symbol.get(position)));
         holder.price.setText("$"+ price.get(position));
         holder.DivYeild.setText(ytd_return.get(position) + "%");
-        holder.dividend_amount.setText((CharSequence) dividend_amount.get(position));
-        holder.percent_Change.setText(percent_Change.get(position)+"%");
+        holder.dividend_amount.setText(String.valueOf(dividend_amount.get(position)));
+        holder.one_yr_percent_change.setText(String.format("%s%%", percent_Change.get(position)));
+        if(Double.parseDouble(String.valueOf(percent_Change.get(position))) < 0){
+            holder.one_yr_percent_change.setTextColor(Color.rgb(255, 0, 0));
+        }else {
+            holder.one_yr_percent_change.setTextColor(Color.rgb(80, 200, 120));
+        }
+
+
     }
 
     @Override
@@ -57,7 +65,7 @@ public class RecViewAdpSimStocks extends RecyclerView.Adapter<RecViewAdpSimStock
     }
 
     public static class MyViewSimHolder extends RecyclerView.ViewHolder {
-        TextView symbol,price,DivYeild,dividend_amount,percent_Change;
+        TextView symbol,price,DivYeild,dividend_amount,one_yr_percent_change;
 
         public MyViewSimHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
@@ -65,7 +73,7 @@ public class RecViewAdpSimStocks extends RecyclerView.Adapter<RecViewAdpSimStock
             price = itemView.findViewById(R.id.price);
             DivYeild = itemView.findViewById(R.id.DivYeild);
             dividend_amount=itemView.findViewById(R.id.dividend_amount);
-            percent_Change=itemView.findViewById(R.id.percent_change);
+            one_yr_percent_change=itemView.findViewById(R.id.one_yr_percent_change);
 
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override

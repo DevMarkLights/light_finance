@@ -29,7 +29,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SimilarStocks extends AppCompatActivity implements RecyclerViewInterface {
-    ApiCalls api = new ApiCalls();
+
     RecyclerView similarStocksRecView;
     ArrayList<String> symbols = new ArrayList<String>();
     ArrayList<String> price = new ArrayList<String>();
@@ -87,7 +87,7 @@ public class SimilarStocks extends AppCompatActivity implements RecyclerViewInte
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create(mediaType, "SELECT * FROM stocks WHERE NOT dividend_date IS NULL AND dividend_yield_percent >= "+low+" AND dividend_yield_percent <= "+high+" ORDER BY dividend_yield_percent  DESC LIMIT 10");
+        RequestBody body = RequestBody.create(mediaType, "SELECT * FROM stocks WHERE NOT price_change_percent_ytd IS NULL AND dividend_yield_percent >= "+low+" AND dividend_yield_percent <= "+high+" ORDER BY dividend_yield_percent  DESC LIMIT 10");
         Request request = new Request.Builder()
                 .url("https://hotstoks-sql-finance.p.rapidapi.com/query")
                 .post(body)

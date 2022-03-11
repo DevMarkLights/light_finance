@@ -1,13 +1,19 @@
 package com.example.myapplication;
 
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 
 public class Database extends AppCompatActivity {
 
@@ -23,6 +29,7 @@ public class Database extends AppCompatActivity {
 
     ApiCalls api = new ApiCalls();
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +51,11 @@ public class Database extends AppCompatActivity {
         // timestamp -> 18:23
 
         addStock.setOnClickListener(view -> {
-            addStock();
+            try {
+                addStock();
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
         });
 
         // to delete a stock out of the database
@@ -107,9 +118,10 @@ public class Database extends AppCompatActivity {
     }
 
 
-    public void addStock() {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void addStock() throws JSONException, IOException {
         String symbolTXT = symbol.getText().toString();
-        api.Dividend(symbolTXT);
+        ApiCalls.simplifiedDividendForAddingStocks(symbolTXT);
         ApiCalls.getOnlyStockPrice(symbolTXT);
         amount_of_dividend = ApiCalls.amount_of_dividend;
         price = ApiCalls.stock_price;

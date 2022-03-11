@@ -46,20 +46,6 @@
             android:hint="enter averageCost"
             android:inputType="numberDecimal" />
     </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-            <TextView
-                android:gravity="end"
-                android:text="frequency : " />
-
-            <EditText
-                android:id="@+id/frequency"
-                android:hint="Quarterly/Monthly/Semi"
-                android:inputType="text|textCapCharacters" />
-        </TableRow>
 
         <TableRow android:gravity="center_horizontal">
             <Button

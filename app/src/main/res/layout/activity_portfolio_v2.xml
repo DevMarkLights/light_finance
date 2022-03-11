@@ -7,6 +7,7 @@
     tools:context=".portfolio_V2">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/firstConstraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,25 +23,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <soup.neumorphism.NeumorphCardView
-            android:id="@+id/similarStocksCardView"
-            android:layout_width="118dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="284dp"
-            android:layout_marginEnd="144dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="2dp"
-                android:text="Similar Stocks"
-                android:textColor="@color/black" />
-
-        </soup.neumorphism.NeumorphCardView>
 
         <soup.neumorphism.NeumorphTextView
             android:id="@+id/neumorphTextView2"
@@ -195,7 +177,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="300dp"
+            android:layout_marginTop="292dp"
             android:text="Portfolio"
             android:textAlignment="center"
             android:textColor="@color/black"
@@ -265,6 +247,48 @@
                 android:textColor="@color/black" />
 
         </soup.neumorphism.NeumorphCardView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/neumorphCardView">
+
+            <soup.neumorphism.NeumorphCardView
+                android:layout_width="407dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Similar Stocks"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="2dp"/>
+
+                <soup.neumorphism.NeumorphFloatingActionButton
+                    android:id="@+id/LinkToSimilarStocksActivity"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/share_icon_png"
+                    android:layout_marginStart="330dp"
+                    android:layout_marginTop="4dp"/>
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/simStocksRecViewCardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="38dp"/>
+
+
+            </soup.neumorphism.NeumorphCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

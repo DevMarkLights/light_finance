@@ -16,7 +16,11 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 
@@ -61,10 +65,11 @@ public class dividendYieldPerStock extends AppCompatActivity {
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
         chart.setVisibleXRange(0,dividendYield.size());
-        chart.animateY(1000);
+        chart.animateY(0);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
         barData.setDrawValues(true);
+        barData.setValueFormatter(new IntValueFormatter());
         XAxis xAxis = chart.getXAxis();
         xAxis.setLabelCount(dividendYield.size());
         xAxis.setValueFormatter(new IndexAxisValueFormatter(stocks));
@@ -89,6 +94,14 @@ public class dividendYieldPerStock extends AppCompatActivity {
                 dividendYield.add(new BarEntry(cursor.getPosition(),divYield));
                 stocks.add(cursor.getString(0));
             }
+        }
+    }
+
+    public static class IntValueFormatter extends ValueFormatter implements IValueFormatter {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return String.valueOf((int) value);
         }
     }
 
