@@ -61,7 +61,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     SimilarStocksRecViewAdpFromDivYield SimilarStocksRecViewAdpFromDivYield;
     ArrayList<String> symbols = new ArrayList<String>();
     ArrayList<String> price2 = new ArrayList<String>();
-    ArrayList<String> price_change_percent_ytd = new ArrayList<String>();
+    ArrayList<String> price_change_percent_5d = new ArrayList<String>();
     ArrayList<String> dividend_yield_percent = new ArrayList<String>();
     ArrayList<String> dividend_rate_Annual = new ArrayList<String>();
 
@@ -115,19 +115,25 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                     // Send a task to the MessageQueue of the main thread
                     mainHandler.post(() -> {
                         // Code will be executed on the main thread
-                        totalMarketValue();
-                        totalProfitLoss();
-                        averageDividendYield();
-                        annualDividend();
+                        updateValues();
+                        recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
+                                Dividend_Yield, marketValue, frequency,this);
+                        recyclerView.setAdapter(recViewAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(this));
                     });
+
                 } catch (InterruptedException | JSONException | IOException e) {
                     e.printStackTrace();
                 }
             });
             newCall.start();
         }
-
-
+    }
+    public void updateValues() {
+        totalMarketValue();
+        totalProfitLoss();
+        annualDividend();
+        averageDividendYield();
     }
 
     public void getAllOnClickListners(){
@@ -212,7 +218,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         simStocksRecViewCardView = findViewById(R.id.simStocksRecViewCardView);
         symbols = new ArrayList<String>();
         price = new ArrayList<String>();
-        price_change_percent_ytd = new ArrayList<String>();
+        price_change_percent_5d = new ArrayList<String>();
         dividend_rate_Annual = new ArrayList<String>();
         dividend_yield_percent = new ArrayList<String>();
         LinkToSimilarStocksActivity = findViewById(R.id.LinkToSimilarStocksActivity);
@@ -231,6 +237,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         average_Dividend_Yield = new ArrayList<>();
     }
 
+    // store data in arrays for updating
     @RequiresApi(api = Build.VERSION_CODES.O)
     void storeDataInArrays() {
         Thread t = new Thread(() -> {
@@ -248,21 +255,20 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                     frequency.add(cursor.getString(8));
                 }
             }
-            try {
-                getDataForUpdate();
-            } catch (InterruptedException | JSONException | IOException e) {
-                e.printStackTrace();
-            }
         }); t.start();
 
     }
 
+    // adds up all the market values for each stock
     public void totalMarketValue() {
         Thread t = new Thread(() -> {
             tmv.clear();
             Cursor cursor = DB.readAllData();
             if (cursor.getCount() == 0) {
-                Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(()->{
+                    Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                });
             } else {
                 while (cursor.moveToNext()) {
                     tmv.add(cursor.getString(10));
@@ -290,12 +296,16 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // gets avarage dividend yield of all the stocks in user's portfolio
     public void averageDividendYield() {
         Thread t = new Thread(() -> {
             average_Dividend_Yield.clear();
             Cursor cursor = DB.readAllData();
             if (cursor.getCount() == 0) {
-                Toast.makeText(portfolio_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(()->{
+                    Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                });
             } else {
                 while (cursor.moveToNext()) {
                     average_Dividend_Yield.add(Double.valueOf(cursor.getString(6)));
@@ -329,12 +339,16 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // get the total profit or loss of the portfolio
     public void totalProfitLoss() {
             Thread t = new Thread(() -> {
                 total_Profit_Loss.clear();
                 Cursor cursor = DB.readAllData();
                 if (cursor.getCount() == 0) {
-                    Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    mainHandler.post(()->{
+                        Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                    });
                 } else {
                     while (cursor.moveToNext()) {
                         total_Profit_Loss.add(Double.valueOf(cursor.getString(4).substring(0, 3)));
@@ -362,12 +376,16 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // gets the total dividend annual dividend amount for the portfolio
     public void annualDividend() {
         Thread t = new Thread(() -> {
             annualDividend=0;
             Cursor cursor = DB.readAllData();
             if (cursor.getCount() == 0) {
-                Toast.makeText(portfolio_V2.this, "No Stocks", Toast.LENGTH_SHORT).show();
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(()->{
+                    Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                });
             } else {
                 while (cursor.moveToNext()) {
                     float div = Float.parseFloat(cursor.getString(5));
@@ -408,6 +426,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         overridePendingTransition(0, 0);
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getDataForUpdate() throws InterruptedException, JSONException, IOException {
         Cursor cursor = DB.readAllData();
@@ -418,23 +437,23 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 symbolU = cursor.getString(0);
                 sharesU = Double.parseDouble(cursor.getString(2));
                 costbasisU = Double.parseDouble(cursor.getString(3));
-                ApiCalls.getOnlyStockPriceUpdadte(symbolU);
+                //ApiCalls.getOnlyStockPriceUpdate(symbolU);
                 updatePortfolio();
             }
             cursor.close();
             dataUpdated = true;
-
         }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void updatePortfolio() throws JSONException, IOException {
+        ApiCalls.dividendYieldUpdate(symbolU,sharesU);
+        ApiCalls.profitLossUpdate(sharesU, costbasisU);
         mktvalU = ApiCalls.stockPriceU * sharesU;
         BigDecimal a = new BigDecimal(mktvalU);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
         mktvalU = Double.parseDouble(String.valueOf(b));
-        ApiCalls.profitLossUpdate(sharesU, costbasisU);
-        ApiCalls.dividendYieldUpdate(symbolU,sharesU);
         DB.updateDatabaseStocksRegularly(symbolU,sharesU);
 
     }
@@ -465,16 +484,17 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                     EditText shar = (EditText) dialog.findViewById(R.id.Shares_add_stock_popup);
                     EditText cps = (EditText) dialog.findViewById(R.id.average_cost_popup);
                     String symbol = sy.getText().toString();
+                    String sym = symbol.toUpperCase();
                     String sha = shar.getText().toString();
                     double shares = Double.parseDouble(sha);
                     String ag = cps.getText().toString();
                     double avgCost = Double.parseDouble(ag);
                     // check to see if symbol is valid
-                    api.checkSymbol(symbol);
+                    api.checkSymbol(sym);
                     // if symbol is valid then add the stock
                     if (api.stockExists){
                         try {
-                            DB.addStocksDialog(symbol, shares, avgCost);
+                            DB.addStocksDialog(sym, shares, avgCost);
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -493,7 +513,14 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     }
 
     // for similar stocks recycler view
-    public void similarStocksArrays() throws IOException, JSONException {
+    public void similarStocksArrays() throws IOException, JSONException { // hotstocks sql
+        //clear values so we do not have duplicates
+        symbols.clear();
+        price2.clear();
+        price_change_percent_5d.clear();
+        dividend_yield_percent.clear();
+        dividend_rate_Annual.clear();
+
         float DY = (float) portfolio_V2.avgDY;
         float low = DY - 1;
         float high = DY + 2;
@@ -501,7 +528,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             OkHttpClient client = new OkHttpClient();
 
             MediaType mediaType = MediaType.parse("text/plain");
-            RequestBody body = RequestBody.create(mediaType, "SELECT * FROM stocks WHERE NOT price_change_percent_ytd IS " +
+            RequestBody body = RequestBody.create(mediaType, "SELECT * FROM stocks WHERE NOT price_change_percent_5d IS " +
                     "NULL AND dividend_yield_percent >= "+low+" AND dividend_yield_percent <= "+high+" ORDER BY dividend_yield_percent  DESC LIMIT 5");
             Request request = new Request.Builder()
                     .url("https://hotstoks-sql-finance.p.rapidapi.com/query")
@@ -556,7 +583,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 }
                 String PCPY = null;
                 try {
-                    PCPY = new JSONObject(String.valueOf(l)).getString("price_change_percent_ytd");
+                    PCPY = new JSONObject(String.valueOf(l)).getString("price_change_percent_5d");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -574,8 +601,8 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 }
 
                 symbols.add(symbol);
-                price.add(stockPrice);
-                price_change_percent_ytd.add(PCPY);
+                price2.add(stockPrice);
+                price_change_percent_5d.add(PCPY);
                 dividend_yield_percent.add(DivYieldPercent);
                 dividend_rate_Annual.add(DivRateAnnual);
             }
@@ -586,7 +613,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 @Override
                 public void run() {
                     // Code will be executed on the main thread
-                    SimilarStocksRecViewAdpFromDivYield = new SimilarStocksRecViewAdpFromDivYield(portfolio_V2.this, symbols, price, price_change_percent_ytd, dividend_yield_percent,
+                    SimilarStocksRecViewAdpFromDivYield = new SimilarStocksRecViewAdpFromDivYield(portfolio_V2.this, symbols, price, price_change_percent_5d, dividend_yield_percent,
                             dividend_rate_Annual, portfolio_V2.this);
                     simStocksRecViewCardView.setAdapter(SimilarStocksRecViewAdpFromDivYield);
                     simStocksRecViewCardView.setLayoutManager(new LinearLayoutManager(portfolio_V2.this));

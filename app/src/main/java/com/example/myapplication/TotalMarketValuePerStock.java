@@ -22,6 +22,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TotalMarketValuePerStock extends AppCompatActivity {
@@ -29,6 +30,8 @@ public class TotalMarketValuePerStock extends AppCompatActivity {
     ArrayList<String> stocks;
     private BarChart chart;
     DBHelper DB;
+    static DecimalFormat formatter = new DecimalFormat("#,###.00");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class TotalMarketValuePerStock extends AppCompatActivity {
         barDataSet.setValueTextSize(11f);
         BarData barData = new BarData(barDataSet);
         barData.setDrawValues(true);
+        chart.setDrawValueAboveBar(false);
         chart.setFitBars(true);
         chart.setData(barData);
         chart.setScaleEnabled(true);
@@ -67,7 +71,6 @@ public class TotalMarketValuePerStock extends AppCompatActivity {
         chart.animateY(0);
         chart.setHorizontalScrollBarEnabled(true);
         barData.setBarWidth(.7f);
-        barData.setValueFormatter(new IntValueFormatter());
         XAxis xAxis = chart.getXAxis();
         xAxis.setLabelCount(marketValue.size());
         xAxis.setValueFormatter(new IndexAxisValueFormatter(stocks));
@@ -89,7 +92,8 @@ public class TotalMarketValuePerStock extends AppCompatActivity {
         } else {
             while (cursor.moveToNext()) {
                 float mkt = Float.parseFloat(cursor.getString(10));
-                marketValue.add(new BarEntry(cursor.getPosition(), mkt));
+                String k = formatter.format(mkt);
+                marketValue.add(new BarEntry(cursor.getPosition(), Float.parseFloat(k)));
                 stocks.add(cursor.getString(0));
             }
         }

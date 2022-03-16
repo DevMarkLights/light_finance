@@ -17,6 +17,7 @@
 
         <EditText
             android:id="@+id/symbol"
+            android:capitalize="characters"
             android:hint="enter symbol"
             android:inputType="text|textCapCharacters" />
     </TableRow>

@@ -29,7 +29,7 @@ public class ApiCalls {
     //----------------------=
     // variables for adding stock to database
     static String date_of_dividend,frequency;
-    static double amount_of_dividend, stock_price, annualDividend, Dividend_Yield, profit_loss;
+    static double amount_of_dividend, stock_price, annualDividend, Dividend_Yield, profit_loss,oneDayPercentChange;
     //-----------------------
 
     static double percentage_profit_loss;
@@ -55,6 +55,7 @@ public class ApiCalls {
     //------------------------------
     static DecimalFormat formatter = new DecimalFormat("#,###.00");
 
+    // checks to see if the symbol is exist in the stock market / alternative yahoo api call
     public void checkSymbol (String s){
         stockExists = true;
         OkHttpClient client = new OkHttpClient();
@@ -79,6 +80,7 @@ public class ApiCalls {
         }
     }
 
+    // get the dividend and the ex-div date / yahoo finance api
     public void Dividend(String s) {
         OkHttpClient client = new OkHttpClient();
 
@@ -111,11 +113,12 @@ public class ApiCalls {
 
             }
 
+    // gets just the stock price for a stock / yahoo finance api
     public static void getOnlyStockPrice(String s) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-metadata?Symbol=am")
+                .url("https://yahoofinance-stocks1.p.rapidapi.com/stock-metadata?Symbol="+s)
                 .get()
                 .addHeader("x-rapidapi-host", "yahoofinance-stocks1.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
@@ -132,21 +135,20 @@ public class ApiCalls {
 
     }
 
+    // gets the stock price for updating the stocks in the user's database /  mboum finance
     public static void getOnlyStockPriceForSingleStockUpdating(String s) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols=" + s)
+                .url("https://mboum-finance.p.rapidapi.com/qu/quote?symbol="+s)
                 .get()
-                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-host", "mboum-finance.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                 .build();
         try {
             Response response = client.newCall(request).execute();
             String allres = Objects.requireNonNull(response.body()).string();
-            String ab = new JSONObject(allres).getString("quoteResponse");
-            String al = new JSONObject(ab).getString("result");
-            JSONArray t = new JSONArray(al);
+            JSONArray t = new JSONArray(allres);
             JSONObject l = new JSONObject(String.valueOf(t.get(0)));
             String k = String.valueOf(l.get("regularMarketPrice"));
             stock_price = Double.parseDouble(k);
@@ -156,6 +158,7 @@ public class ApiCalls {
 
     }
 
+    // multiplies the dividend amount by the frequency
     public static void getAnnualDividend(String freq) {
         if(freq.startsWith("M")) {
             annualDividend = amount_of_dividend * 12;
@@ -171,6 +174,7 @@ public class ApiCalls {
 
     }
 
+    // divides the annual dividend by the stock price to get the dividend yield
     public static void getDividendYield() {
         double DY = annualDividend / stock_price;
         Dividend_Yield = DY * 100;
@@ -180,6 +184,8 @@ public class ApiCalls {
         Dividend_Yield = Double.parseDouble(String.valueOf(b));
     }
 
+    // gets the market value of the current stock price with user's amount of shares. then compares it
+    // with the cost value. which is shares * the average price paid per stock
     public static void profit_loss(double shares, double costbasis) {
         double market_value = stock_price * shares;
         double cost_value = shares * costbasis;
@@ -195,6 +201,7 @@ public class ApiCalls {
 
     }
 
+    // gets the open, close, high,low, 52 week high, and 52 week low prices of a stock for the day / yahoo alternative
     public void stockQuote(String s) {
         open = "";
         close = "";
@@ -257,6 +264,7 @@ public class ApiCalls {
         }
     }
 
+    // gets recommended stocks based off the stock on the line chart activity / yahoo alternative
     public void similarStocks(String s) throws IOException, JSONException {
         recommendedSymbols.clear();
         OkHttpClient client = new OkHttpClient();
@@ -285,31 +293,32 @@ public class ApiCalls {
 
     }
 
+    // another stock price api call to reduce how many calls are being done on one api a second and also trying to spread
+    // the usage around so it can be less costly / seeking alpha
     public static void regularMarketPrice(String s) throws IOException, JSONException {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://seeking-alpha.p.rapidapi.com/symbols/get-key-data?symbol="+s)
+                .url("https://twelve-data1.p.rapidapi.com/quote?symbol="+s+"&interval=1day&outputsize=30&format=json")
                 .get()
-                .addHeader("x-rapidapi-host", "seeking-alpha.p.rapidapi.com")
+                .addHeader("x-rapidapi-host", "twelve-data1.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                 .build();
         try{
             Response response = client.newCall(request).execute();
             String allres = Objects.requireNonNull(response.body()).string();
-            String ab = new JSONObject(allres).getString("data");
-            JSONArray t = new JSONArray(ab);
-            JSONObject l = new JSONObject(String.valueOf(t.get(0)));
-            String n = String.valueOf(l.get("attributes"));
-            String k = new JSONObject(n).getString("last");
-            stock_price = Double.parseDouble(k);
-
-
+            String ab = new JSONObject(allres).getString("close");
+            String m = formatter.format(Double.parseDouble(ab));
+            stock_price = Double.parseDouble(m);
+            String k = new JSONObject(allres).getString("percent_change");
+            String t = formatter.format(Double.parseDouble(k));
+            oneDayPercentChange = Double.parseDouble(t);
         } catch (IOException | JSONException | NumberFormatException e) {
             e.printStackTrace();
         }
     }
 
+    // gets the percent change of a stock in one day compared to its open amount. yahoo alternative api
     public void getPercentChange(String s) throws IOException, JSONException {
         OkHttpClient client = new OkHttpClient();
 
@@ -333,6 +342,7 @@ public class ApiCalls {
 
     }
 
+    // gets the dividend yield and annual dividend amount for 1 share / seeking alpha
     public void getDivYield(String s) throws IOException, JSONException {
         OkHttpClient client = new OkHttpClient();
 
@@ -361,6 +371,8 @@ public class ApiCalls {
 
     }
 
+    // created this method to simplify adding a stock to the database with less api calls which in tails speeds
+    // the time it takes / seeking alpha
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void simplifiedDividendForAddingStocks(String symbol) throws IOException, JSONException {
         // get the date to check the dividend dates
@@ -394,7 +406,7 @@ public class ApiCalls {
             String n = m.substring(0, 7);
             if(thisMonth.startsWith(n) || oneMonthBefore.startsWith(n) || twoMonthBefore.startsWith(n)){
                 amount_of_dividend = Double.parseDouble(new JSONObject(k).getString("amount"));
-                frequencyU = new JSONObject(k).getString("freq");
+                frequency = new JSONObject(k).getString("freq");
                 date_of_dividend = new JSONObject(k).getString("pay_date");
                 getAnnualDividend(frequency);
                 getOnlyStockPrice(symbol);
@@ -449,7 +461,7 @@ public class ApiCalls {
             }
         }
 
-    }
+    } // seeking alpha
     public static void getDividendYieldSim() {
         double DY = annualDividendUpdate / stockPriceU;
         DivYieldSim = DY * 100;
@@ -484,7 +496,7 @@ public class ApiCalls {
         }
 
 
-    }
+    } // yahoo alternative
     public static void getAnnualDividendSim(String freq) {
         if(freq.startsWith("M")) {
             annualDividendSimStockStocks = DivAmountSim * 12;
@@ -498,28 +510,30 @@ public class ApiCalls {
             annualDividendSimStockStocks = DivAmountSim;
         }
 
+        BigDecimal a = new BigDecimal(annualDividendSimStockStocks);
+        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+        annualDividendSimStockStocks = Double.parseDouble(String.valueOf(b));
+
+
     }
     //-----------------------
 
 
 
-    //---------------------------------------
-    //methods for stock update
-    public static void getOnlyStockPriceUpdadte(String s) {
+    // methods for updating stocks in the portfolio in the background
+    public static void getOnlyStockPriceUpdate(String s) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url("https://stock-data-yahoo-finance-alternative.p.rapidapi.com/v6/finance/quote?symbols=" + s)
+                .url("https://mboum-finance.p.rapidapi.com/qu/quote?symbol="+s)
                 .get()
-                .addHeader("x-rapidapi-host", "stock-data-yahoo-finance-alternative.p.rapidapi.com")
+                .addHeader("x-rapidapi-host", "mboum-finance.p.rapidapi.com")
                 .addHeader("x-rapidapi-key", "1825a76a53mshde9945082d517f9p1c5c08jsn6dcc58da9fbd")
                 .build();
         try {
             Response response = client.newCall(request).execute();
             String allres = Objects.requireNonNull(response.body()).string();
-            String ab = new JSONObject(allres).getString("quoteResponse");
-            String al = new JSONObject(ab).getString("result");
-            JSONArray t = new JSONArray(al);
+            JSONArray t = new JSONArray(allres);
             JSONObject l = new JSONObject(String.valueOf(t.get(0)));
             String k = String.valueOf(l.get("regularMarketPrice"));
             stockPriceU = Double.parseDouble(k);
@@ -527,7 +541,7 @@ public class ApiCalls {
             e.printStackTrace();
         }
 
-    }
+    } // mboum finance
 
     public static void profitLossUpdate(double shares, double costbasis) {
         marketValueU = stockPriceU * shares;
@@ -575,35 +589,38 @@ public class ApiCalls {
                 frequencyU = new JSONObject(k).getString("freq");
                 dateOfDividendU = new JSONObject(k).getString("pay_date");
                 getAnnualDividendUpdate(frequencyU);
-                getOnlyStockPriceUpdadte(s);
+                getOnlyStockPriceUpdate(s);
                 getDividendYieldUpdate();
                 break;
             }
         }
 
-    }
+    } // seeking alpha
 
     public static void getDividendYieldUpdate() {
         double DY = annualDividendUpdate / stockPriceU;
         dividendYieldU = DY * 100;
         // Rounding
         BigDecimal a = new BigDecimal(dividendYieldU);
-        BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+        BigDecimal b = a.setScale(2, RoundingMode.DOWN);
         dividendYieldU = Double.parseDouble(String.valueOf(b));
     }
 
     public static void getAnnualDividendUpdate(String freq) {
+        double upd;
         if(freq.startsWith("M")) {
-            annualDividendUpdate = amountOfDividendU * 12;
+            upd = amountOfDividendU * 12;
         } else if (freq.startsWith("Q")) {
-            annualDividendUpdate = amountOfDividendU * 4;
+            upd = amountOfDividendU * 4;
         }
         else if (freq.startsWith("S")) {
-            annualDividendUpdate = amountOfDividendU * 2;
+            upd = amountOfDividendU * 2;
         }
         else {
-            annualDividendUpdate = amountOfDividendU;
+            upd = amountOfDividendU;
         }
+
+        annualDividendUpdate = Double.parseDouble(formatter.format(upd));
 
     }
 

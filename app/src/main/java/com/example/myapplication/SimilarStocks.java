@@ -79,7 +79,7 @@ public class SimilarStocks extends AppCompatActivity implements RecyclerViewInte
 
 
 
-    public void similarStocksArrays() throws IOException, JSONException {
+    public void similarStocksArrays() throws IOException, JSONException { // hotstocks sql
 
         float DY = (float) portfolio_V2.avgDY;
         float low = DY - 1;
@@ -87,7 +87,7 @@ public class SimilarStocks extends AppCompatActivity implements RecyclerViewInte
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create(mediaType, "SELECT * FROM stocks WHERE NOT price_change_percent_ytd IS NULL AND dividend_yield_percent >= "+low+" AND dividend_yield_percent <= "+high+" ORDER BY dividend_yield_percent  DESC LIMIT 10");
+        RequestBody body = RequestBody.create(mediaType, "SELECT * FROM stocks WHERE NOT price_change_percent_5d IS NULL AND dividend_yield_percent >= "+low+" AND dividend_yield_percent <= "+high+" ORDER BY dividend_yield_percent  DESC LIMIT 10");
         Request request = new Request.Builder()
                 .url("https://hotstoks-sql-finance.p.rapidapi.com/query")
                 .post(body)
@@ -104,7 +104,7 @@ public class SimilarStocks extends AppCompatActivity implements RecyclerViewInte
             JSONObject l = new JSONObject(String.valueOf(t.get(i)));
             String symbol = new JSONObject(String.valueOf(l)).getString("symbol");
             String stockPrice = new JSONObject(String.valueOf(l)).getString("price");
-            String PCPY = new JSONObject(String.valueOf(l)).getString("price_change_percent_ytd");
+            String PCPY = new JSONObject(String.valueOf(l)).getString("price_change_percent_5d");
             String DivYieldPercent = new JSONObject(String.valueOf(l)).getString("dividend_yield_percent");
             String DivRateAnnual = new JSONObject(String.valueOf(l)).getString("dividend_rate");
 

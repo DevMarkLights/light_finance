@@ -62,12 +62,12 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
     LineChart lineChart;
     // For card view
     TextView openValue,lowValue,highValue,closeValue,fifty_two_week_high_TV,fifty_two_week_low_TV,
-            divAmountView,exDivDate,highestView,lowestView;
+            divAmountView,exDivDate,highestView,lowestView,oneDayPercentChange;
     double highVal;
     NeumorphTextView symbolView,priceView,highestvalue,lowestValue;
     NeumorphButton threeMoTV,sixMoTV,oneYear,fiveDay;
     NeumorphFloatingActionButton addStock;
-    ImageView imp_View_in_Portfolio;
+    ImageView imp_View_in_Portfolio,percentDrawable;
     int days = 5;
     double lowest,highest;
     String fifty_two_week_loww,fifty_two_week_highh,high,low,open,close, exDate;
@@ -89,6 +89,8 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setTitle("stock price history");
+
+        // make the action bar match with the status bar
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         int color = Color.parseColor("#808080");
@@ -100,28 +102,37 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         if (bar != null) {
             bar.setBackgroundDrawable(cd);
         }
+        //----------------------------------
+
 
         DB = new DBHelper(this);
         sym = String.valueOf(getIntent().getSerializableExtra("Symbol"));
 
+        // gets the regular stock price for the given stock
         Thread thread1 = new Thread(() -> {
             try {
                 ApiCalls.regularMarketPrice(sym);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-
             // Create a handler that associated with Looper of the main thread
             Handler mainHandler = new Handler(Looper.getMainLooper());
-
-// Send a task to the MessageQueue of the main thread
+            // Send a task to the MessageQueue of the main thread
             mainHandler.post(() -> {
                 // Code will be executed on the main thread
                 priceView.setText(String.format("$%s", ApiCalls.stock_price));
+                oneDayPercentChange.setText(String.format("%s%%", String.valueOf(ApiCalls.oneDayPercentChange)));
+                if(ApiCalls.oneDayPercentChange > 0) {
+                    percentDrawable.setImageDrawable(getResources().getDrawable(R.drawable.green_up_arrow_png));
+                } else{
+                    percentDrawable.setImageDrawable(getResources().getDrawable(R.drawable.red_down_arrow_png));
+                }
             });
         }); thread1.start();
 
+        // gets all the views, buttons and graphs
         getUiElements();
+
         // similar stocks thread && store data in arrays
         Thread simStocksThread = new Thread(() -> {
             try {
@@ -155,19 +166,22 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
             e.printStackTrace();
         }
 
+        // if the stock is in the portfolio or not
         Thread newCall = new Thread(() ->
                 inPortfolio(sym));
         newCall.start();
+
         //52 week thread
         try {
             fiftyTwoWeek(sym);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // store data in arrays
+
 
     }
 
+    // gets the onclicklisteners for all the buttons
     private void setOnClickListeners() {
         threeMoTV.setOnClickListener(view -> {
             linechartcount++;
@@ -299,6 +313,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // arrays for the similar stocks recycler view
     private void getArraysForRecView() {
         symbol = new ArrayList<>();
         price = new ArrayList<>();
@@ -307,6 +322,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         percent_Change = new ArrayList<>();
     }
 
+    // store the data initialized arrays so that they can be used for the rec view
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void store_data_in_arrays() throws JSONException, IOException, InterruptedException {
         Thread t = new Thread(() -> {
@@ -338,6 +354,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // gets all the views, buttons and graphs
     public void getUiElements() {
         highestvalue = findViewById(R.id.highestValue);
         lowestValue = findViewById(R.id.lowestValue);
@@ -358,6 +375,8 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         highestView = findViewById(R.id.highest);
         lowestView = findViewById(R.id.lowest);
         addStock = findViewById(R.id.addStock);
+        percentDrawable = findViewById(R.id.percentDrawable);
+        oneDayPercentChange = findViewById(R.id.oneDayPercentChange);
 
         imp_View_in_Portfolio = findViewById(R.id.imp_View_in_Portfolio);
 
@@ -371,6 +390,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // method to set the recycler view on the activity when the data is loaded
     public void setRecyclerView() {
         Handler mainHandler = new Handler(Looper.getMainLooper());
         // Send a task to the MessageQueue of the main thread
@@ -386,6 +406,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // gets the old stock prices for the line chart
     public void historicalPrices(String s, int days) throws IOException, JSONException {
         String num_days = "";
         if (historicalPrice5 != null){
@@ -424,6 +445,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         getDataSet();
     }
 
+    // take the historical prices arraylist and store it in the lineEntries arraylist
     private void getDataSet() {
         lineEntries.clear();
         for(int i = 0; i < historicalPrice5.size(); i++) {
@@ -444,6 +466,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // get the highest value of the historical prices array list
     public void highestValueForLineChart() {
         highVal = Double.parseDouble(Collections.max(historicalPrice5));
         BigDecimal a = new BigDecimal(highVal);
@@ -453,6 +476,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // gets the lowest value of the historical prices array list
     public void lowestValueForLineChart() {
         double min = 0.0;
         for (int i = 0; i < historicalPrice5.size(); i++) {
@@ -470,6 +494,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // check if the last value of the historical prices array list is lower than the first value in the arraylist
     public void negOrPos(){
         if(historicalPrice5.isEmpty()){
             lowest = 0.0;
@@ -482,6 +507,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         }
     }
 
+    // method just to reload the activity
     public void reloadActivity() {
         finish();
         overridePendingTransition(0, 0);
@@ -489,6 +515,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         overridePendingTransition(0, 0);
     }
 
+    // method to initialize all the values in the line chart
     public void lineChart() {
         lineChart = findViewById(R.id.lineChart);
         if(lineEntries.isEmpty()){
@@ -497,6 +524,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "");
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineDataSet.setLineWidth(2);
+        // if the lowest is greater than the highest turn the line graph red or else blue
         if(lowest > highest){
             lineDataSet.setColors(Color.rgb(255, 0, 0));
             lineDataSet.setCircleColors(255, 0, 0);
@@ -529,6 +557,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         }
     }
 
+    // sets all the fifty two week views with values after the data is loaded
     public void fiftyTwoWeek(String symb) throws InterruptedException {
         Thread thread = new Thread(() -> {
             try {
@@ -570,6 +599,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
 
     }
 
+    // read the data to see if the stock is in the portfolio
     public void inPortfolio(String sym) {
         stockInPortfolio = false;
         Cursor cursor = DB.readAllData();
@@ -627,6 +657,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         cursor.close();
     }
 
+    // if a row is clicked on the similar stocks rec view it will go the line chart for that stock
     @Override
     public void onItemClick(int position) {
         Intent intent = new Intent(LineChart_V2.this,LineChart_V2.class);
@@ -636,6 +667,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
         linechartcount++;
     }
 
+    // for if you want to add the stock to the portfolio, update or delete the stock
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {

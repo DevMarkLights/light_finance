@@ -19,7 +19,6 @@ public class splashScreen extends AppCompatActivity {
         int color = Color.parseColor("#808080");
         window.setStatusBarColor(color);
 
-        portfolio_V2.dataUpdated = false;
         getSupportActionBar().hide();
         new Handler().postDelayed(new Runnable() {
             @Override

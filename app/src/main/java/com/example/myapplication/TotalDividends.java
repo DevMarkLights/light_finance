@@ -67,6 +67,7 @@ public class TotalDividends extends AppCompatActivity {
         barDataSet.setValueTextSize(11f);
         BarData barData = new BarData(barDataSet);
         barData.setDrawValues(true);
+        chart.setDrawValueAboveBar(false);
         chart.setFitBars(true);
         chart.setData(barData);
         chart.setScaleEnabled(true);
@@ -111,8 +112,8 @@ public class TotalDividends extends AppCompatActivity {
                 } else{
                     totaldiv = div * shares;
                 }
-                formatter.format(totaldiv);
-                dividend.add(new BarEntry(cursor.getPosition(), totaldiv));
+                String k = formatter.format(totaldiv);
+                dividend.add(new BarEntry(cursor.getPosition(), Float.parseFloat(k)));
                 stocks.add(cursor.getString(0));
             }
         }

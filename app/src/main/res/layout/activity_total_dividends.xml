@@ -11,7 +11,7 @@
     <soup.neumorphism.NeumorphCardView
         android:id="@+id/neumorphCardView2"
         android:layout_width="423dp"
-        android:layout_height="717dp"
+        android:layout_height="710dp"
         android:layout_marginBottom="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -6,11 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".SimilarStocks">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Similar stocks based on your portfolio dividend yield"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <soup.neumorphism.NeumorphCardView
         android:layout_width="416dp"
         android:layout_height="697dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="37dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="28dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -19,8 +30,9 @@
             android:id="@+id/similarStocksRecView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="2dp" />
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="4dp"/>
     </soup.neumorphism.NeumorphCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

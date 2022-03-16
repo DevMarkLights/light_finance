@@ -141,11 +141,11 @@ public class FutureValue extends AppCompatActivity  {
         BarDataSet barDataSet = new BarDataSet(futureMarketvalue, "Future Value");
         barDataSet.setColors(Color.rgb(0, 150, 255));
         barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(11f);
+        barDataSet.setValueTextSize(5f);
         BarData barData = new BarData(barDataSet);
         chart.setFitBars(true);
         chart.setData(barData);
-        barData.setDrawValues(false);
+        barData.setDrawValues(true);
         chart.setScaleEnabled(true);
         chart.getDescription().setEnabled(false);
         chart.setDragEnabled(true);
@@ -164,11 +164,12 @@ public class FutureValue extends AppCompatActivity  {
         chart.getXAxis().setSpaceMax(1);
         xAxis.setDrawGridLines(false);
         xAxis.setSpaceMin(0);
-        CustomMarkerClass mv = new CustomMarkerClass(this, R.layout.custom_marker_layout);
-        chart.setMarker(mv);
+        //CustomMarkerClass mv = new CustomMarkerClass(this, R.layout.custom_marker_layout);
+        //chart.setMarker(mv);
         chart.invalidate();
     }
 
+    // calculates the given future value based on the input
     public void calculateTheFutureValue(int length){
         float AC = Float.parseFloat(annualContributions.getText().toString());
         if(reinvestDivSwitch.isChecked()){ // dividends reinvested

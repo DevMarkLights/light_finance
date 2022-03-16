@@ -9,9 +9,8 @@
     <soup.neumorphism.NeumorphCardView
         android:id="@+id/neumorphCardView3"
         android:layout_width="400dp"
-        android:layout_height="656dp"
+        android:layout_height="654dp"
         android:layout_marginBottom="421dp"
-        android:background="@color/background_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.454"
@@ -22,8 +21,7 @@
         <com.github.mikephil.charting.charts.HorizontalBarChart
             android:id="@+id/fragment_verticalbarchart_chart"
             android:layout_width="match_parent"
-            android:layout_height="643dp"
-            android:background="@color/background" />
+            android:layout_height="643dp" />
 
     </soup.neumorphism.NeumorphCardView>
 

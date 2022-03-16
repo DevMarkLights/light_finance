@@ -135,13 +135,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    // displays the stock database
-    public Cursor showStocks() {
-        SQLiteDatabase DB = this.getWritableDatabase();
-
-        return DB.rawQuery("select * from Stocks ", null);
-
-    }
 
     Cursor readAllData() {
         SQLiteDatabase DB = this.getReadableDatabase();
@@ -159,11 +152,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean addStocksDialog(String symbol, double shares, double average_cost) throws JSONException, IOException {
         ApiCalls.simplifiedDividendForAddingStocks(symbol);
         String sym = symbol.toUpperCase();
-        ApiCalls.getOnlyStockPriceForSingleStockUpdating(symbol);
         double annualDividend = ApiCalls.annualDividend;
         double dividend = ApiCalls.amount_of_dividend;
         String dateOfDividend = ApiCalls.date_of_dividend;
-        String pric = String.valueOf(ApiCalls.stock_price_for_updating_single_stock);
+        String pric = String.valueOf(ApiCalls.stock_price);
         double price = Double.parseDouble(pric);
         BigDecimal a = new BigDecimal(price);
         BigDecimal b = a.setScale(2, RoundingMode.DOWN);
@@ -208,7 +200,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("Profit_or_Loss",ApiCalls.profitLossU);
         contentValues.put("dividend", ApiCalls.amountOfDividendU);
         contentValues.put("Dividend_Yield", ApiCalls.dividendYieldU);
-        contentValues.put("marketValue",ApiCalls.marketValueU);
+        contentValues.put("marketValue",portfolio_V2.mktvalU);
         contentValues.put("dateOfDividend", ApiCalls.dateOfDividendU);
 
         Cursor cursor = DB.rawQuery("select * from Stocks where symbol=?", new String[]{symbol});

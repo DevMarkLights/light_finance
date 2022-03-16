@@ -53,21 +53,9 @@
             android:name=".nuemorphism_example_2"
             android:exported="false" />
         <activity
-            android:name=".LineChartView"
-            android:exported="false"
-            android:parentActivityName=".portfolio_V2" />
-        <activity
             android:name=".TotalDividends"
             android:exported="false"
             android:parentActivityName=".portfolio_V2" />
-        <activity
-            android:name=".Database"
-            android:exported="true"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="Lights Finance" />
     </application>
 
 </manifest>

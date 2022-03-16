@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHolder>{
+public class RecViewAdapter extends  RecyclerView.Adapter<RecViewAdapter.MyViewHolder>{
     private final RecyclerViewInterface recyclerViewInterface;
     private static Context context = null;
     private final ArrayList symbol;
@@ -32,6 +32,7 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
     private final ArrayList marketValue;
     private final ArrayList frequency;
     static ApiCalls api = new ApiCalls();
+    static portfolio_V2 pt = new portfolio_V2();
     DecimalFormat formatter = new DecimalFormat("#,###.00");
 
     RecViewAdapter(Context context, ArrayList symbol, ArrayList price, ArrayList profit_loss,
@@ -160,11 +161,9 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
                     Button cancel2 = (Button) delete.findViewById(R.id.button_cancel_user_data);
                     DBHelper DB2 = new DBHelper(context);
                     delete2.setOnClickListener(view -> {
-                        EditText sy = (EditText) delete.findViewById(R.id.symbol);
                         DB2.deleteStock(sym);
                         delete.dismiss();
                     });
-
                     cancel2.setOnClickListener(view -> delete.dismiss());
                     return true;
                 default:
@@ -172,4 +171,5 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
             }
         }
     }
+
 }

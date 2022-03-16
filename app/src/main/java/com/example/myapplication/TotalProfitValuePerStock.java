@@ -22,6 +22,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TotalProfitValuePerStock extends AppCompatActivity {
@@ -30,6 +31,7 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
     ArrayList<String> stocks;
     private BarChart chart;
     DBHelper DB;
+    static DecimalFormat formatter = new DecimalFormat("#,###.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
         barDataSet.setValueTextColor(Color.BLACK);
         barDataSet.setValueTextSize(11f);
         BarData barData = new BarData(barDataSet);
+        chart.setDrawValueAboveBar(true);
         chart.setFitBars(true);
         chart.setData(barData);
         chart.setScaleEnabled(true);
@@ -93,7 +96,8 @@ public class TotalProfitValuePerStock extends AppCompatActivity {
         } else {
             while (cursor.moveToNext()) {
                 float pv = Float.parseFloat(cursor.getString(4));
-                profitValue.add(new BarEntry(cursor.getPosition(), pv));
+                String t = formatter.format(pv);
+                profitValue.add(new BarEntry(cursor.getPosition(), Float.parseFloat(t)));
                 stocks.add(cursor.getString(0));
             }
         }
