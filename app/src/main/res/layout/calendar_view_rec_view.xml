@@ -20,34 +20,33 @@
                 android:layout_height="27dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="341dp"
+                android:layout_marginTop="4dp"
                 android:text="symbol"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.227" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:text="Price"
+                android:layout_marginTop="42dp"
+                android:text="Date"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/symbol" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/price"
+                android:id="@+id/dateView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="114dp"
+                android:layout_marginStart="70dp"
                 android:layout_marginTop="40dp"
                 android:text="TextView"
                 android:textColor="@color/black"
@@ -62,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="61dp"
-                android:text="Today % Change"
+                android:text="Frequency"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,12 +69,12 @@
 
 
             <TextView
-                android:id="@+id/one_yr_percent_change"
+                android:id="@+id/frequencyView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="114dp"
+                android:layout_marginStart="70dp"
                 android:layout_marginTop="60dp"
-                android:text="change"
+                android:text="frequency"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -87,14 +86,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="192dp"
                 android:layout_marginTop="40dp"
-                android:text="Dividend_Yield"
+                android:text="Amount of Dividend"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/DivYeild"
+                android:id="@+id/amountOfDividendView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
@@ -111,14 +110,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="192dp"
                 android:layout_marginTop="60dp"
-                android:text="Annual Dividend Amount"
+                android:text="Total Dividend Amount"
                 android:textColor="@color/black"
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/dividend_amount"
+                android:id="@+id/annualDividendAmountView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"

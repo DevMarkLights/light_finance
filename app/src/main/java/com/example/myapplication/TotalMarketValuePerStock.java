@@ -16,12 +16,10 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -92,7 +90,9 @@ public class TotalMarketValuePerStock extends AppCompatActivity {
         } else {
             while (cursor.moveToNext()) {
                 float mkt = Float.parseFloat(cursor.getString(10));
-                String k = formatter.format(mkt);
+                BigDecimal a = new BigDecimal(mkt);
+                BigDecimal b = a.setScale(3, RoundingMode.DOWN);
+                String k  = String.valueOf(b);
                 marketValue.add(new BarEntry(cursor.getPosition(), Float.parseFloat(k)));
                 stocks.add(cursor.getString(0));
             }
@@ -100,11 +100,4 @@ public class TotalMarketValuePerStock extends AppCompatActivity {
         cursor.close();
     }
 
-    public static class IntValueFormatter extends ValueFormatter implements IValueFormatter {
-
-        @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            return String.valueOf((int) value);
-        }
-    }
 }

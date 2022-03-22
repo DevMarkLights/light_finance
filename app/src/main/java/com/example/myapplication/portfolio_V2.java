@@ -54,7 +54,8 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     RecViewAdapter recViewAdapter;
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     static double totalMV, totalProfitLoss, avgDY, annualDividend;
-    NeumorphFloatingActionButton neumorphFloatingActionButton,search_stocks,futureValue_foreground,LinkToSimilarStocksActivity;
+    NeumorphFloatingActionButton neumorphFloatingActionButton,search_stocks,futureValue_foreground,LinkToSimilarStocksActivity,
+            calendarFloatButton;
 
     // for similar stocks
     RecyclerView simStocksRecViewCardView;
@@ -129,6 +130,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             newCall.start();
         }
     }
+
     public void updateValues() {
         totalMarketValue();
         totalProfitLoss();
@@ -197,6 +199,11 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             Intent intent = new Intent(portfolio_V2.this,SimilarStocks.class);
             startActivity(intent);
         });
+
+        calendarFloatButton.setOnClickListener(view -> {
+            Intent intent = new Intent(portfolio_V2.this, CalendarActivity.class);
+            startActivity(intent);
+        });
     }
 
     public void getUiElements() {
@@ -222,6 +229,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         dividend_rate_Annual = new ArrayList<String>();
         dividend_yield_percent = new ArrayList<String>();
         LinkToSimilarStocksActivity = findViewById(R.id.LinkToSimilarStocksActivity);
+        calendarFloatButton = findViewById(R.id.calendarFloatButton);
     }
 
     public void getAllArrayListForUI() {
@@ -425,7 +433,6 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         startActivity(getIntent());
         overridePendingTransition(0, 0);
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getDataForUpdate() throws InterruptedException, JSONException, IOException {

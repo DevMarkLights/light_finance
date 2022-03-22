@@ -41,8 +41,6 @@ public class RecViewAdpSimStocks extends RecyclerView.Adapter<RecViewAdpSimStock
 
     }
 
-
-
     @Override
     public void onBindViewHolder(@NonNull RecViewAdpSimStocks.MyViewSimHolder holder, int position) {
         holder.symbol.setText(String.valueOf(symbol.get(position)));

@@ -141,7 +141,7 @@ public class FutureValue extends AppCompatActivity  {
         BarDataSet barDataSet = new BarDataSet(futureMarketvalue, "Future Value");
         barDataSet.setColors(Color.rgb(0, 150, 255));
         barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(5f);
+        barDataSet.setValueTextSize(8f);
         BarData barData = new BarData(barDataSet);
         chart.setFitBars(true);
         chart.setData(barData);

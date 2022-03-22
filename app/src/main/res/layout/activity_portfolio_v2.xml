@@ -25,6 +25,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/calendarFloatButton"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="202dp"
+            android:layout_marginTop="260dp"
+            android:src="@drawable/calender_view_foreground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <soup.neumorphism.NeumorphTextView
             android:id="@+id/neumorphTextView2"
             style="@style/Widget.Neumorph.TextView"
@@ -264,38 +274,38 @@
             <soup.neumorphism.NeumorphCardView
                 android:layout_width="407dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
                 android:background="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/white"
                     android:text="Similar Stocks"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
                     android:textSize="20sp"
-                    android:background="@color/white"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="2dp"/>
+                    android:textStyle="bold" />
 
                 <soup.neumorphism.NeumorphFloatingActionButton
                     android:id="@+id/LinkToSimilarStocksActivity"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/share_icon_png"
                     android:layout_marginStart="330dp"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/share_icon_png" />
 
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/simStocksRecViewCardView"
                     android:layout_width="match_parent"
-                    android:background="@color/white"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="38dp"
                     android:layout_marginStart="2dp"
-                    android:layout_marginBottom="4dp"/>
+                    android:layout_marginTop="38dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/white" />
 
 
             </soup.neumorphism.NeumorphCardView>
