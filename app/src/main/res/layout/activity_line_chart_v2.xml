@@ -369,7 +369,7 @@
                 android:id="@+id/highest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="2dp"
                 android:text="5 day highest"
                 android:textColor="@color/black" />
@@ -378,7 +378,7 @@
                 android:id="@+id/highestValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
                 android:text="TextView"
                 android:textColor="@color/black" />

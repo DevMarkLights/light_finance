@@ -148,10 +148,11 @@ public class RecViewAdapter extends  RecyclerView.Adapter<RecViewAdapter.MyViewH
                         double aveg = Double.parseDouble(avgg);
                         DB3.updateStock(sym2, shares, aveg);
                         update.dismiss();
+                        ((portfolio_V2)context).reloadActivity(context);
+                        ((portfolio_V2)context).updateValues();
                     });
                     cancel3.setOnClickListener(view -> update.dismiss());
                     return true;
-
                 case R.id.delete2:
                     String sym = String.valueOf(symbol.getText());
                     Dialog delete = new Dialog(context);
@@ -163,13 +164,16 @@ public class RecViewAdapter extends  RecyclerView.Adapter<RecViewAdapter.MyViewH
                     delete2.setOnClickListener(view -> {
                         DB2.deleteStock(sym);
                         delete.dismiss();
+                        ((portfolio_V2)context).reloadActivity(context);
                     });
                     cancel2.setOnClickListener(view -> delete.dismiss());
                     return true;
                 default:
                     return false;
             }
+
         }
     }
+
 
 }

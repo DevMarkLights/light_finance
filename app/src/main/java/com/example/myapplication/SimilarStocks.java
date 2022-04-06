@@ -28,7 +28,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class SimilarStocks extends AppCompatActivity implements RecyclerViewInterface {
+public class SimilarStocks extends AppCompatActivity implements RecylerViewInterface2 {
 
     RecyclerView similarStocksRecView;
     ArrayList<String> symbols = new ArrayList<String>();
@@ -121,9 +121,9 @@ public class SimilarStocks extends AppCompatActivity implements RecyclerViewInte
             @Override
             public void run() {
                 // Code will be executed on the main thread
+                SimilarStocksRecViewAdpFromDivYield = new SimilarStocksRecViewAdpFromDivYield(SimilarStocks.this,symbols,
+                        price,price_change_percent_ytd,dividend_yield_percent,dividend_rate_Annual, (RecylerViewInterface2) SimilarStocks.this);
 
-                SimilarStocksRecViewAdpFromDivYield = new SimilarStocksRecViewAdpFromDivYield(SimilarStocks.this, symbols, price, price_change_percent_ytd, dividend_yield_percent,
-                                                                                                   dividend_rate_Annual, SimilarStocks.this);
                 similarStocksRecView.setAdapter(SimilarStocksRecViewAdpFromDivYield);
                 similarStocksRecView.setLayoutManager(new LinearLayoutManager(SimilarStocks.this));
             }
@@ -131,7 +131,7 @@ public class SimilarStocks extends AppCompatActivity implements RecyclerViewInte
 
     }
     @Override
-    public void onItemClick(int position) {
+    public void onItemClick2(int position) {
         Intent intent = new Intent(SimilarStocks.this,LineChart_V2.class);
         String s = symbols.get(position);
         intent.putExtra("Symbol",s);

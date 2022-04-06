@@ -9,9 +9,10 @@
     <soup.neumorphism.NeumorphCardView
         android:layout_width="406dp"
         android:layout_height="334dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
         <CalendarView
             android:id="@+id/calendarView2"
@@ -20,14 +21,46 @@
 
     </soup.neumorphism.NeumorphCardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/calendarViewRecyclerView"
-        android:layout_width="388dp"
-        android:layout_height="378dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="352dp"
+    <soup.neumorphism.NeumorphCardView
+        android:layout_width="92dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="350dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/ListAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:text="List all"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+    </soup.neumorphism.NeumorphCardView>
+
+    <soup.neumorphism.NeumorphCardView
+        android:layout_width="408dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="401dp"
+        android:layout_marginEnd="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/calendarViewRecyclerView"
+            android:layout_width="388dp"
+            android:layout_height="315dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="2dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </soup.neumorphism.NeumorphCardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

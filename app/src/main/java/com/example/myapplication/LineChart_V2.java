@@ -335,6 +335,7 @@ public class LineChart_V2 extends AppCompatActivity implements RecyclerViewInter
                     String temp = ApiCalls.recommendedSymbols.get(i);
                     symbol.add(temp);
                     price.add(String.valueOf(ApiCalls.priceSim.get(i)));
+                    ApiCalls.stockPriceSimStocks = ApiCalls.priceSim.get(i);
                     try {
                         ApiCalls.getDivYieldSimStocks(temp);
                     } catch (IOException | JSONException e) {

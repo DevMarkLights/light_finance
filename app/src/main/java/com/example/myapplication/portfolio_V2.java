@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -42,7 +43,7 @@ import okhttp3.Response;
 import soup.neumorphism.NeumorphCardView;
 import soup.neumorphism.NeumorphFloatingActionButton;
 
-public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInterface, PopupMenu.OnMenuItemClickListener {
+public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInterface, PopupMenu.OnMenuItemClickListener,RecylerViewInterface2 {
     RecyclerView recyclerView;
     ArrayList<String> tmv, Symbol, price, profit_loss, average_cost, Dividend_Yield, marketValue, frequency;
     TextView total_market_value, totalProfitLossView, avgDyview, totalAnnualDiv;
@@ -55,7 +56,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     ArrayList<Double> total_Profit_Loss, average_Dividend_Yield;
     static double totalMV, totalProfitLoss, avgDY, annualDividend;
     NeumorphFloatingActionButton neumorphFloatingActionButton,search_stocks,futureValue_foreground,LinkToSimilarStocksActivity,
-            calendarFloatButton;
+            calendarFloatButton,updatePortfolio;
 
     // for similar stocks
     RecyclerView simStocksRecViewCardView;
@@ -72,8 +73,11 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     static double mktvalU;
     double costbasisU;
     static boolean dataUpdated = false;
+
+
     //--------------------
     DecimalFormat formatter = new DecimalFormat("#,###.00");
+    String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -103,32 +107,44 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         storeDataInArrays();
         //-------------------------
         getAllOnClickListners();
-        // if stocks in database has been updated once then skip step
+
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         String time = sdf.format(Calendar.getInstance().getTime());
 
-        if(!dataUpdated && (time.startsWith("09") || time.startsWith("10") || time.startsWith("11") || time.startsWith("12") ||
-                time.startsWith("13") || time.startsWith("14") || time.startsWith("15")|| time.startsWith("16"))) {
-            Thread newCall = new Thread(() -> {
-                try {
-                    getDataForUpdate();
-                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                    // Send a task to the MessageQueue of the main thread
-                    mainHandler.post(() -> {
-                        // Code will be executed on the main thread
-                        updateValues();
-                        recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
-                                Dividend_Yield, marketValue, frequency,this);
-                        recyclerView.setAdapter(recViewAdapter);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                    });
+        Calendar c = Calendar.getInstance();
+        String dayOfWeek = days[c.get(Calendar.DAY_OF_WEEK) - 1];
 
-                } catch (InterruptedException | JSONException | IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            newCall.start();
+        // if the day of the week or not trading days then don't update portfolio
+        if (dayOfWeek.equals("Monday") || dayOfWeek.equals("Tuesday") || dayOfWeek.equals("Wednesday") || dayOfWeek.equals("Thursday")
+                || dayOfWeek.equals("Friday")){
+
+            // if data is updated then skip and if it is not trading hours then skip
+            if(!dataUpdated && (time.startsWith("09") || time.startsWith("10") || time.startsWith("11") || time.startsWith("12") ||
+                    time.startsWith("13") || time.startsWith("14") || time.startsWith("15")|| time.startsWith("16")) ) {
+
+                // thread to update portfolio
+                Thread newCall = new Thread(() -> {
+                    try {
+                        getDataForUpdate();
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+                        // Send a task to the MessageQueue of the main thread
+                        mainHandler.post(() -> {
+                            // Code will be executed on the main thread
+                            updateValues();
+                            recViewAdapter = new RecViewAdapter(this, Symbol, price, profit_loss, average_cost,
+                                    Dividend_Yield, marketValue, frequency,this);
+                            recyclerView.setAdapter(recViewAdapter);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                        });
+
+                    } catch (InterruptedException | JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                newCall.start();
+            }
         }
+
     }
 
     public void updateValues() {
@@ -138,6 +154,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         averageDividendYield();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllOnClickListners(){
         annualDividendCardView.setOnClickListener(view -> {
             Intent intent = new Intent(portfolio_V2.this, TotalDividends.class);
@@ -204,6 +221,31 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
             Intent intent = new Intent(portfolio_V2.this, CalendarActivity.class);
             startActivity(intent);
         });
+
+        updatePortfolio.setOnClickListener(view -> {
+
+            Thread update = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getDataForUpdate();
+                    } catch (InterruptedException | JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // Send a task to the MessageQueue of the main thread
+                    mainHandler.post(() -> {
+                        // Code will be executed on the main thread
+                        updateValues();
+                        recViewAdapter = new RecViewAdapter(portfolio_V2.this, Symbol, price, profit_loss, average_cost,
+                                Dividend_Yield, marketValue, frequency,portfolio_V2.this);
+                        recyclerView.setAdapter(recViewAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(portfolio_V2.this));
+                    });
+                }
+            });update.start();
+        });
     }
 
     public void getUiElements() {
@@ -220,6 +262,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         searchInput = findViewById(R.id.searchInput);
         search_stocks = findViewById(R.id.search_stocks);
         futureValue_foreground = findViewById(R.id.futureValue_foreground);
+        updatePortfolio = findViewById(R.id.updatePortfolio);
 
         // for similar stocks
         simStocksRecViewCardView = findViewById(R.id.simStocksRecViewCardView);
@@ -251,7 +294,10 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         Thread t = new Thread(() -> {
             Cursor cursor = DB.readAllData();
             if (cursor.getCount() == 0) {
-                Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                mainHandler.post(()->{
+                    Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+                });
             } else {
                 while (cursor.moveToNext()) {
                     Symbol.add(cursor.getString(0));
@@ -262,6 +308,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                     marketValue.add(cursor.getString(10));
                     frequency.add(cursor.getString(8));
                 }
+
             }
         }); t.start();
 
@@ -271,6 +318,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     public void totalMarketValue() {
         Thread t = new Thread(() -> {
             tmv.clear();
+            totalMV = 0.0;
             Cursor cursor = DB.readAllData();
             if (cursor.getCount() == 0) {
                 Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -308,6 +356,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     public void averageDividendYield() {
         Thread t = new Thread(() -> {
             average_Dividend_Yield.clear();
+            avgDY=0.0;
             Cursor cursor = DB.readAllData();
             if (cursor.getCount() == 0) {
                 Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -336,10 +385,12 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 // Code will be executed on the main thread
                 avgDyview.setText("");
                 avgDyview.setText(String.format("%s%%", avgDY));
-                try {
-                    similarStocksArrays();
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
+                if(avgDY > 0){
+                    try {
+                        similarStocksArrays();
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
@@ -351,6 +402,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
     public void totalProfitLoss() {
             Thread t = new Thread(() -> {
                 total_Profit_Loss.clear();
+                totalProfitLoss = 0.0;
                 Cursor cursor = DB.readAllData();
                 if (cursor.getCount() == 0) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -423,28 +475,41 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 });
             }
 
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            // Send a task to the MessageQueue of the main thread
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                BigDecimal a = new BigDecimal(annualDividend);
+                BigDecimal b = a.setScale(2, RoundingMode.DOWN);
+                totalAnnualDiv.setText(String.format("$%s", formatter.format(b)));
+            });
+
         }); t.start();
 
     }
 
-    public void reloadActivity () {
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(getIntent());
-        overridePendingTransition(0, 0);
+    public void reloadActivity(Context context) {
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+
     }
 
+    // gets the data to update the portfolio
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getDataForUpdate() throws InterruptedException, JSONException, IOException {
         Cursor cursor = DB.readAllData();
         if (cursor.getCount() == 0) {
-            Toast.makeText(this, "No Stocks", Toast.LENGTH_SHORT).show();
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            mainHandler.post(()->{
+                Toast.makeText(portfolio_V2.this, "No stocks", Toast.LENGTH_SHORT).show();
+            });
         } else {
             while (cursor.moveToNext()) {
                 symbolU = cursor.getString(0);
                 sharesU = Double.parseDouble(cursor.getString(2));
                 costbasisU = Double.parseDouble(cursor.getString(3));
-                //ApiCalls.getOnlyStockPriceUpdate(symbolU);
                 updatePortfolio();
             }
             cursor.close();
@@ -506,7 +571,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                             e.printStackTrace();
                         }
                         dialog.dismiss();
-                        reloadActivity();
+                        reloadActivity(this);
                     } else {
                         Toast.makeText(portfolio_V2.this, "Stock doesnt exist. Check input", Toast.LENGTH_LONG).show();
                     }
@@ -527,6 +592,7 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
         price_change_percent_5d.clear();
         dividend_yield_percent.clear();
         dividend_rate_Annual.clear();
+
 
         float DY = (float) portfolio_V2.avgDY;
         float low = DY - 1;
@@ -620,15 +686,21 @@ public class portfolio_V2 extends AppCompatActivity implements RecyclerViewInter
                 @Override
                 public void run() {
                     // Code will be executed on the main thread
-                    SimilarStocksRecViewAdpFromDivYield = new SimilarStocksRecViewAdpFromDivYield(portfolio_V2.this, symbols, price, price_change_percent_5d, dividend_yield_percent,
-                            dividend_rate_Annual, portfolio_V2.this);
+                    SimilarStocksRecViewAdpFromDivYield = new SimilarStocksRecViewAdpFromDivYield(portfolio_V2.this,symbols,price2,price_change_percent_5d,
+                            dividend_yield_percent,dividend_rate_Annual,portfolio_V2.this);
                     simStocksRecViewCardView.setAdapter(SimilarStocksRecViewAdpFromDivYield);
                     simStocksRecViewCardView.setLayoutManager(new LinearLayoutManager(portfolio_V2.this));
                 }
             });
         }); ha.start();
-
-
     }
 
+    // for similar stocks
+    @Override
+    public void onItemClick2(int position) {
+        Intent intent = new Intent(portfolio_V2.this,LineChart_V2.class);
+        String s = symbols.get(position);
+        intent.putExtra("Symbol",s);
+        startActivity(intent);
+    }
 }

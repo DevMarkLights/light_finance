@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class SimilarStocksRecViewAdpFromDivYield extends RecyclerView.Adapter<SimilarStocksRecViewAdpFromDivYield.MyViewSimStocksHolder>{
-    private final RecyclerViewInterface recyclerViewInterface;
+    private final RecylerViewInterface2 recyclerViewInterface;
     private final Context context;
     private final ArrayList symbols;
     private final ArrayList price;
@@ -23,7 +23,7 @@ public class SimilarStocksRecViewAdpFromDivYield extends RecyclerView.Adapter<Si
 
     SimilarStocksRecViewAdpFromDivYield(Context context, ArrayList symbols, ArrayList price, ArrayList price_change_percent_ytd,
                                         ArrayList dividend_yield_percent, ArrayList dividend_rate_annual,
-                                        RecyclerViewInterface recyclerViewInterface) {
+                                        RecylerViewInterface2 recyclerViewInterface) {
         this.recyclerViewInterface = recyclerViewInterface;
         this.context = context;
         this.symbols = symbols;
@@ -65,7 +65,7 @@ public class SimilarStocksRecViewAdpFromDivYield extends RecyclerView.Adapter<Si
     public static class MyViewSimStocksHolder extends RecyclerView.ViewHolder {
         TextView symbol,price,DivYeild,AnnualDividendAmount,percent_change;
 
-        public MyViewSimStocksHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
+        public MyViewSimStocksHolder(@NonNull View itemView, RecylerViewInterface2 recyclerViewInterface) {
             super(itemView);
             symbol = itemView.findViewById(R.id.symbol);
             price = itemView.findViewById(R.id.price);
@@ -80,7 +80,7 @@ public class SimilarStocksRecViewAdpFromDivYield extends RecyclerView.Adapter<Si
                         int position = getAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION) {
-                            recyclerViewInterface.onItemClick(position);
+                            recyclerViewInterface.onItemClick2(position);
                         }
                     }
                 }

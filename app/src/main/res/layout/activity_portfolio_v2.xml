@@ -35,6 +35,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <soup.neumorphism.NeumorphFloatingActionButton
+            android:id="@+id/updatePortfolio"
+            android:layout_width="37dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="160dp"
+            android:layout_marginTop="272dp"
+            android:src="@drawable/update_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <soup.neumorphism.NeumorphTextView
             android:id="@+id/neumorphTextView2"
             style="@style/Widget.Neumorph.TextView"

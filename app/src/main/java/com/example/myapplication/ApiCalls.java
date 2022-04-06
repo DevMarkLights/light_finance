@@ -40,7 +40,7 @@ public class ApiCalls {
     static ArrayList<String> recommendedSymbols = new ArrayList<>();
     static ArrayList<Float> priceSim = new ArrayList<>();
     static ArrayList<Float> percentChange = new ArrayList<>();
-    static double DivYieldSim,DivAmountSim,annualDividendSimStockStocks,percent_Change;
+    static double DivYieldSim,DivAmountSim,annualDividendSimStockStocks,percent_Change,stockPriceSimStocks;
     static String FreqSim;
     //------------------
 
@@ -54,6 +54,7 @@ public class ApiCalls {
     static String dateOfDividendU,frequencyU;
     //------------------------------
     static DecimalFormat formatter = new DecimalFormat("#,###.00");
+    static DecimalFormat formatterNoComma = new DecimalFormat("####.00");
 
     // checks to see if the symbol is exist in the stock market / alternative yahoo api call
     public void checkSymbol (String s){
@@ -151,7 +152,7 @@ public class ApiCalls {
             JSONArray t = new JSONArray(allres);
             JSONObject l = new JSONObject(String.valueOf(t.get(0)));
             String k = String.valueOf(l.get("regularMarketPrice"));
-            stock_price = Double.parseDouble(k);
+            stock_price_for_updating_single_stock = Double.parseDouble(k);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
@@ -187,7 +188,7 @@ public class ApiCalls {
     // gets the market value of the current stock price with user's amount of shares. then compares it
     // with the cost value. which is shares * the average price paid per stock
     public static void profit_loss(double shares, double costbasis) {
-        double market_value = stock_price * shares;
+        double market_value = stock_price_for_updating_single_stock * shares;
         double cost_value = shares * costbasis;
         double pr = market_value - cost_value;
         BigDecimal l = new BigDecimal(pr);
@@ -463,8 +464,8 @@ public class ApiCalls {
 
     } // seeking alpha
     public static void getDividendYieldSim() {
-        double DY = annualDividendUpdate / stockPriceU;
-        DivYieldSim = DY * 100;
+        String DY = formatterNoComma.format(Double.parseDouble(String.valueOf(annualDividendSimStockStocks)) / Double.parseDouble(String.valueOf(stockPriceSimStocks)));
+        DivYieldSim = Double.parseDouble(DY) * 100;
         // Rounding
         BigDecimal a = new BigDecimal(DivYieldSim);
         BigDecimal b = a.setScale(3, RoundingMode.DOWN);

@@ -29,6 +29,7 @@ public class CalendarActivity extends AppCompatActivity implements RecyclerViewI
     RecyclerView calendarViewRecyclerView;
     RecViewCalendarView recViewCalendarView;
     TextView dateView,frequencyView,amountOfDividendView,annualDividendAmountView;
+    TextView ListAll;
     ArrayList<String> symbols = new ArrayList<String>();
     ArrayList<String> date = new ArrayList<String>();
     ArrayList<String> frequency = new ArrayList<String>();
@@ -63,6 +64,12 @@ public class CalendarActivity extends AppCompatActivity implements RecyclerViewI
         setMinAndMaxDates();
 
         dataFromDateOnClick();
+
+        ListAll = findViewById(R.id.ListAll);
+
+        ListAll.setOnClickListener(view -> {
+            dataFromDateOnClick();
+        });
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -101,7 +108,7 @@ public class CalendarActivity extends AppCompatActivity implements RecyclerViewI
                         if(symbols.isEmpty()){
                             Handler mainHandler = new Handler(Looper.getMainLooper());
                             mainHandler.post(()->{
-                                Toast.makeText(CalendarActivity.this, "No dividends today", Toast.LENGTH_LONG).show();
+                                Toast.makeText(CalendarActivity.this, "No dividends today", Toast.LENGTH_SHORT).show();
                             });
                         }
                     }
@@ -141,7 +148,6 @@ public class CalendarActivity extends AppCompatActivity implements RecyclerViewI
         long startOfMonth = calendar.getTimeInMillis();
         calendarView.setMaxDate(endOfMonth);
         calendarView.setMinDate(startOfMonth);
-
 
     }
 

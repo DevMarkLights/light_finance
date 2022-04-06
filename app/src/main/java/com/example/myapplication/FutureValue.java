@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -30,7 +29,6 @@ import soup.neumorphism.NeumorphButton;
 
 
 public class FutureValue extends AppCompatActivity  {
-    portfolio_V2 pt = new portfolio_V2();
     float totalMarketValue;
     private BarChart chart;
     ArrayList<BarEntry> futureMarketvalue;
@@ -56,9 +54,10 @@ public class FutureValue extends AppCompatActivity  {
         ActionBar bar;
         bar = getSupportActionBar();
         ColorDrawable cd = new ColorDrawable(Color.parseColor("#808080"));
+        assert bar != null;
         bar.setBackgroundDrawable(cd);
 
-        chart = (BarChart) findViewById(R.id.futureValueChart);
+        chart = findViewById(R.id.futureValueChart);
         oneYearftv = findViewById(R.id.oneYearftv);
         fiveYearftv = findViewById(R.id.fiveYearftv);
         tenYearftv = findViewById(R.id.tenYearftv);
@@ -73,66 +72,29 @@ public class FutureValue extends AppCompatActivity  {
         reinvestDivSwitch.toggle();
         setOnClickListeners();
 
-        futureMarketvalue = new ArrayList<BarEntry>();
-        futureYear = new ArrayList<String>();
+        futureMarketvalue = new ArrayList<>();
+        futureYear = new ArrayList<>();
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                calculateTheFutureValue(5);
-            }
-        }); t.start();
+        Thread t = new Thread(() -> calculateTheFutureValue(5)); t.start();
 
     }
 
     public void setOnClickListeners() {
 
-        oneYearftv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        calculateTheFutureValue(1);
-                    }
-                });t.start();
-            }
+        oneYearftv.setOnClickListener(view -> {
+            Thread t = new Thread(() -> calculateTheFutureValue(1));t.start();
         });
 
-        fiveYearftv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        calculateTheFutureValue(5);
-                    }
-                });t.start();
-            }
+        fiveYearftv.setOnClickListener(view -> {
+            Thread t = new Thread(() -> calculateTheFutureValue(5));t.start();
         });
 
-        tenYearftv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        calculateTheFutureValue(10);
-                    }
-                });t.start();
-            }
+        tenYearftv.setOnClickListener(view -> {
+            Thread t = new Thread(() -> calculateTheFutureValue(10));t.start();
         });
 
-        twentyFiveYearftv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        calculateTheFutureValue(25);
-                    }
-                });t.start();
-            }
+        twentyFiveYearftv.setOnClickListener(view -> {
+            Thread t = new Thread(() -> calculateTheFutureValue(25));t.start();
         });
 
     }
@@ -164,8 +126,6 @@ public class FutureValue extends AppCompatActivity  {
         chart.getXAxis().setSpaceMax(1);
         xAxis.setDrawGridLines(false);
         xAxis.setSpaceMin(0);
-        //CustomMarkerClass mv = new CustomMarkerClass(this, R.layout.custom_marker_layout);
-        //chart.setMarker(mv);
         chart.invalidate();
     }
 
@@ -179,7 +139,7 @@ public class FutureValue extends AppCompatActivity  {
             double ARI = .06; // average stock market return on investment accounted for inflation
             totalMarketValue = (float) portfolio_V2.totalMV;
             int year = Calendar.getInstance().get(Calendar.YEAR);
-            float divY = (float) portfolio_V2.avgDY;
+            float divY = (float) portfolio_V2.avgDY/100; // gets the average percent dividend yield in decimal form
             float value = 0;
 
             for(int i = 0; i <=length; i++){
@@ -191,19 +151,18 @@ public class FutureValue extends AppCompatActivity  {
                     value = totalMarketValue;
                 } else{
                     // getting dividends for each year and calculating them with the new price of the next year
-                    float divAmount = 0;
-                    float tempDy = divY/100;// gets the average percent dividend yield in decimal form
+                    float divAmount;
                     double tempV = value * ARI;// gets the average return on the money in your portfolio
-                    value = (float) (value + tempV); // inflation minus the money you have for that year
-                    divAmount = value * tempDy; // gets the dollar amount of dividends for this year
-                    value = (float) (value + divAmount + AC);
+                    divAmount = value * divY; // gets the dollar amount of dividends for this year
+                    value = (float) (value + tempV); // average stock market return plus the money you have in your portfolio
+                    value = value + divAmount + AC;
                     futureMarketvalue.add(new BarEntry(i,value));
                     futureYear.add(String.valueOf(year));
                     year++;
                     totalDispersedDividends+=divAmount;
                     if(i == length){
                         endingValue = value;
-                        expectedDividends = value * tempDy;
+                        expectedDividends = value * divY;
                     }
                 }
 
@@ -211,16 +170,13 @@ public class FutureValue extends AppCompatActivity  {
 
             Handler mainHandler = new Handler(Looper.getMainLooper());
             // Send a task to the MessageQueue of the main thread
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Code will be executed on the main thread
-                    setBarChart();
-                    totalDividendsReceived.setText("$"+formatter.format(totalDispersedDividends));
-                    endingAmount.setText("$"+formatter.format(endingValue));
-                    expectedDiv.setText("$"+formatter.format(expectedDividends));
-                    presentValue.setText("$"+formatter.format(totalMarketValue));
-                }
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                setBarChart();
+                totalDividendsReceived.setText(String.format("$%s", formatter.format(totalDispersedDividends)));
+                endingAmount.setText(String.format("$%s", formatter.format(endingValue)));
+                expectedDiv.setText(String.format("$%s", formatter.format(expectedDividends)));
+                presentValue.setText(String.format("$%s", formatter.format(totalMarketValue)));
             });
         } else { // dividends not reinvested
             futureYear.clear();
@@ -241,12 +197,12 @@ public class FutureValue extends AppCompatActivity  {
                     value = totalMarketValue;
                 } else{
                     // getting dividends for each year and calculating them with the new price of the next year
-                    float divAmount = 0;
+                    float divAmount;
                     float tempDy = divY/100;// gets the average percent dividend yield in decimal form
                     double tempV = value * ARI;// gets the average return on the money in your portfolio
                     value = (float) (value + tempV); // average return plus the money you have for that year
                     divAmount = value * tempDy; // gets the dollar amount of dividends for this year
-                    value = (float) (value + AC);
+                    value = value + AC;
                     futureMarketvalue.add(new BarEntry(i,value));
                     futureYear.add(String.valueOf(year));
                     year++;
@@ -262,17 +218,14 @@ public class FutureValue extends AppCompatActivity  {
 
             Handler mainHandler = new Handler(Looper.getMainLooper());
             // Send a task to the MessageQueue of the main thread
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Code will be executed on the main thread
-                    setBarChart();
-                    totalDividendsReceived.setText("$"+formatter.format(totalDispersedDividends));
-                    endingAmount.setText("$"+formatter.format(endingValue));
-                    expectedDiv.setText("$"+formatter.format(expectedDividends));
-                    presentValue.setText("$"+formatter.format(totalMarketValue));
+            mainHandler.post(() -> {
+                // Code will be executed on the main thread
+                setBarChart();
+                totalDividendsReceived.setText(String.format("$%s", formatter.format(totalDispersedDividends)));
+                endingAmount.setText(String.format("$%s", formatter.format(endingValue)));
+                expectedDiv.setText(String.format("$%s", formatter.format(expectedDividends)));
+                presentValue.setText(String.format("$%s", formatter.format(totalMarketValue)));
 
-                }
             });
         }
 

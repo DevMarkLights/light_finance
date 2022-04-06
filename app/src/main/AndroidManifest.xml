@@ -54,9 +54,6 @@
             android:label="Lights Finance"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name=".nuemorphism_example_2"
-            android:exported="false" />
-        <activity
             android:name=".TotalDividends"
             android:exported="false"
             android:parentActivityName=".portfolio_V2" />
